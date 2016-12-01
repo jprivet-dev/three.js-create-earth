@@ -132,8 +132,7 @@ var Camera = (function() {
  */
 var SkyBox = (function() {
   var
-    SKYBOX_DIM = 2000,
-    SKYBOX_SEGMENTS = 32,
+    SKYBOX_DIM = 4000,
     SKYBOX_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/sky_2048x1024.jpg';
 
   this.init = function() {
@@ -142,11 +141,7 @@ var SkyBox = (function() {
       side: THREE.BackSide
     });
 
-    this.geometry = new THREE.SphereGeometry(
-      SKYBOX_DIM,
-      SKYBOX_SEGMENTS,
-      SKYBOX_SEGMENTS
-    );
+    this.geometry = new THREE.CubeGeometry(SKYBOX_DIM, SKYBOX_DIM, SKYBOX_DIM);
 
     this.skybox = new THREE.Mesh(this.geometry, this.material);
   };
@@ -154,7 +149,7 @@ var SkyBox = (function() {
   this.getTexture = function() {
     var texture = new THREE.TextureLoader().load(SKYBOX_MATERIAL_TEXTURE_IMAGE_URL);
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(1, 1);
+    texture.repeat.set(2, 2);
 
     return texture;
   };
