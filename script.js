@@ -128,13 +128,13 @@ var Camera = (function() {
 })();
 
 /**
- * Stars
+ * SkyBox
  */
-var Stars = (function() {
+var SkyBox = (function() {
   var
-    STARS_DIM = 2000,
-    STARS_SEGMENTS = 32,
-    STARS_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/sky_2048x1024.jpg';
+    SKYBOX_DIM = 2000,
+    SKYBOX_SEGMENTS = 32,
+    SKYBOX_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/sky_2048x1024.jpg';
 
   this.init = function() {
     this.material = new THREE.MeshBasicMaterial({
@@ -143,16 +143,16 @@ var Stars = (function() {
     });
 
     this.geometry = new THREE.SphereGeometry(
-      STARS_DIM,
-      STARS_SEGMENTS,
-      STARS_SEGMENTS
+      SKYBOX_DIM,
+      SKYBOX_SEGMENTS,
+      SKYBOX_SEGMENTS
     );
 
-    this.stars = new THREE.Mesh(this.geometry, this.material);
+    this.skybox = new THREE.Mesh(this.geometry, this.material);
   };
 
   this.getTexture = function() {
-    var texture = new THREE.TextureLoader().load(STARS_MATERIAL_TEXTURE_IMAGE_URL);
+    var texture = new THREE.TextureLoader().load(SKYBOX_MATERIAL_TEXTURE_IMAGE_URL);
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(1, 1);
 
@@ -284,7 +284,7 @@ var Scene = (function() {
     this.scene = new THREE.Scene();
     this.scene.add(Earth.earth);
     this.scene.add(Light.light);
-    this.scene.add(Stars.stars);
+    this.scene.add(SkyBox.skybox);
   };
 
   this.init();
