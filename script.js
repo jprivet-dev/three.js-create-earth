@@ -173,14 +173,13 @@ var Cloud = (function() {
     CLOUD_SEGMENTS = 64,
     CLOUD_OPACITY = 0.6,
     CLOUD_ANIMATION_ROTATION_Y = 100,
-    CLOUD_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_clouds_2048x1024.jpg',
     CLOUD_MATERIAL_ALPHA_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_clouds_2048x1024.jpg',
     CLOUD_MATERIAL_BUMP_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_clouds_2048x1024.jpg',
     CLOUD_MATERIAL_BUMP_SCALE = 1;
 
   this.init = function() {
     this.material = new THREE.MeshPhongMaterial({
-      map: new THREE.TextureLoader().load(CLOUD_MATERIAL_TEXTURE_IMAGE_URL),
+      color: COLOR_WHITE,
       opacity: CLOUD_OPACITY,
       transparent: true,
       alphaMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_ALPHA_IMAGE_URL),
@@ -215,11 +214,11 @@ var Earth = (function() {
     EARTH_SEGMENTS = 64,
     EARTH_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_map_2048x1024.jpg',
     EARTH_MATERIAL_BUMP_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_bump_2048x1024.jpg',
-    EARTH_MATERIAL_BUMP_SCALE = 4,
+    EARTH_MATERIAL_BUMP_SCALE = 3,
     EARTH_MATERIAL_SPECULAR_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_specular_2048x1024.jpg',
     EARTH_MATERIAL_SPECULAR_COLOR = 0xfffdef,
     EARTH_MATERIAL_SHININESS = 3,
-    EARTH_ANIMATION_ROTATION_Y = Math.PI / 1000;
+    EARTH_ANIMATION_ROTATION_Y = Math.PI / 2000;
 
   this.init = function() {
     this.material = new THREE.MeshPhongMaterial({
