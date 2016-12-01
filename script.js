@@ -133,7 +133,7 @@ var Camera = (function() {
 var SkyBox = (function() {
   var
     SKYBOX_DIM = 4000,
-    SKYBOX_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/sky_2048x1024.jpg',
+    SKYBOX_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skybox_1024x1024.jpg',
     SKYBOX_MATERIAL_TEXTURE_REPEAT = 1;
 
   this.init = function() {
