@@ -2,6 +2,7 @@
  * Resources :
  * http://learningthreejs.com/blog/2013/09/16/how-to-make-the-earth-in-webgl/
  * http://blog.mastermaps.com/2013/09/creating-webgl-earth-with-threejs.html
+ * http://thematicmapping.org/playground/webgl/earth/
  * http://planetpixelemporium.com/earth.html
  * https://threejs.org/examples/webgl_materials_bumpmap.html
  * http://earthobservatory.nasa.gov/blogs/elegantfigures/2011/10/06/crafting-the-blue-marble/
@@ -134,7 +135,7 @@ var SkyBox = (function() {
   var
     SKYBOX_DIM = 4000,
     SKYBOX_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skybox_1024x1024.jpg',
-    SKYBOX_MATERIAL_TEXTURE_REPEAT = 1;
+    SKYBOX_MATERIAL_TEXTURE_REPEAT = 2;
 
   this.init = function() {
     this.material = new THREE.MeshBasicMaterial({
