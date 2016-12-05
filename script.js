@@ -3,6 +3,7 @@
  * http://learningthreejs.com/blog/2013/09/16/how-to-make-the-earth-in-webgl/
  * http://blog.mastermaps.com/2013/09/creating-webgl-earth-with-threejs.html
  * http://thematicmapping.org/playground/webgl/earth/
+ * https://threejs.org/examples/#css3d_panorama
  * http://planetpixelemporium.com/earth.html
  * https://threejs.org/examples/webgl_materials_bumpmap.html
  * http://earthobservatory.nasa.gov/blogs/elegantfigures/2011/10/06/crafting-the-blue-marble/
@@ -19,15 +20,16 @@ var
  * Utils
  */
 var Utils = {
+  MOUSE_WHEEL_DELTA_Y_FACTOR: 0.01,
+  
   mousePosition: function(e) {
     return {
       x: (e.clientX - this.windowHalf.x),
       y: (e.clientY - this.windowHalf.y)
     }
   },
-  mouseWheelDelta: function(e) {
-    var e = window.event || e;
-    return Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+  mouseWheelDeltaY: function(e) {
+    return e.deltaY * this.MOUSE_WHEEL_DELTA_Y_FACTOR;
   },
   windowHalf: {
     x: window.innerWidth / 2,
@@ -44,7 +46,6 @@ var Utils = {
 var Renderer = (function() {
   var
     RENDERER_ANTIALIAS_ON = true,
-    RENDERER_VIEW_ID = 'view',
     RENDERER_CLEAR_COLOR = COLOR_WHITE;
 
   this.init = function() {
@@ -59,7 +60,7 @@ var Renderer = (function() {
   };
 
   this.renderView = function() {
-    this.view = document.getElementById(RENDERER_VIEW_ID);
+    this.view = document.body;
     this.view.appendChild(this.renderer.domElement);
     this.updateSize();
   };
@@ -114,8 +115,8 @@ var Camera = (function() {
     this.camera.lookAt(target);
   };
 
-  this.updatePositionZ = function(mouseWheelDelta, target) {
-    this.camera.position.z += mouseWheelDelta * CAMERA_POSITION_FACTOR_Z;
+  this.updatePositionZ = function(mouseWheelDeltaY, target) {
+    this.camera.position.z += mouseWheelDeltaY * CAMERA_POSITION_FACTOR_Z;
     this.camera.lookAt(target);
   };
 
@@ -301,7 +302,7 @@ var View = (function() {
 
     window.addEventListener('resize', updateAll, false);
     document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener('mousewheel', onMouseWheel, false);
+    document.addEventListener('wheel', onMouseWheel, false);
   };
 
   var onMouseMove = function(e) {
@@ -313,7 +314,7 @@ var View = (function() {
 
   var onMouseWheel = function(e) {
     Camera.updatePositionZ(
-      Utils.mouseWheelDelta(e),
+      Utils.mouseWheelDeltaY(e),
       Earth.earth.position
     );
   };
