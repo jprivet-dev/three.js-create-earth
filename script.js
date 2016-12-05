@@ -21,7 +21,7 @@ var
  */
 var Utils = {
   MOUSE_WHEEL_DELTA_Y_FACTOR: 0.01,
-  
+
   mousePosition: function(e) {
     return {
       x: (e.clientX - this.windowHalf.x),
@@ -130,33 +130,33 @@ var Camera = (function() {
 })();
 
 /**
- * SkyBox
+ * Skymap
  */
-var SkyBox = (function() {
+var Skymap = (function() {
   var
-    SKYBOX_DIM = 4000,
-    SKYBOX_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skybox_1024x1024.jpg',
-    SKYBOX_MATERIAL_TEXTURE_REPEAT = 2;
+    SKYMAP_TEXTURE_POSITION_TAG = '{pos}',
+    SKYMAP_TEXTURE_POSITIONS = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
+    SKYMAP_TEXTURE_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
+    SKYMAP_TEXTURE_FILENAME = 'skymap_{pos}_1024x1024.jpg';
 
   this.init = function() {
-    this.material = new THREE.MeshBasicMaterial({
-      map: this.getTexture(),
-      side: THREE.BackSide
-    });
-
-    this.geometry = new THREE.CubeGeometry(SKYBOX_DIM, SKYBOX_DIM, SKYBOX_DIM);
-
-    this.skybox = new THREE.Mesh(this.geometry, this.material);
+    this.skymapTexture = new THREE.CubeTextureLoader()
+      .setPath(SKYMAP_TEXTURE_PATH)
+      .load(this.getFilenames());
   };
 
-  this.getTexture = function() {
-    var texture = new THREE.TextureLoader().load(SKYBOX_MATERIAL_TEXTURE_IMAGE_URL);
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(
-      SKYBOX_MATERIAL_TEXTURE_REPEAT,
-      SKYBOX_MATERIAL_TEXTURE_REPEAT
-    );
-    return texture;
+  this.getFilenames = function() {
+    var filenames = [];
+
+    for (var i = 0; i < SKYMAP_TEXTURE_POSITIONS.length; i++) {
+      var filename = SKYMAP_TEXTURE_FILENAME.replace(
+        SKYMAP_TEXTURE_POSITION_TAG,
+        SKYMAP_TEXTURE_POSITIONS[i]
+      );
+      filenames.push(filename);
+    }
+    
+    return filenames;
   };
 
   this.init();
@@ -284,7 +284,8 @@ var Scene = (function() {
     this.scene = new THREE.Scene();
     this.scene.add(Earth.earth);
     this.scene.add(Light.light);
-    this.scene.add(SkyBox.skybox);
+
+    this.scene.background = Skymap.skymapTexture;
   };
 
   this.init();
