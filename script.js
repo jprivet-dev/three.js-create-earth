@@ -1,15 +1,18 @@
 /**
- * Resources :
+ * Resources Three.js :
  * http://learningthreejs.com/blog/2013/09/16/how-to-make-the-earth-in-webgl/
  * http://blog.mastermaps.com/2013/09/creating-webgl-earth-with-threejs.html
  * http://thematicmapping.org/playground/webgl/earth/
  * https://threejs.org/examples/#css3d_panorama
- * http://planetpixelemporium.com/earth.html
  * https://threejs.org/examples/webgl_materials_bumpmap.html
+ * https://threejs.org/examples/webgl_materials_cars.html
+ * https://stemkoski.github.io/Three.js/
+ *
+ * Resources textures :
+ * http://planetpixelemporium.com/earth.html
  * http://earthobservatory.nasa.gov/blogs/elegantfigures/2011/10/06/crafting-the-blue-marble/
  * http://visibleearth.nasa.gov/view.php?id=79765
  * http://visibleearth.nasa.gov/view.php?id=57747
- * https://stemkoski.github.io/Three.js/
  */
 var
   COLOR_WHITE = 0xffffff,
@@ -149,14 +152,19 @@ var Skymap = (function() {
     var filenames = [];
 
     for (var i = 0; i < SKYMAP_TEXTURE_POSITIONS.length; i++) {
-      var filename = SKYMAP_TEXTURE_FILENAME.replace(
-        SKYMAP_TEXTURE_POSITION_TAG,
-        SKYMAP_TEXTURE_POSITIONS[i]
+      filenames.push(
+        this.getFilename(SKYMAP_TEXTURE_POSITIONS[i])
       );
-      filenames.push(filename);
     }
-    
+
     return filenames;
+  };
+
+  this.getFilename = function(position) {
+    return SKYMAP_TEXTURE_FILENAME.replace(
+      SKYMAP_TEXTURE_POSITION_TAG,
+      position
+    );
   };
 
   this.init();
