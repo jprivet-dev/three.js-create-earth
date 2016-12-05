@@ -7,6 +7,10 @@
  * https://threejs.org/examples/webgl_materials_bumpmap.html
  * https://threejs.org/examples/webgl_materials_cars.html
  * https://stemkoski.github.io/Three.js/
+ * 
+ * Specials :
+ * https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js
+ * https://threejs.org/examples/misc_controls_orbit.html
  *
  * Resources textures :
  * http://planetpixelemporium.com/earth.html
@@ -15,9 +19,8 @@
  * http://visibleearth.nasa.gov/view.php?id=57747
  */
 var
-  COLOR_WHITE = 0xffffff,
-  COLOR_BLUE = 0x156289,
-  COLOR_DARK_BLUE = 0x072534;
+  ASSETS_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
+  COLOR_WHITE = 0xffffff;
 
 /**
  * Utils
@@ -85,9 +88,6 @@ var Camera = (function() {
     CAMERA_POSITION_X = 0,
     CAMERA_POSITION_Y = 0,
     CAMERA_POSITION_Z = 1500,
-    CAMERA_POSITION_FACTOR_X = 2,
-    CAMERA_POSITION_FACTOR_Y = 0.5,
-    CAMERA_POSITION_FACTOR_Z = 100,
     CAMERA_FOV = 50,
     CAMERA_NEAR = 1,
     CAMERA_FAR = 10000;
@@ -112,17 +112,6 @@ var Camera = (function() {
     this.camera.updateProjectionMatrix();
   };
 
-  this.updatePositionXY = function(mouse, target) {
-    this.camera.position.x = mouse.x * CAMERA_POSITION_FACTOR_X;
-    this.camera.position.y = -mouse.y * CAMERA_POSITION_FACTOR_Y;
-    this.camera.lookAt(target);
-  };
-
-  this.updatePositionZ = function(mouseWheelDeltaY, target) {
-    this.camera.position.z += mouseWheelDeltaY * CAMERA_POSITION_FACTOR_Z;
-    this.camera.lookAt(target);
-  };
-
   this.updateLookAt = function(target) {
     this.camera.lookAt(target);
   };
@@ -139,7 +128,7 @@ var Skymap = (function() {
   var
     SKYMAP_TEXTURE_POSITION_TAG = '{pos}',
     SKYMAP_TEXTURE_POSITIONS = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
-    SKYMAP_TEXTURE_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
+    SKYMAP_TEXTURE_PATH = ASSETS_PATH,
     SKYMAP_TEXTURE_FILENAME = 'skymap_{pos}_1024x1024.jpg';
 
   this.init = function() {
@@ -181,8 +170,8 @@ var Cloud = (function() {
     CLOUD_SEGMENTS = 64,
     CLOUD_OPACITY = 0.6,
     CLOUD_ANIMATION_ROTATION_Y = 100,
-    CLOUD_MATERIAL_ALPHA_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_clouds_2048x1024.jpg',
-    CLOUD_MATERIAL_BUMP_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_clouds_2048x1024.jpg',
+    CLOUD_MATERIAL_ALPHA_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
+    CLOUD_MATERIAL_BUMP_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
     CLOUD_MATERIAL_BUMP_SCALE = 1;
 
   this.init = function() {
@@ -220,10 +209,10 @@ var Earth = (function() {
   var
     EARTH_DIM = 300,
     EARTH_SEGMENTS = 64,
-    EARTH_MATERIAL_TEXTURE_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_map_2048x1024.jpg',
-    EARTH_MATERIAL_BUMP_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_bump_2048x1024.jpg',
+    EARTH_MATERIAL_TEXTURE_IMAGE_URL = ASSETS_PATH + 'earth_map_2048x1024.jpg',
+    EARTH_MATERIAL_BUMP_IMAGE_URL = ASSETS_PATH + 'earth_bump_2048x1024.jpg',
     EARTH_MATERIAL_BUMP_SCALE = 3,
-    EARTH_MATERIAL_SPECULAR_IMAGE_URL = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_specular_2048x1024.jpg',
+    EARTH_MATERIAL_SPECULAR_IMAGE_URL = ASSETS_PATH + 'earth_specular_2048x1024.jpg',
     EARTH_MATERIAL_SPECULAR_COLOR = 0xfffdef,
     EARTH_MATERIAL_SHININESS = 3,
     EARTH_ANIMATION_ROTATION_Y = Math.PI / 2000;
@@ -294,6 +283,15 @@ var Scene = (function() {
     this.scene.add(Light.light);
 
     this.scene.background = Skymap.skymapTexture;
+    
+    this.enableControls();
+  };
+  
+  this.enableControls = function() {
+    this.controls = new THREE.OrbitControls(Camera.camera, Renderer.renderer.domElement);
+    this.controls.autoRotate = true;
+    this.controls.autoRotateSpeed = 0.07;
+    this.controls.enableDamping = true;    
   };
 
   this.init();
@@ -305,27 +303,12 @@ var Scene = (function() {
  * View
  */
 var View = (function() {
+
   var init = function() {
     updateAll();
-    render();
+    animate();
 
     window.addEventListener('resize', updateAll, false);
-    document.addEventListener('mousemove', onMouseMove, false);
-    document.addEventListener('wheel', onMouseWheel, false);
-  };
-
-  var onMouseMove = function(e) {
-    Camera.updatePositionXY(
-      Utils.mousePosition(e),
-      Earth.earth.position
-    );
-  };
-
-  var onMouseWheel = function(e) {
-    Camera.updatePositionZ(
-      Utils.mouseWheelDeltaY(e),
-      Earth.earth.position
-    );
   };
 
   var updateAll = function() {
@@ -333,11 +316,14 @@ var View = (function() {
     Renderer.updateSize();
   };
 
-  var render = function() {
+  var animate = function() {
+    requestAnimationFrame(animate);
+
     Earth.animation();
     Cloud.animation();
+
+    Scene.controls.update();
     Renderer.renderer.render(Scene.scene, Camera.camera);
-    requestAnimationFrame(render);
   };
 
   init();
