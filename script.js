@@ -35,7 +35,7 @@ var Utils = {
     return {
       x: (e.clientX - this.windowHalf.x),
       y: (e.clientY - this.windowHalf.y)
-    }
+    };
   },
   mouseWheelDeltaY: function(e) {
     return e.deltaY * this.MOUSE_WHEEL_DELTA_Y_FACTOR;
@@ -210,6 +210,10 @@ var Cloud = (function() {
  */
 var Earth = (function() {
   var
+    self = this,
+    guiColor = {
+      material: {}
+    },
     EARTH_DIM = 300,
     EARTH_SEGMENTS = 64,
     EARTH_MATERIAL_TEXTURE_IMAGE_URL = ASSETS_PATH + 'earth_map_2048x1024.jpg',
@@ -221,36 +225,50 @@ var Earth = (function() {
     EARTH_ANIMATE_ROTATION_Y = Math.PI / 2000;
 
   this.init = function() {
-    this.material = new THREE.MeshPhongMaterial({
-      map: new THREE.TextureLoader().load(EARTH_MATERIAL_TEXTURE_IMAGE_URL),
-      bumpMap: new THREE.TextureLoader().load(EARTH_MATERIAL_BUMP_IMAGE_URL),
-      bumpScale: EARTH_MATERIAL_BUMP_SCALE,
-      specularMap: new THREE.TextureLoader().load(EARTH_MATERIAL_SPECULAR_IMAGE_URL),
-      specular: EARTH_MATERIAL_SPECULAR_COLOR,
-      shininess: EARTH_MATERIAL_SHININESS
-    });
-
+    this.material = new THREE.MeshPhongMaterial();
     this.geometry = new THREE.SphereGeometry(
       EARTH_DIM,
       EARTH_SEGMENTS,
       EARTH_SEGMENTS
     );
-
     this.earth = new THREE.Mesh(this.geometry, this.material);
+
+    this.paramsDefault();
+  };
+
+  this.paramsDefault = function() {
+    this.material.map = new THREE.TextureLoader().load(EARTH_MATERIAL_TEXTURE_IMAGE_URL);
+    this.material.bumpMap = new THREE.TextureLoader().load(EARTH_MATERIAL_BUMP_IMAGE_URL);
+    this.material.bumpScale = EARTH_MATERIAL_BUMP_SCALE;
+    this.material.specularMap = new THREE.TextureLoader().load(EARTH_MATERIAL_SPECULAR_IMAGE_URL);
+    this.material.specular.setHex(EARTH_MATERIAL_SPECULAR_COLOR);
+    this.material.shininess = EARTH_MATERIAL_SHININESS;
+    
+    this.guiParamsDefault();
   };
   
+  this.guiParamsDefault = function() {
+    guiColor.material.specular = '#' + this.material.specular.getHexString();    
+  }
+
   this.addGui = function(gui) {
-    var earth = gui.addFolder('Earth');
-    
-    var material = earth.addFolder('Matérial');
-    material.add(this.material, 'bumpScale', 0, 10);
-    material.add(this.material, 'shininess', 0, 10);
+    var guiEarth = gui.addFolder('Earth');
+    var guiMaterial = guiEarth.addFolder('Matérial');
+
+    guiMaterial.add(this.material, 'bumpScale', 0, 10).listen();
+    guiMaterial.add(this.material, 'shininess', 0, 10).listen();
+
+    guiMaterial.addColor(guiColor.material, 'specular').onChange(function(value) {
+      self.material.specular.setHex(value.replace('#', '0x'));
+    }).listen();
+
+    guiEarth.add(this, 'paramsDefault').name('Reset Params');
   };
 
   this.animate = function() {
     this.earth.rotation.y += EARTH_ANIMATE_ROTATION_Y;
   };
-  
+
   this.dim = 0;
 
   this.init();
