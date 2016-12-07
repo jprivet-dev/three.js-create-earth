@@ -13,6 +13,7 @@
  * Specials :
  * https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js
  * https://threejs.org/examples/misc_controls_orbit.html
+ * http://workshop.chromeexperiments.com/examples/gui
  *
  * Resources textures :
  * http://planetpixelemporium.com/earth.html
@@ -237,10 +238,20 @@ var Earth = (function() {
 
     this.earth = new THREE.Mesh(this.geometry, this.material);
   };
+  
+  this.addGui = function(gui) {
+    var earth = gui.addFolder('Earth');
+    
+    var material = earth.addFolder('Matérial');
+    material.add(this.material, 'bumpScale', 0, 10);
+    material.add(this.material, 'shininess', 0, 10);
+  };
 
   this.animate = function() {
     this.earth.rotation.y += EARTH_ANIMATE_ROTATION_Y;
   };
+  
+  this.dim = 0;
 
   this.init();
 
@@ -285,15 +296,15 @@ var Scene = (function() {
     this.scene.add(Light.light);
 
     this.scene.background = Skymap.skymapTexture;
-    
+
     this.enableControls();
   };
-  
+
   this.enableControls = function() {
     this.controls = new THREE.OrbitControls(Camera.camera, Renderer.renderer.domElement);
     this.controls.autoRotate = true;
     this.controls.autoRotateSpeed = 0.07;
-    this.controls.enableDamping = true;    
+    this.controls.enableDamping = true;
   };
 
   this.init();
@@ -309,8 +320,14 @@ var View = (function() {
   var init = function() {
     updateAll();
     animate();
+    addGui();
 
     window.addEventListener('resize', updateAll, false);
+  };
+
+  var addGui = function() {
+    var gui = new dat.GUI();
+    Earth.addGui(gui);
   };
 
   var updateAll = function() {
