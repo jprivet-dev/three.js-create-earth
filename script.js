@@ -3,11 +3,13 @@
  * http://learningthreejs.com/blog/2013/09/16/how-to-make-the-earth-in-webgl/
  * http://blog.mastermaps.com/2013/09/creating-webgl-earth-with-threejs.html
  * http://thematicmapping.org/playground/webgl/earth/
+ * https://threejs.org/examples/
  * https://threejs.org/examples/#css3d_panorama
  * https://threejs.org/examples/webgl_materials_bumpmap.html
  * https://threejs.org/examples/webgl_materials_cars.html
  * https://stemkoski.github.io/Three.js/
- * 
+ * https://threejs.org/examples/webgl_lensflares.html
+ *
  * Specials :
  * https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js
  * https://threejs.org/examples/misc_controls_orbit.html
@@ -19,7 +21,7 @@
  * http://visibleearth.nasa.gov/view.php?id=57747
  */
 var
-  ASSETS_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
+  ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
   COLOR_WHITE = 0xffffff;
 
 /**
@@ -169,7 +171,7 @@ var Cloud = (function() {
     CLOUD_DIM = 302,
     CLOUD_SEGMENTS = 64,
     CLOUD_OPACITY = 0.6,
-    CLOUD_ANIMATION_ROTATION_Y = 100,
+    CLOUD_ANIMATE_ROTATION_Y = 100,
     CLOUD_MATERIAL_ALPHA_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
     CLOUD_MATERIAL_BUMP_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
     CLOUD_MATERIAL_BUMP_SCALE = 1;
@@ -193,8 +195,8 @@ var Cloud = (function() {
     this.cloud = new THREE.Mesh(this.geometry, this.material);
   };
 
-  this.animation = function() {
-    //this.cloud.rotation.y += CLOUD_ANIMATION_ROTATION_Y;
+  this.animate = function() {
+    //this.cloud.rotation.y += CLOUD_ANIMATE_ROTATION_Y;
   };
 
   this.init();
@@ -215,7 +217,7 @@ var Earth = (function() {
     EARTH_MATERIAL_SPECULAR_IMAGE_URL = ASSETS_PATH + 'earth_specular_2048x1024.jpg',
     EARTH_MATERIAL_SPECULAR_COLOR = 0xfffdef,
     EARTH_MATERIAL_SHININESS = 3,
-    EARTH_ANIMATION_ROTATION_Y = Math.PI / 2000;
+    EARTH_ANIMATE_ROTATION_Y = Math.PI / 2000;
 
   this.init = function() {
     this.material = new THREE.MeshPhongMaterial({
@@ -236,8 +238,8 @@ var Earth = (function() {
     this.earth = new THREE.Mesh(this.geometry, this.material);
   };
 
-  this.animation = function() {
-    this.earth.rotation.y += EARTH_ANIMATION_ROTATION_Y;
+  this.animate = function() {
+    this.earth.rotation.y += EARTH_ANIMATE_ROTATION_Y;
   };
 
   this.init();
@@ -319,8 +321,8 @@ var View = (function() {
   var animate = function() {
     requestAnimationFrame(animate);
 
-    Earth.animation();
-    Cloud.animation();
+    Earth.animate();
+    Cloud.animate();
 
     Scene.controls.update();
     Renderer.renderer.render(Scene.scene, Camera.camera);
