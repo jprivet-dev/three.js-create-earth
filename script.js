@@ -211,8 +211,9 @@ var Cloud = (function() {
 var Earth = (function() {
   var
     self = this,
-    guiColor = {
-      material: {}
+    guiParams = {
+      material: {},
+      animate: {}
     },
     EARTH_DIM = 300,
     EARTH_SEGMENTS = 64,
@@ -222,7 +223,7 @@ var Earth = (function() {
     EARTH_MATERIAL_SPECULAR_IMAGE_URL = ASSETS_PATH + 'earth_specular_2048x1024.jpg',
     EARTH_MATERIAL_SPECULAR_COLOR = 0xfffdef,
     EARTH_MATERIAL_SHININESS = 3,
-    EARTH_ANIMATE_ROTATION_Y = Math.PI / 2000;
+    EARTH_ANIMATE_ROTATION_FACTOR_Y = 2;
 
   this.init = function() {
     this.material = new THREE.MeshPhongMaterial();
@@ -248,25 +249,29 @@ var Earth = (function() {
   };
   
   this.guiParamsDefault = function() {
-    guiColor.material.specular = '#' + this.material.specular.getHexString();    
+    guiParams.material.specular = '#' + this.material.specular.getHexString();
+    guiParams.animate.rotationFactorY = EARTH_ANIMATE_ROTATION_FACTOR_Y;
   }
 
   this.addGui = function(gui) {
     var guiEarth = gui.addFolder('Earth');
-    var guiMaterial = guiEarth.addFolder('Matérial');
+    var guiMaterial = guiEarth.addFolder('Material');
 
     guiMaterial.add(this.material, 'bumpScale', 0, 10).listen();
     guiMaterial.add(this.material, 'shininess', 0, 10).listen();
 
-    guiMaterial.addColor(guiColor.material, 'specular').onChange(function(value) {
+    guiMaterial.addColor(guiParams.material, 'specular').onChange(function(value) {
       self.material.specular.setHex(value.replace('#', '0x'));
     }).listen();
+    
+    var guiAnimate = guiEarth.addFolder('Animate');
+    guiAnimate.add(guiParams.animate, 'rotationFactorY', -20, 20).listen();
 
     guiEarth.add(this, 'paramsDefault').name('Reset Params');
   };
 
   this.animate = function() {
-    this.earth.rotation.y += EARTH_ANIMATE_ROTATION_Y;
+    this.earth.rotation.y += Math.PI * guiParams.animate.rotationFactorY / 5000;
   };
 
   this.dim = 0;
