@@ -50,341 +50,355 @@ var Utils = {
 };
 
 /**
- * _Renderer
+ * Renderer
  */
-var _Renderer = function() {
-  var
-    RENDERER_ANTIALIAS_ON = true,
-    RENDERER_CLEAR_COLOR = COLOR_WHITE;
+var Renderer = (function() {
+  var _Renderer = function() {
+    var
+      RENDERER_ANTIALIAS_ON = true,
+      RENDERER_CLEAR_COLOR = COLOR_WHITE;
 
-  this.init = function() {
-    // @see also THREE.CanvasRenderer()
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: RENDERER_ANTIALIAS_ON
-    });
+    this.init = function() {
+      // @see also THREE.CanvasRenderer()
+      this.renderer = new THREE.WebGLRenderer({
+        antialias: RENDERER_ANTIALIAS_ON
+      });
 
-    this.renderer.setClearColor(RENDERER_CLEAR_COLOR);
-    this.renderer.setPixelRatio(window.devicePixelRatio);
-    this.renderView();
+      this.renderer.setClearColor(RENDERER_CLEAR_COLOR);
+      this.renderer.setPixelRatio(window.devicePixelRatio);
+      this.renderView();
+    };
+
+    this.renderView = function() {
+      this.view = document.body;
+      this.view.appendChild(this.renderer.domElement);
+      this.updateSize();
+    };
+
+    this.updateSize = function() {
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    this.init();
   };
 
-  this.renderView = function() {
-    this.view = document.body;
-    this.view.appendChild(this.renderer.domElement);
-    this.updateSize();
-  };
-
-  this.updateSize = function() {
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-  };
-
-  this.init();
-};
-
-var Renderer = new _Renderer();
+  return new _Renderer();
+})();
 
 /**
- * _Camera
+ * Camera
  */
-var _Camera = function() {
-  var
-    CAMERA_POSITION_X = 0,
-    CAMERA_POSITION_Y = 0,
-    CAMERA_POSITION_Z = 1500,
-    CAMERA_FOV = 50,
-    CAMERA_NEAR = 1,
-    CAMERA_FAR = 10000;
+var Camera = (function() {
+  var _Camera = function() {
+    var
+      CAMERA_POSITION_X = 0,
+      CAMERA_POSITION_Y = 0,
+      CAMERA_POSITION_Z = 1500,
+      CAMERA_FOV = 50,
+      CAMERA_NEAR = 1,
+      CAMERA_FAR = 10000;
 
-  this.init = function() {
-    this.camera = new THREE.PerspectiveCamera(
-      CAMERA_FOV,
-      Utils.windowRatio(),
-      CAMERA_NEAR,
-      CAMERA_FAR
-    );
-
-    this.camera.position.set(
-      CAMERA_POSITION_X,
-      CAMERA_POSITION_Y,
-      CAMERA_POSITION_Z
-    );
-  };
-
-  this.updateAspect = function() {
-    this.camera.aspect = Utils.windowRatio();
-    this.camera.updateProjectionMatrix();
-  };
-
-  this.updateLookAt = function(target) {
-    this.camera.lookAt(target);
-  };
-
-  this.init();
-};
-
-var Camera = new _Camera();
-
-/**
- * _Skymap
- */
-var _Skymap = function() {
-  var
-    SKYMAP_TEXTURE_POSITION_TAG = '{pos}',
-    SKYMAP_TEXTURE_POSITIONS = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
-    SKYMAP_TEXTURE_PATH = ASSETS_PATH,
-    SKYMAP_TEXTURE_FILENAME = 'skymap_{pos}_1024x1024.jpg';
-
-  this.init = function() {
-    this.skymapTexture = new THREE.CubeTextureLoader()
-      .setPath(SKYMAP_TEXTURE_PATH)
-      .load(this.getFilenames());
-  };
-
-  this.getFilenames = function() {
-    var filenames = [];
-
-    for (var i = 0; i < SKYMAP_TEXTURE_POSITIONS.length; i++) {
-      filenames.push(
-        this.getFilename(SKYMAP_TEXTURE_POSITIONS[i])
+    this.init = function() {
+      this.camera = new THREE.PerspectiveCamera(
+        CAMERA_FOV,
+        Utils.windowRatio(),
+        CAMERA_NEAR,
+        CAMERA_FAR
       );
-    }
 
-    return filenames;
+      this.camera.position.set(
+        CAMERA_POSITION_X,
+        CAMERA_POSITION_Y,
+        CAMERA_POSITION_Z
+      );
+    };
+
+    this.updateAspect = function() {
+      this.camera.aspect = Utils.windowRatio();
+      this.camera.updateProjectionMatrix();
+    };
+
+    this.updateLookAt = function(target) {
+      this.camera.lookAt(target);
+    };
+
+    this.init();
   };
 
-  this.getFilename = function(position) {
-    return SKYMAP_TEXTURE_FILENAME.replace(
-      SKYMAP_TEXTURE_POSITION_TAG,
-      position
-    );
-  };
-
-  this.init();
-};
-
-var Skymap = new _Skymap();
+  return new _Camera();
+})();
 
 /**
- * _Cloud
+ * Skymap
  */
-var _Cloud = function() {
-  var
-    CLOUD_DIM = 302,
-    CLOUD_SEGMENTS = 64,
-    CLOUD_OPACITY = 0.6,
-    CLOUD_ANIMATE_ROTATION_Y = 100,
-    CLOUD_MATERIAL_ALPHA_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
-    CLOUD_MATERIAL_BUMP_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
-    CLOUD_MATERIAL_BUMP_SCALE = 1;
+var Skymap = (function() {
+  var _Skymap = function() {
+    var
+      SKYMAP_TEXTURE_POSITION_TAG = '{pos}',
+      SKYMAP_TEXTURE_POSITIONS = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
+      SKYMAP_TEXTURE_PATH = ASSETS_PATH,
+      SKYMAP_TEXTURE_FILENAME = 'skymap_{pos}_1024x1024.jpg';
 
-  this.init = function() {
-    this.material = new THREE.MeshPhongMaterial({
-      color: COLOR_WHITE,
-      opacity: CLOUD_OPACITY,
-      transparent: true,
-      alphaMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_ALPHA_IMAGE_URL),
-      bumpMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_BUMP_IMAGE_URL),
-      bumpScale: CLOUD_MATERIAL_BUMP_SCALE
-    });
+    this.init = function() {
+      this.skymapTexture = new THREE.CubeTextureLoader()
+        .setPath(SKYMAP_TEXTURE_PATH)
+        .load(this.getFilenames());
+    };
 
-    this.geometry = new THREE.SphereGeometry(
-      CLOUD_DIM,
-      CLOUD_SEGMENTS,
-      CLOUD_SEGMENTS
-    );
+    this.getFilenames = function() {
+      var filenames = [];
 
-    this.cloud = new THREE.Mesh(this.geometry, this.material);
+      for (var i = 0; i < SKYMAP_TEXTURE_POSITIONS.length; i++) {
+        filenames.push(
+          this.getFilename(SKYMAP_TEXTURE_POSITIONS[i])
+        );
+      }
+
+      return filenames;
+    };
+
+    this.getFilename = function(position) {
+      return SKYMAP_TEXTURE_FILENAME.replace(
+        SKYMAP_TEXTURE_POSITION_TAG,
+        position
+      );
+    };
+
+    this.init();
   };
 
-  this.animate = function() {
-    //this.cloud.rotation.y += CLOUD_ANIMATE_ROTATION_Y;
-  };
-
-  this.init();
-};
-
-var Cloud = new _Cloud();
+  return new _Skymap();
+})();
 
 /**
- * _Earth
+ * Cloud
  */
-var _Earth = function() {
-  var self = this;
+var Cloud = (function() {
+  var _Cloud = function() {
+    var
+      CLOUD_DIM = 302,
+      CLOUD_SEGMENTS = 64,
+      CLOUD_OPACITY = 0.6,
+      CLOUD_ANIMATE_ROTATION_Y = 100,
+      CLOUD_MATERIAL_ALPHA_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
+      CLOUD_MATERIAL_BUMP_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
+      CLOUD_MATERIAL_BUMP_SCALE = 1;
 
-  var paramsDefault = function() {
-    return {
-      material: {
-        map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
-        bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
-        bumpScale: 3,
-        specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
-        specular: 0xfffdef,
-        shininess: 3
+    this.init = function() {
+      this.material = new THREE.MeshPhongMaterial({
+        color: COLOR_WHITE,
+        opacity: CLOUD_OPACITY,
+        transparent: true,
+        alphaMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_ALPHA_IMAGE_URL),
+        bumpMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_BUMP_IMAGE_URL),
+        bumpScale: CLOUD_MATERIAL_BUMP_SCALE
+      });
+
+      this.geometry = new THREE.SphereGeometry(
+        CLOUD_DIM,
+        CLOUD_SEGMENTS,
+        CLOUD_SEGMENTS
+      );
+
+      this.cloud = new THREE.Mesh(this.geometry, this.material);
+    };
+
+    this.animate = function() {
+      //this.cloud.rotation.y += CLOUD_ANIMATE_ROTATION_Y;
+    };
+
+    this.init();
+  };
+
+  return new _Cloud();
+})();
+
+/**
+ * Earth
+ */
+var Earth = (function() {
+  var _Earth = function() {
+    var self = this;
+
+    var paramsDefault = function() {
+      return {
+        material: {
+          map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
+          bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
+          bumpScale: 3,
+          specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
+          specular: 0xfffdef,
+          shininess: 3
+        },
+        geometry: {
+          radius: 300,
+          segments: 64
+        },
+        animate: {
+          rotationFactorY: 2
+        }
+      };
+    };
+
+    var params = paramsDefault();
+
+    this.init = function() {
+      this.geometry = new THREE.SphereGeometry(
+        params.geometry.radius,
+        params.geometry.segments,
+        params.geometry.segments
+      );
+
+      this.material = new THREE.MeshPhongMaterial({
+        map: new THREE.TextureLoader().load(params.material.map),
+        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
+        specularMap: new THREE.TextureLoader().load(params.material.specularMap),
+        bumpScale: params.material.bumpScale,
+        specular: params.material.specular,
+        shininess: params.material.shininess
+      });
+
+      this.earth = new THREE.Mesh(this.geometry, this.material);
+    };
+
+    this.animate = function() {
+      this.earth.rotation.y += Math.PI * params.animate.rotationFactorY / 5000;
+    };
+
+    this.gui = {
+      colors: {},
+
+      reset: function() {
+        var _default = paramsDefault();
+
+        self.material.bumpScale = _default.material.bumpScale;
+        self.material.specular.setHex(_default.material.specular);
+        self.material.shininess = _default.material.shininess;
+
+        params.animate.rotationFactorY = _default.animate.rotationFactorY;
+
+        this.colors.specular = '#' + self.material.specular.getHexString();
       },
-      geometry: {
-        radius: 300,
-        segments: 64
-      },
-      animate: {
-        rotationFactorY: 2
+
+      add: function(gui) {
+        this.reset();
+
+        var gEarth = gui.addFolder('Earth');
+
+        var gMaterial = gEarth.addFolder('Material');
+        gMaterial.add(self.material, 'bumpScale', 0, 10).listen();
+        gMaterial.add(self.material, 'shininess', 0, 10).listen();
+        gMaterial.addColor(this.colors, 'specular').listen()
+          .onChange(function(color) {
+            self.material.specular.setHex(color.replace('#', '0x'));
+          });
+
+        var gAnimate = gEarth.addFolder('Animate');
+        gAnimate.add(params.animate, 'rotationFactorY', -20, 20).listen();
+
+        gEarth.add(this, 'reset').name('Reset Earth');
       }
     };
+
+    this.init();
   };
 
-  var params = paramsDefault();
-
-  this.init = function() {
-    this.geometry = new THREE.SphereGeometry(
-      params.geometry.radius,
-      params.geometry.segments,
-      params.geometry.segments
-    );
-
-    this.material = new THREE.MeshPhongMaterial({
-      map: new THREE.TextureLoader().load(params.material.map),
-      bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
-      specularMap: new THREE.TextureLoader().load(params.material.specularMap),
-      bumpScale: params.material.bumpScale,
-      specular: params.material.specular,
-      shininess: params.material.shininess
-    });
-
-    this.earth = new THREE.Mesh(this.geometry, this.material);
-  };
-
-  this.animate = function() {
-    this.earth.rotation.y += Math.PI * params.animate.rotationFactorY / 5000;
-  };
-
-  this.gui = {
-    colors: {},
-
-    reset: function() {
-      var _default = paramsDefault();
-
-      self.material.bumpScale = _default.material.bumpScale;
-      self.material.specular.setHex(_default.material.specular);
-      self.material.shininess = _default.material.shininess;
-
-      params.animate.rotationFactorY = _default.animate.rotationFactorY;
-      params.animate.rotationFactorY = _default.animate.rotationFactorY;
-
-      this.colors.specular = '#' + self.material.specular.getHexString();
-    },
-
-    add: function(gui) {
-      this.reset();
-
-      var gEarth = gui.addFolder('Earth');
-
-      var gMaterial = gEarth.addFolder('Material');
-      gMaterial.add(self.material, 'bumpScale', 0, 10).listen();
-      gMaterial.add(self.material, 'shininess', 0, 10).listen();
-      gMaterial.addColor(this.colors, 'specular').listen()
-        .onChange(function(color) {
-          self.material.specular.setHex(color.replace('#', '0x'));
-        });
-
-      var gAnimate = gEarth.addFolder('Animate');
-      gAnimate.add(params.animate, 'rotationFactorY', -20, 20).listen();
-
-      gEarth.add(this, 'reset').name('Reset Earth');
-    }
-  };
-
-  this.init();
-};
-
-var Earth = new _Earth();
+  return new _Earth();
+})();
 
 /**
- * _Light
+ * Light
  */
-var _Light = function() {
-  var
-    LIGHT_COLOR = COLOR_WHITE,
-    LIGHT_INTENSITY = 1.2,
-    LIGHT_POSITION_X = 1000,
-    LIGHT_POSITION_Y = 500,
-    LIGHT_POSITION_Z = 1000;
+var Light = (function() {
+  var _Light = function() {
+    var
+      LIGHT_COLOR = COLOR_WHITE,
+      LIGHT_INTENSITY = 1.2,
+      LIGHT_POSITION_X = 1000,
+      LIGHT_POSITION_Y = 500,
+      LIGHT_POSITION_Z = 1000;
 
-  this.init = function() {
-    this.light = new THREE.DirectionalLight(LIGHT_COLOR, LIGHT_INTENSITY);
+    this.init = function() {
+      this.light = new THREE.DirectionalLight(LIGHT_COLOR, LIGHT_INTENSITY);
 
-    this.light.position.set(
-      LIGHT_POSITION_X,
-      LIGHT_POSITION_Y,
-      LIGHT_POSITION_Z
-    );
+      this.light.position.set(
+        LIGHT_POSITION_X,
+        LIGHT_POSITION_Y,
+        LIGHT_POSITION_Z
+      );
+    };
+
+    this.init();
   };
 
-  this.init();
-};
-
-var Light = new _Light();
+  return new _Light();
+})();
 
 /**
- * _Scene
+ * Scene
  */
-var _Scene = function() {
-  this.init = function() {
-    Earth.earth.add(Cloud.cloud);
+var Scene = (function() {
+  var _Scene = function() {
+    this.init = function() {
+      Earth.earth.add(Cloud.cloud);
 
-    this.scene = new THREE.Scene();
-    this.scene.add(Earth.earth);
-    this.scene.add(Light.light);
+      this.scene = new THREE.Scene();
+      this.scene.add(Earth.earth);
+      this.scene.add(Light.light);
 
-    this.scene.background = Skymap.skymapTexture;
+      this.scene.background = Skymap.skymapTexture;
 
-    this.enableControls();
+      this.enableControls();
+    };
+
+    this.enableControls = function() {
+      this.controls = new THREE.OrbitControls(Camera.camera, Renderer.renderer.domElement);
+      this.controls.autoRotate = true;
+      this.controls.autoRotateSpeed = 0.07;
+      this.controls.enableDamping = true;
+    };
+
+    this.init();
   };
 
-  this.enableControls = function() {
-    this.controls = new THREE.OrbitControls(Camera.camera, Renderer.renderer.domElement);
-    this.controls.autoRotate = true;
-    this.controls.autoRotateSpeed = 0.07;
-    this.controls.enableDamping = true;
-  };
-
-  this.init();
-};
-
-var Scene = new _Scene();
+  return new _Scene();
+})();
 
 /**
- * _View
+ * View
  */
-var _View = function() {
+var View = (function() {
+  var _View = function() {
+    var init = function() {
+      updateAll();
+      animate();
+      addGui();
 
-  var init = function() {
-    updateAll();
-    animate();
-    addGui();
+      window.addEventListener('resize', updateAll, false);
+    };
 
-    window.addEventListener('resize', updateAll, false);
+    var addGui = function() {
+      var gui = new dat.GUI();
+      Earth.gui.add(gui);
+    };
+
+    var updateAll = function() {
+      Camera.updateAspect();
+      Renderer.updateSize();
+    };
+
+    var animate = function() {
+      requestAnimationFrame(animate);
+
+      Earth.animate();
+      Cloud.animate();
+
+      Scene.controls.update();
+      Renderer.renderer.render(Scene.scene, Camera.camera);
+    };
+
+    init();
   };
-
-  var addGui = function() {
-    var gui = new dat.GUI();
-    Earth.gui.add(gui);
-  };
-
-  var updateAll = function() {
-    Camera.updateAspect();
-    Renderer.updateSize();
-  };
-
-  var animate = function() {
-    requestAnimationFrame(animate);
-
-    Earth.animate();
-    Cloud.animate();
-
-    Scene.controls.update();
-    Renderer.renderer.render(Scene.scene, Camera.camera);
-  };
-
-  init();
-};
-
-var View = new _View();
+  
+  return new _View();
+})();
