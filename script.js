@@ -175,10 +175,24 @@ var Skymap = (function() {
  */
 var Cloud = (function() {
   var _Cloud = function() {
+    var self = this;
+
+    var paramsDefault = function() {
+      return {
+        material: {
+          opacity: 0.9
+        },
+        geometry: {
+          radius: 302,
+          segments: 64
+        },
+        animate: {}
+      };
+    };
+
+    var params = paramsDefault();
+
     var
-      CLOUD_DIM = 302,
-      CLOUD_SEGMENTS = 64,
-      CLOUD_OPACITY = 0.6,
       CLOUD_ANIMATE_ROTATION_Y = 100,
       CLOUD_MATERIAL_ALPHA_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
       CLOUD_MATERIAL_BUMP_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
@@ -187,7 +201,7 @@ var Cloud = (function() {
     this.init = function() {
       this.material = new THREE.MeshPhongMaterial({
         color: COLOR_WHITE,
-        opacity: CLOUD_OPACITY,
+        opacity: params.material.opacity,
         transparent: true,
         alphaMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_ALPHA_IMAGE_URL),
         bumpMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_BUMP_IMAGE_URL),
@@ -195,9 +209,9 @@ var Cloud = (function() {
       });
 
       this.geometry = new THREE.SphereGeometry(
-        CLOUD_DIM,
-        CLOUD_SEGMENTS,
-        CLOUD_SEGMENTS
+        params.geometry.radius,
+        params.geometry.segments,
+        params.geometry.segments
       );
 
       this.cloud = new THREE.Mesh(this.geometry, this.material);
@@ -205,6 +219,45 @@ var Cloud = (function() {
 
     this.animate = function() {
       //this.cloud.rotation.y += CLOUD_ANIMATE_ROTATION_Y;
+    };
+
+    this.gui = {
+      colors: {},
+
+      reset: function() {
+        var _default = paramsDefault();
+
+        self.material.opacity = _default.material.opacity;
+
+        //         self.material.bumpScale = _default.material.bumpScale;
+        //         self.material.specular.setHex(_default.material.specular);
+        //         self.material.shininess = _default.material.shininess;
+
+        //         params.animate.rotationFactorY = _default.animate.rotationFactorY;
+
+        //         this.colors.specular = '#' + self.material.specular.getHexString();
+      },
+
+      add: function(gui) {
+        this.reset();
+
+        var gCloud = gui.addFolder('Cloud');
+
+        var gMaterial = gCloud.addFolder('Material');
+        gMaterial.add(self.material, 'opacity', 0, 1).listen();
+
+        // gMaterial.add(self.material, 'bumpScale', 0, 10).listen();
+        // gMaterial.add(self.material, 'shininess', 0, 10).listen();
+        // gMaterial.addColor(this.colors, 'specular').listen()
+        //   .onChange(function(color) {
+        //     self.material.specular.setHex(color.replace('#', '0x'));
+        //   });
+
+        // var gAnimate = gCloud.addFolder('Animate');
+        // gAnimate.add(params.animate, 'rotationFactorY', -20, 20).listen();
+
+        gCloud.add(this, 'reset').name('Reset Cloud');
+      }
     };
 
     this.init();
@@ -227,7 +280,7 @@ var Earth = (function() {
           bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
           bumpScale: 3,
           specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
-          specular: 0xfffdef,
+          specular: 0x2d4ea0,
           shininess: 3
         },
         geometry: {
@@ -380,6 +433,7 @@ var View = (function() {
     var addGui = function() {
       var gui = new dat.GUI();
       Earth.gui.add(gui);
+      Cloud.gui.add(gui);
     };
 
     var updateAll = function() {
@@ -399,6 +453,6 @@ var View = (function() {
 
     init();
   };
-  
+
   return new _View();
 })();
