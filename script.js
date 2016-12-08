@@ -209,28 +209,29 @@ var Cloud = (function() {
  * Earth
  */
 var Earth = (function() {
-  var
-    self = this,
-    paramsDefault = function() {
-      return {
-        material: {
-          map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
-          bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
-          bumpScale: 3,
-          specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
-          specular: 0xfffdef,
-          shininess: 3
-        },
-        geometry: {
-          radius: 300,
-          segments: 64
-        },
-        animate: {
-          rotationFactorY: 2
-        }
-      };
-    },
-    params = paramsDefault();
+  var self = this;
+  
+  var paramsDefault = function() {
+    return {
+      material: {
+        map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
+        bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
+        bumpScale: 3,
+        specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
+        specular: 0xfffdef,
+        shininess: 3
+      },
+      geometry: {
+        radius: 300,
+        segments: 64
+      },
+      animate: {
+        rotationFactorY: 2
+      }
+    };
+  };
+
+  var params = paramsDefault();
 
   this.init = function() {
     this.geometry = new THREE.SphereGeometry(
@@ -280,8 +281,8 @@ var Earth = (function() {
       gMaterial.add(self.material, 'bumpScale', 0, 10).listen();
       gMaterial.add(self.material, 'shininess', 0, 10).listen();
       gMaterial.addColor(this.colors, 'specular').listen()
-        .onChange(function(value) {
-          self.material.specular.setHex(value.replace('#', '0x'));
+        .onChange(function(color) {
+          self.material.specular.setHex(color.replace('#', '0x'));
         });
 
       var gAnimate = gEarth.addFolder('Animate');
