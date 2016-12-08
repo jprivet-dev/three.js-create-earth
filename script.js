@@ -50,9 +50,9 @@ var Utils = {
 };
 
 /**
- * Renderer
+ * _Renderer
  */
-var Renderer = (function() {
+var _Renderer = function() {
   var
     RENDERER_ANTIALIAS_ON = true,
     RENDERER_CLEAR_COLOR = COLOR_WHITE;
@@ -79,14 +79,14 @@ var Renderer = (function() {
   };
 
   this.init();
+};
 
-  return this;
-})();
+var Renderer = new _Renderer();
 
 /**
- * Camera
+ * _Camera
  */
-var Camera = (function() {
+var _Camera = function() {
   var
     CAMERA_POSITION_X = 0,
     CAMERA_POSITION_Y = 0,
@@ -120,14 +120,14 @@ var Camera = (function() {
   };
 
   this.init();
+};
 
-  return this;
-})();
+var Camera = new _Camera();
 
 /**
- * Skymap
+ * _Skymap
  */
-var Skymap = (function() {
+var _Skymap = function() {
   var
     SKYMAP_TEXTURE_POSITION_TAG = '{pos}',
     SKYMAP_TEXTURE_POSITIONS = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
@@ -160,14 +160,14 @@ var Skymap = (function() {
   };
 
   this.init();
+};
 
-  return this;
-})();
+var Skymap = new _Skymap();
 
 /**
- * Cloud
+ * _Cloud
  */
-var Cloud = (function() {
+var _Cloud = function() {
   var
     CLOUD_DIM = 302,
     CLOUD_SEGMENTS = 64,
@@ -201,16 +201,16 @@ var Cloud = (function() {
   };
 
   this.init();
+};
 
-  return this;
-})();
+var Cloud = new _Cloud();
 
 /**
- * Earth
+ * _Earth
  */
-var Earth = (function() {
+var _Earth = function() {
   var self = this;
-  
+
   var paramsDefault = function() {
     return {
       material: {
@@ -293,14 +293,14 @@ var Earth = (function() {
   };
 
   this.init();
+};
 
-  return this;
-})();
+var Earth = new _Earth();
 
 /**
- * Light
+ * _Light
  */
-var Light = (function() {
+var _Light = function() {
   var
     LIGHT_COLOR = COLOR_WHITE,
     LIGHT_INTENSITY = 1.2,
@@ -319,14 +319,14 @@ var Light = (function() {
   };
 
   this.init();
+};
 
-  return this;
-})();
+var Light = new _Light();
 
 /**
- * Scene
+ * _Scene
  */
-var Scene = (function() {
+var _Scene = function() {
   this.init = function() {
     Earth.earth.add(Cloud.cloud);
 
@@ -347,14 +347,14 @@ var Scene = (function() {
   };
 
   this.init();
+};
 
-  return this;
-})();
+var Scene = new _Scene();
 
 /**
- * View
+ * _View
  */
-var View = (function() {
+var _View = function() {
 
   var init = function() {
     updateAll();
@@ -385,4 +385,6 @@ var View = (function() {
   };
 
   init();
-})();
+};
+
+var View = new _View();
