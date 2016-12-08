@@ -238,60 +238,57 @@ var Earth = (function() {
       params.geometry.segments,
       params.geometry.segments
     );
-    this.material = new THREE.MeshPhongMaterial();
+
+    this.material = new THREE.MeshPhongMaterial({
+      map: new THREE.TextureLoader().load(params.material.map),
+      bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
+      specularMap: new THREE.TextureLoader().load(params.material.specularMap),
+      bumpScale: params.material.bumpScale,
+      specular: params.material.specular,
+      shininess: params.material.shininess
+    });
+
     this.earth = new THREE.Mesh(this.geometry, this.material);
-
-    this.setParamsDefault();
-  };
-
-  this.setParamsDefault = function() {
-    this.material.map = new THREE.TextureLoader().load(params.material.map);
-    this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap);
-    this.material.specularMap = new THREE.TextureLoader().load(params.material.specularMap);
-    this.material.bumpScale = params.material.bumpScale;
-    this.material.specular.setHex(params.material.specular);
-    this.material.shininess = params.material.shininess;
-
-    this.setGuiParams();
-  };
-
-  this.resetParams = function() {
-    var _params = paramsDefault();
-
-    this.material.bumpScale = _params.material.bumpScale;
-    this.material.specular.setHex(_params.material.specular);
-    this.material.shininess = _params.material.shininess;
-
-    params.animate.rotationFactorY = _params.animate.rotationFactorY;
-    params.animate.rotationFactorY = _params.animate.rotationFactorY;
-
-    this.setGuiParams();
-  };
-
-  this.setGuiParams = function() {
-    params.material._specular = '#' + this.material.specular.getHexString();
-  };
-
-  this.addGui = function(gui) {
-    var gEarth = gui.addFolder('Earth');
-
-    var gMaterial = gEarth.addFolder('Material');
-    gMaterial.add(this.material, 'bumpScale', 0, 10).listen();
-    gMaterial.add(this.material, 'shininess', 0, 10).listen();
-    gMaterial.addColor(params.material, '_specular').listen()
-      .name('specular')
-      .onChange(function(value) {
-        self.material.specular.setHex(value.replace('#', '0x'));
-      });
-
-    var gAnimate = gEarth.addFolder('Animate');
-    gAnimate.add(params.animate, 'rotationFactorY', -20, 20).listen();
-
-    gEarth.add(this, 'resetParams').name('Reset Params');
   };
 
   this.animate = function() {
     this.earth.rotation.y += Math.PI * params.animate.rotationFactorY / 5000;
+  };
+
+  this.gui = {
+    colors: {},
+
+    reset: function() {
+      var _default = paramsDefault();
+
+      self.material.bumpScale = _default.material.bumpScale;
+      self.material.specular.setHex(_default.material.specular);
+      self.material.shininess = _default.material.shininess;
+
+      params.animate.rotationFactorY = _default.animate.rotationFactorY;
+      params.animate.rotationFactorY = _default.animate.rotationFactorY;
+
+      this.colors.specular = '#' + self.material.specular.getHexString();
+    },
+
+    add: function(gui) {
+      this.reset();
+
+      var gEarth = gui.addFolder('Earth');
+
+      var gMaterial = gEarth.addFolder('Material');
+      gMaterial.add(self.material, 'bumpScale', 0, 10).listen();
+      gMaterial.add(self.material, 'shininess', 0, 10).listen();
+      gMaterial.addColor(this.colors, 'specular').listen()
+        .onChange(function(value) {
+          self.material.specular.setHex(value.replace('#', '0x'));
+        });
+
+      var gAnimate = gEarth.addFolder('Animate');
+      gAnimate.add(params.animate, 'rotationFactorY', -20, 20).listen();
+
+      gEarth.add(this, 'reset').name('Reset Earth');
+    }
   };
 
   this.init();
@@ -368,7 +365,7 @@ var View = (function() {
 
   var addGui = function() {
     var gui = new dat.GUI();
-    Earth.addGui(gui);
+    Earth.gui.add(gui);
   };
 
   var updateAll = function() {
