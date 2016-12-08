@@ -211,24 +211,26 @@ var Cloud = (function() {
 var Earth = (function() {
   var
     self = this,
-    params = {
-      material: {
-        map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
-        bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
-        bumpScale: 3,
-        specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
-        specular: 0xfffdef,
-        shininess: 3
-      },
-      geometry: {
-        radius: 300,
-        segments: 64
-      },
-      animate: {
-        rotationFactorY: 2
-      }
+    paramsDefault = function() {
+      return {
+        material: {
+          map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
+          bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
+          bumpScale: 3,
+          specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
+          specular: 0xfffdef,
+          shininess: 3
+        },
+        geometry: {
+          radius: 300,
+          segments: 64
+        },
+        animate: {
+          rotationFactorY: 2
+        }
+      };
     },
-    paramsDefault = params;
+    params = paramsDefault();
 
   this.init = function() {
     this.geometry = new THREE.SphereGeometry(
@@ -243,14 +245,25 @@ var Earth = (function() {
   };
 
   this.setParamsDefault = function() {
-    params = paramsDefault;
-
     this.material.map = new THREE.TextureLoader().load(params.material.map);
     this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap);
     this.material.specularMap = new THREE.TextureLoader().load(params.material.specularMap);
     this.material.bumpScale = params.material.bumpScale;
     this.material.specular.setHex(params.material.specular);
     this.material.shininess = params.material.shininess;
+
+    this.setGuiParams();
+  };
+
+  this.resetParams = function() {
+    var _params = paramsDefault();
+
+    this.material.bumpScale = _params.material.bumpScale;
+    this.material.specular.setHex(_params.material.specular);
+    this.material.shininess = _params.material.shininess;
+
+    params.animate.rotationFactorY = _params.animate.rotationFactorY;
+    params.animate.rotationFactorY = _params.animate.rotationFactorY;
 
     this.setGuiParams();
   };
@@ -274,18 +287,12 @@ var Earth = (function() {
     var gAnimate = gEarth.addFolder('Animate');
     gAnimate.add(params.animate, 'rotationFactorY', -20, 20).listen();
 
-    gEarth.add(this, 'setParamsDefault').name('Reset Params');
-  };
-
-  this.addGuiMaterial = function() {
-
+    gEarth.add(this, 'resetParams').name('Reset Params');
   };
 
   this.animate = function() {
     this.earth.rotation.y += Math.PI * params.animate.rotationFactorY / 5000;
   };
-
-  this.dim = 0;
 
   this.init();
 
