@@ -109,7 +109,7 @@ var Camera = (function() {
           positionZ: 1500,
           fov: 63,
           near: 1,
-          far: 2000
+          far: 8000
         }
       };
     };
@@ -158,7 +158,7 @@ var Camera = (function() {
 
         var gCamera = gui.addFolder('Camera');
 
-        gCamera.add(self.camera, 'fov', -150, 150).listen()
+        gCamera.add(self.camera, 'fov', 0, 150).listen()
           .onChange(function() {
             self.updateAspect();
           });
@@ -168,7 +168,7 @@ var Camera = (function() {
             self.updateAspect();
           });
 
-        gCamera.add(self.camera, 'far', -5000, 5000).listen()
+        gCamera.add(self.camera, 'far', 0, 10000).listen()
           .onChange(function() {
             self.updateAspect();
           });
