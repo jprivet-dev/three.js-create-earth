@@ -107,7 +107,7 @@ var Camera = (function() {
           positionX: 0,
           positionY: 0,
           positionZ: 1500,
-          fov: 67,
+          fov: 63,
           near: 1,
           far: 2000
         }
@@ -123,7 +123,7 @@ var Camera = (function() {
         params.camera.near,
         params.camera.far
       );
-      
+
       this.camera.position.set(
         params.camera.positionX,
         params.camera.positionY,
@@ -157,22 +157,22 @@ var Camera = (function() {
         this.reset();
 
         var gCamera = gui.addFolder('Camera');
-        
+
         gCamera.add(self.camera, 'fov', -150, 150).listen()
           .onChange(function() {
             self.updateAspect();
           });
-        
+
         gCamera.add(self.camera, 'near', 0, 5).listen()
           .onChange(function() {
             self.updateAspect();
           });
-        
+
         gCamera.add(self.camera, 'far', -5000, 5000).listen()
           .onChange(function() {
             self.updateAspect();
           });
-        
+
         gCamera.add(this, 'reset').name('Reset Camera');
       }
     };
@@ -293,10 +293,10 @@ var Cloud = (function() {
         var _default = paramsDefault();
 
         self.material.transparent = _default.material.transparent;
-        self.material.color.setHex(_default.material.color);
         self.material.opacity = _default.material.opacity;
         self.material.bumpScale = _default.material.bumpScale;
 
+        self.material.color.setHex(_default.material.color);
         this.colors.color = '#' + self.material.color.getHexString();
       },
 
@@ -383,12 +383,12 @@ var Earth = (function() {
         var _default = paramsDefault();
 
         self.material.bumpScale = _default.material.bumpScale;
-        self.material.specular.setHex(_default.material.specular);
         self.material.shininess = _default.material.shininess;
 
-        params.animate.rotationFactorY = _default.animate.rotationFactorY;
-
+        self.material.specular.setHex(_default.material.specular);
         this.colors.specular = '#' + self.material.specular.getHexString();
+
+        params.animate.rotationFactorY = _default.animate.rotationFactorY;
       },
 
       add: function(gui) {
@@ -422,21 +422,65 @@ var Earth = (function() {
  */
 var Light = (function() {
   var _Light = function() {
-    var
-      LIGHT_COLOR = COLOR_WHITE,
-      LIGHT_INTENSITY = 1.2,
-      LIGHT_POSITION_X = 1000,
-      LIGHT_POSITION_Y = 500,
-      LIGHT_POSITION_Z = 1000;
+    var self = this;
+
+    var paramsDefault = function() {
+      return {
+        light: {
+          color: COLOR_WHITE,
+          intensity: 1.3,
+          positionX: 1000,
+          positionY: 500,
+          positionZ: 1000
+        }
+      };
+    };
+
+    var params = paramsDefault();
 
     this.init = function() {
-      this.light = new THREE.DirectionalLight(LIGHT_COLOR, LIGHT_INTENSITY);
-
+      this.light = new THREE.DirectionalLight(params.light.color, params.light.intensity);
+      
       this.light.position.set(
-        LIGHT_POSITION_X,
-        LIGHT_POSITION_Y,
-        LIGHT_POSITION_Z
+        params.light.positionX,
+        params.light.positionY,
+        params.light.positionZ
       );
+    };
+
+    this.gui = {
+      colors: {},
+
+      reset: function() {
+        var _default = paramsDefault();
+
+        self.light.intensity = _default.light.intensity;
+
+        self.light.color.setHex(_default.light.color);
+        this.colors.color = '#' + self.light.color.getHexString();
+
+        self.light.position.x = _default.light.positionX;
+        self.light.position.y = _default.light.positionY;
+        self.light.position.z = _default.light.positionZ;
+      },
+
+      add: function(gui) {
+        this.reset();
+
+        var gLight = gui.addFolder('Light');
+        gLight.add(self.light, 'intensity', 0, 10).listen();
+
+        gLight.addColor(this.colors, 'color').listen()
+          .onChange(function(color) {
+            self.light.color.setHex(color.replace('#', '0x'));
+          });
+
+        gLight.add(self.light.position, 'x', -2000, 2000).listen();
+        gLight.add(self.light.position, 'y', -2000, 2000).listen();
+        gLight.add(self.light.position, 'z', -2000, 2000).listen();
+
+        gLight.add(this, 'reset').name('Reset Light');
+      }
     };
 
     this.init();
@@ -491,6 +535,7 @@ var View = (function() {
     var addGui = function() {
       var gui = new dat.GUI();
       Camera.gui.add(gui);
+      Light.gui.add(gui);
       Earth.gui.add(gui);
       Cloud.gui.add(gui);
     };
