@@ -54,17 +54,26 @@ var Utils = {
  */
 var Renderer = (function() {
   var _Renderer = function() {
-    var
-      RENDERER_ANTIALIAS_ON = true,
-      RENDERER_CLEAR_COLOR = COLOR_WHITE;
+    var self = this;
+
+    var paramsDefault = function() {
+      return {
+        renderer: {
+          antialias: true,
+          clearColor: COLOR_WHITE
+        }
+      };
+    };
+
+    var params = paramsDefault();
 
     this.init = function() {
       // @see also THREE.CanvasRenderer()
       this.renderer = new THREE.WebGLRenderer({
-        antialias: RENDERER_ANTIALIAS_ON
+        antialias: params.renderer.antialias
       });
 
-      this.renderer.setClearColor(RENDERER_CLEAR_COLOR);
+      this.renderer.setClearColor(params.renderer.clearColor);
       this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderView();
     };
@@ -426,6 +435,7 @@ var View = (function() {
 
     var addGui = function() {
       var gui = new dat.GUI();
+      Renderer.gui.add(gui);
       Earth.gui.add(gui);
       Cloud.gui.add(gui);
     };
