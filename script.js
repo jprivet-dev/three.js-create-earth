@@ -180,32 +180,32 @@ var Cloud = (function() {
     var paramsDefault = function() {
       return {
         material: {
+          transparent: true,
           color: COLOR_WHITE,
           bumpScale: 1,
-          opacity: 0.9
+          opacity: 0.9,
+          alphaMap: ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
+          bumpMap: ASSETS_PATH + 'earth_clouds_2048x1024.jpg'
         },
         geometry: {
           radius: 302,
           segments: 64
         },
-        animate: {}
+        animate: {
+          rotationY: 100
+        }
       };
     };
 
     var params = paramsDefault();
 
-    var
-      CLOUD_ANIMATE_ROTATION_Y = 100,
-      CLOUD_MATERIAL_ALPHA_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
-      CLOUD_MATERIAL_BUMP_IMAGE_URL = ASSETS_PATH + 'earth_clouds_2048x1024.jpg';
-
     this.init = function() {
       this.material = new THREE.MeshPhongMaterial({
         color: params.material.color,
         opacity: params.material.opacity,
-        transparent: true,
-        alphaMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_ALPHA_IMAGE_URL),
-        bumpMap: new THREE.TextureLoader().load(CLOUD_MATERIAL_BUMP_IMAGE_URL),
+        transparent: params.material.transparent,
+        alphaMap: new THREE.TextureLoader().load(params.material.alphaMap),
+        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
         bumpScale: params.material.bumpScale
       });
 
@@ -219,7 +219,7 @@ var Cloud = (function() {
     };
 
     this.animate = function() {
-      //this.cloud.rotation.y += CLOUD_ANIMATE_ROTATION_Y;
+      //this.cloud.rotation.y += params.animate.rotationY;
     };
 
     this.gui = {
@@ -228,10 +228,11 @@ var Cloud = (function() {
       reset: function() {
         var _default = paramsDefault();
 
+        self.material.transparent = _default.material.transparent;
         self.material.color.setHex(_default.material.color);
         self.material.opacity = _default.material.opacity;
         self.material.bumpScale = _default.material.bumpScale;
-        
+
         this.colors.color = '#' + self.material.color.getHexString();
       },
 
@@ -241,6 +242,7 @@ var Cloud = (function() {
         var gCloud = gui.addFolder('Cloud');
 
         var gMaterial = gCloud.addFolder('Material');
+        gMaterial.add(self.material, 'transparent').listen();
         gMaterial.add(self.material, 'opacity', 0, 1).listen();
         gMaterial.add(self.material, 'bumpScale', -10, 10).listen();
         gMaterial.addColor(this.colors, 'color').listen()
