@@ -107,9 +107,9 @@ var Camera = (function() {
           positionX: 0,
           positionY: 0,
           positionZ: 1500,
-          fov: 50,
+          fov: 67,
           near: 1,
-          far: 10000
+          far: 2000
         }
       };
     };
@@ -123,7 +123,7 @@ var Camera = (function() {
         params.camera.near,
         params.camera.far
       );
-
+      
       this.camera.position.set(
         params.camera.positionX,
         params.camera.positionY,
@@ -138,6 +138,43 @@ var Camera = (function() {
 
     this.updateLookAt = function(target) {
       this.camera.lookAt(target);
+    };
+
+    this.gui = {
+      colors: {},
+
+      reset: function() {
+        var _default = paramsDefault();
+
+        self.camera.fov = _default.camera.fov;
+        self.camera.near = _default.camera.near;
+        self.camera.far = _default.camera.far;
+
+        self.updateAspect();
+      },
+
+      add: function(gui) {
+        this.reset();
+
+        var gCamera = gui.addFolder('Camera');
+        
+        gCamera.add(self.camera, 'fov', -150, 150).listen()
+          .onChange(function() {
+            self.updateAspect();
+          });
+        
+        gCamera.add(self.camera, 'near', 0, 5).listen()
+          .onChange(function() {
+            self.updateAspect();
+          });
+        
+        gCamera.add(self.camera, 'far', -5000, 5000).listen()
+          .onChange(function() {
+            self.updateAspect();
+          });
+        
+        gCamera.add(this, 'reset').name('Reset Camera');
+      }
     };
 
     this.init();
@@ -444,6 +481,7 @@ var View = (function() {
 
     var addGui = function() {
       var gui = new dat.GUI();
+      Camera.gui.add(gui);
       Earth.gui.add(gui);
       Cloud.gui.add(gui);
     };
