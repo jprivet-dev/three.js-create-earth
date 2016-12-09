@@ -99,26 +99,35 @@ var Renderer = (function() {
  */
 var Camera = (function() {
   var _Camera = function() {
-    var
-      CAMERA_POSITION_X = 0,
-      CAMERA_POSITION_Y = 0,
-      CAMERA_POSITION_Z = 1500,
-      CAMERA_FOV = 50,
-      CAMERA_NEAR = 1,
-      CAMERA_FAR = 10000;
+    var self = this;
+
+    var paramsDefault = function() {
+      return {
+        camera: {
+          positionX: 0,
+          positionY: 0,
+          positionZ: 1500,
+          fov: 50,
+          near: 1,
+          far: 10000
+        }
+      };
+    };
+
+    var params = paramsDefault();
 
     this.init = function() {
       this.camera = new THREE.PerspectiveCamera(
-        CAMERA_FOV,
+        params.camera.fov,
         Utils.windowRatio(),
-        CAMERA_NEAR,
-        CAMERA_FAR
+        params.camera.near,
+        params.camera.far
       );
 
       this.camera.position.set(
-        CAMERA_POSITION_X,
-        CAMERA_POSITION_Y,
-        CAMERA_POSITION_Z
+        params.camera.positionX,
+        params.camera.positionY,
+        params.camera.positionZ
       );
     };
 
@@ -435,7 +444,6 @@ var View = (function() {
 
     var addGui = function() {
       var gui = new dat.GUI();
-      Renderer.gui.add(gui);
       Earth.gui.add(gui);
       Cloud.gui.add(gui);
     };
