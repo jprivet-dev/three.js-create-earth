@@ -188,24 +188,33 @@ var Camera = (function() {
  */
 var Skymap = (function() {
   var _Skymap = function() {
-    var
-      SKYMAP_TEXTURE_POSITION_TAG = '{pos}',
-      SKYMAP_TEXTURE_POSITIONS = ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
-      SKYMAP_TEXTURE_PATH = ASSETS_PATH,
-      SKYMAP_TEXTURE_FILENAME = 'skymap_{pos}_1024x1024.jpg';
+    var self = this;
+
+    var paramsDefault = function() {
+      return {
+        skymapTexture: {
+          positionTag: '{pos}',
+          positions: ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
+          path: ASSETS_PATH,
+          filename: 'skymap_{pos}_1024x1024.jpg'
+        }
+      };
+    };
+
+    var params = paramsDefault();
 
     this.init = function() {
       this.skymapTexture = new THREE.CubeTextureLoader()
-        .setPath(SKYMAP_TEXTURE_PATH)
+        .setPath(params.skymapTexture.path)
         .load(this.getFilenames());
     };
 
     this.getFilenames = function() {
       var filenames = [];
 
-      for (var i = 0; i < SKYMAP_TEXTURE_POSITIONS.length; i++) {
+      for (var i = 0; i < params.skymapTexture.positions.length; i++) {
         filenames.push(
-          this.getFilename(SKYMAP_TEXTURE_POSITIONS[i])
+          this.getFilename(params.skymapTexture.positions[i])
         );
       }
 
@@ -213,8 +222,8 @@ var Skymap = (function() {
     };
 
     this.getFilename = function(position) {
-      return SKYMAP_TEXTURE_FILENAME.replace(
-        SKYMAP_TEXTURE_POSITION_TAG,
+      return params.skymapTexture.filename.replace(
+        params.skymapTexture.positionTag,
         position
       );
     };
