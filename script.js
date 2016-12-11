@@ -196,7 +196,6 @@ var Skymap = (function() {
         skymapTexture: {
           positionTag: '{pos}',
           positions: ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
-          path: ASSETS_PATH,
           filename: 'skymap_{pos}_1024x1024.jpg'
         }
       };
@@ -206,7 +205,7 @@ var Skymap = (function() {
 
     this.init = function() {
       this.skymapTexture = new THREE.CubeTextureLoader()
-        .setPath(params.skymapTexture.path)
+        .setPath(ASSETS_PATH)
         .load(this.getFilenames());
     };
 
@@ -431,7 +430,7 @@ var Sun = (function() {
           color: COLOR_WHITE,
           intensity: 1.3,
           positionX: 1000,
-          positionY: 500,
+          positionY: 200,
           positionZ: 1000
         }
       };
@@ -447,54 +446,36 @@ var Sun = (function() {
         params.sun.positionY,
         params.sun.positionZ
       );
-      
+
       this.createLensFlare();
     };
 
     this.createLensFlare = function() {
-
-      var s = 250;
-
-      // lens flares
       var textureLoader = new THREE.TextureLoader();
-
       var textureFlare0 = textureLoader.load(ASSETS_PATH + 'lensflare0.png');
-      var textureFlare2 = textureLoader.load(ASSETS_PATH + 'lensflare2.png');
       var textureFlare3 = textureLoader.load(ASSETS_PATH + 'lensflare3.png');
 
-      addLight(0.08, 0.8, 0.5, 0, 0, -1000);
+      var h = 0.08;
+      var s = 0.8;
+      var l = 0.5;
 
-      function addLight(h, s, l, x, y, z) {
+      var flareColor = new THREE.Color(COLOR_WHITE);
+      flareColor.setHSL(h, s, l + 0.5);
 
-        // var light = new THREE.PointLight(0xffffff, 1.5, 2000);
-        // light.color.setHSL(h, s, l);
-        // light.position.set(x, y, z);
-        // scene.add(light);
+      this.lensFlare = new THREE.LensFlare(
+        textureFlare0,
+        700,
+        0.0,
+        THREE.AdditiveBlending,
+        flareColor
+      );
 
-        var flareColor = new THREE.Color(0xffffff);
-        flareColor.setHSL(h, s, l + 0.5);
+      this.lensFlare.add(textureFlare3, 60, 0.6, THREE.AdditiveBlending);
+      this.lensFlare.add(textureFlare3, 70, 0.7, THREE.AdditiveBlending);
+      this.lensFlare.add(textureFlare3, 120, 0.9, THREE.AdditiveBlending);
+      this.lensFlare.add(textureFlare3, 70, 1.0, THREE.AdditiveBlending);
 
-        var lensFlare = new THREE.LensFlare(textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor);
-
-        // lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
-        // lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
-        // lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
-
-        lensFlare.add(textureFlare3, 60, 0.6, THREE.AdditiveBlending);
-        lensFlare.add(textureFlare3, 70, 0.7, THREE.AdditiveBlending);
-        lensFlare.add(textureFlare3, 120, 0.9, THREE.AdditiveBlending);
-        lensFlare.add(textureFlare3, 70, 1.0, THREE.AdditiveBlending);
-
-        //lensFlare.customUpdateCallback = lensFlareUpdateCallback;
-        //lensFlare.position.copy(light.position);
-
-        self.sun.add(lensFlare);
-
-      }
-    };
-
-    this.updateLensFlare = function() {
-
+      this.sun.add(this.lensFlare);
     };
 
     this.gui = {
