@@ -106,7 +106,7 @@ var Camera = (function() {
         camera: {
           positionX: 0,
           positionY: 0,
-          positionZ: 1500,
+          positionZ: 140,
           fov: 63,
           near: 1,
           far: 8000
@@ -246,13 +246,13 @@ var Cloud = (function() {
         material: {
           transparent: true,
           color: COLOR_WHITE,
-          bumpScale: 1,
+          bumpScale: 0.1,
           opacity: 0.9,
           alphaMap: ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
           bumpMap: ASSETS_PATH + 'earth_clouds_2048x1024.jpg'
         },
         geometry: {
-          radius: 302,
+          radius: 50.3,
           segments: 64
         },
         animate: {
@@ -308,7 +308,7 @@ var Cloud = (function() {
         var gMaterial = gCloud.addFolder('Material');
         gMaterial.add(self.material, 'transparent').listen();
         gMaterial.add(self.material, 'opacity', 0, 1).listen();
-        gMaterial.add(self.material, 'bumpScale', -10, 10).listen();
+        gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.addColor(this.colors, 'color').listen()
           .onChange(function(color) {
             self.material.color.setHex(color.replace('#', '0x'));
@@ -336,13 +336,13 @@ var Earth = (function() {
         material: {
           map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
           bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
-          bumpScale: 3,
+          bumpScale: 0.45,
           specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
           specular: 0x2d4ea0,
           shininess: 6
         },
         geometry: {
-          radius: 300,
+          radius: 50,
           segments: 64
         },
         animate: {
@@ -397,7 +397,7 @@ var Earth = (function() {
         var gEarth = gui.addFolder('Earth');
 
         var gMaterial = gEarth.addFolder('Material');
-        gMaterial.add(self.material, 'bumpScale', -10, 10).listen();
+        gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
         gMaterial.addColor(this.colors, 'specular').listen()
           .onChange(function(color) {
