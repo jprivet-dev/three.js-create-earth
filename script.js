@@ -70,7 +70,8 @@ var Renderer = (function() {
     this.init = function() {
       // @see also THREE.CanvasRenderer()
       this.renderer = new THREE.WebGLRenderer({
-        antialias: params.renderer.antialias
+        antialias: params.renderer.antialias,
+        alpha: true
       });
 
       this.renderer.setClearColor(params.renderer.clearColor);
@@ -440,12 +441,60 @@ var Sun = (function() {
 
     this.init = function() {
       this.sun = new THREE.DirectionalLight(params.sun.color, params.sun.intensity);
-      
+
       this.sun.position.set(
         params.sun.positionX,
         params.sun.positionY,
         params.sun.positionZ
       );
+      
+      this.createLensFlare();
+    };
+
+    this.createLensFlare = function() {
+
+      var s = 250;
+
+      // lens flares
+      var textureLoader = new THREE.TextureLoader();
+
+      var textureFlare0 = textureLoader.load(ASSETS_PATH + 'lensflare0.png');
+      var textureFlare2 = textureLoader.load(ASSETS_PATH + 'lensflare2.png');
+      var textureFlare3 = textureLoader.load(ASSETS_PATH + 'lensflare3.png');
+
+      addLight(0.08, 0.8, 0.5, 0, 0, -1000);
+
+      function addLight(h, s, l, x, y, z) {
+
+        // var light = new THREE.PointLight(0xffffff, 1.5, 2000);
+        // light.color.setHSL(h, s, l);
+        // light.position.set(x, y, z);
+        // scene.add(light);
+
+        var flareColor = new THREE.Color(0xffffff);
+        flareColor.setHSL(h, s, l + 0.5);
+
+        var lensFlare = new THREE.LensFlare(textureFlare0, 700, 0.0, THREE.AdditiveBlending, flareColor);
+
+        // lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+        // lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+        // lensFlare.add(textureFlare2, 512, 0.0, THREE.AdditiveBlending);
+
+        lensFlare.add(textureFlare3, 60, 0.6, THREE.AdditiveBlending);
+        lensFlare.add(textureFlare3, 70, 0.7, THREE.AdditiveBlending);
+        lensFlare.add(textureFlare3, 120, 0.9, THREE.AdditiveBlending);
+        lensFlare.add(textureFlare3, 70, 1.0, THREE.AdditiveBlending);
+
+        //lensFlare.customUpdateCallback = lensFlareUpdateCallback;
+        //lensFlare.position.copy(light.position);
+
+        self.sun.add(lensFlare);
+
+      }
+    };
+
+    this.updateLensFlare = function() {
+
     };
 
     this.gui = {
