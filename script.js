@@ -418,15 +418,15 @@ var Earth = (function() {
 })();
 
 /**
- * Light
+ * Sun
  */
-var Light = (function() {
-  var _Light = function() {
+var Sun = (function() {
+  var _Sun = function() {
     var self = this;
 
     var paramsDefault = function() {
       return {
-        light: {
+        sun: {
           color: COLOR_WHITE,
           intensity: 1.3,
           positionX: 1000,
@@ -439,12 +439,12 @@ var Light = (function() {
     var params = paramsDefault();
 
     this.init = function() {
-      this.light = new THREE.DirectionalLight(params.light.color, params.light.intensity);
+      this.sun = new THREE.DirectionalLight(params.sun.color, params.sun.intensity);
       
-      this.light.position.set(
-        params.light.positionX,
-        params.light.positionY,
-        params.light.positionZ
+      this.sun.position.set(
+        params.sun.positionX,
+        params.sun.positionY,
+        params.sun.positionZ
       );
     };
 
@@ -454,39 +454,39 @@ var Light = (function() {
       reset: function() {
         var _default = paramsDefault();
 
-        self.light.intensity = _default.light.intensity;
+        self.sun.intensity = _default.sun.intensity;
 
-        self.light.color.setHex(_default.light.color);
-        this.colors.color = '#' + self.light.color.getHexString();
+        self.sun.color.setHex(_default.sun.color);
+        this.colors.color = '#' + self.sun.color.getHexString();
 
-        self.light.position.x = _default.light.positionX;
-        self.light.position.y = _default.light.positionY;
-        self.light.position.z = _default.light.positionZ;
+        self.sun.position.x = _default.sun.positionX;
+        self.sun.position.y = _default.sun.positionY;
+        self.sun.position.z = _default.sun.positionZ;
       },
 
       add: function(gui) {
         this.reset();
 
-        var gLight = gui.addFolder('Light');
-        gLight.add(self.light, 'intensity', 0, 10).listen();
+        var gSun = gui.addFolder('Sun');
+        gSun.add(self.sun, 'intensity', 0, 10).listen();
 
-        gLight.addColor(this.colors, 'color').listen()
+        gSun.addColor(this.colors, 'color').listen()
           .onChange(function(color) {
-            self.light.color.setHex(color.replace('#', '0x'));
+            self.sun.color.setHex(color.replace('#', '0x'));
           });
 
-        gLight.add(self.light.position, 'x', -2000, 2000).listen();
-        gLight.add(self.light.position, 'y', -2000, 2000).listen();
-        gLight.add(self.light.position, 'z', -2000, 2000).listen();
+        gSun.add(self.sun.position, 'x', -2000, 2000).listen();
+        gSun.add(self.sun.position, 'y', -2000, 2000).listen();
+        gSun.add(self.sun.position, 'z', -2000, 2000).listen();
 
-        gLight.add(this, 'reset').name('Reset Light');
+        gSun.add(this, 'reset').name('Reset Sun');
       }
     };
 
     this.init();
   };
 
-  return new _Light();
+  return new _Sun();
 })();
 
 /**
@@ -499,7 +499,7 @@ var Scene = (function() {
 
       this.scene = new THREE.Scene();
       this.scene.add(Earth.earth);
-      this.scene.add(Light.light);
+      this.scene.add(Sun.sun);
 
       this.scene.background = Skymap.skymapTexture;
 
@@ -535,7 +535,7 @@ var View = (function() {
     var addGui = function() {
       var gui = new dat.GUI();
       Camera.gui.add(gui);
-      Light.gui.add(gui);
+      Sun.gui.add(gui);
       Earth.gui.add(gui);
       Cloud.gui.add(gui);
     };
