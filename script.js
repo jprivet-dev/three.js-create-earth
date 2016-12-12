@@ -439,7 +439,28 @@ var Sun = (function() {
             y: 200,
             z: 1000,
           }
-        }
+        },
+        lensFlares: [{
+          size: 700,
+          opacity: 1,
+          distance: 0
+        }, {
+          size: 60,
+          opacity: 1,
+          distance: 0.6
+        }, {
+          size: 70,
+          opacity: 1,
+          distance: 0.7
+        }, {
+          size: 120,
+          opacity: 1,
+          distance: 0.9
+        }, {
+          size: 70,
+          opacity: 1,
+          distance: 1
+        }]
       };
     };
 
@@ -462,27 +483,27 @@ var Sun = (function() {
       var textureFlare0 = textureLoader.load(ASSETS_PATH + 'lensflare0.png');
       var textureFlare3 = textureLoader.load(ASSETS_PATH + 'lensflare3.png');
 
-      var h = 0.08;
-      var s = 0.8;
-      var l = 0.5;
-
-      var flareColor = new THREE.Color(COLOR_WHITE);
-      flareColor.setHSL(h, s, l + 0.5);
-
       this.lensFlare = new THREE.LensFlare(
         textureFlare0,
-        700,
-        0.0,
-        THREE.AdditiveBlending,
-        flareColor
+        params.lensFlares[0].size,
+        params.lensFlares[0].distance,
+        THREE.AdditiveBlending
       );
 
-      this.lensFlare.add(textureFlare3, 60, 0.6, THREE.AdditiveBlending);
-      this.lensFlare.add(textureFlare3, 70, 0.7, THREE.AdditiveBlending);
-      this.lensFlare.add(textureFlare3, 120, 0.9, THREE.AdditiveBlending);
-      this.lensFlare.add(textureFlare3, 70, 1.0, THREE.AdditiveBlending);
+      for (var i = 1; i < params.lensFlares.length; i++) {
+        this.lensFlare.add(
+          textureFlare3,
+          params.lensFlares[i].size,
+          params.lensFlares[i].distance,
+          THREE.AdditiveBlending
+        );
+      }
 
       this.sun.add(this.lensFlare);
+    };
+
+    this.updateLensFlare = function() {
+
     };
 
     this.gui = {
@@ -499,6 +520,12 @@ var Sun = (function() {
         self.sun.position.x = _default.sun.position.x;
         self.sun.position.y = _default.sun.position.y;
         self.sun.position.z = _default.sun.position.z;
+
+        for (var i = 0; i < params.lensFlares.length; i++) {
+          self.lensFlare.lensFlares[i].size = _default.lensFlares[i].size;
+          self.lensFlare.lensFlares[i].opacity = _default.lensFlares[i].opacity;
+          self.lensFlare.lensFlares[i].distance = _default.lensFlares[i].distance;
+        }
       },
 
       add: function(gui) {
@@ -511,11 +538,20 @@ var Sun = (function() {
           .onChange(function(color) {
             self.sun.color.setHex(color.replace('#', '0x'));
           });
-        
+
         var gPosition = gSun.addFolder('Position');
         gPosition.add(self.sun.position, 'x', -2000, 2000).listen();
         gPosition.add(self.sun.position, 'y', -2000, 2000).listen();
         gPosition.add(self.sun.position, 'z', -2000, 2000).listen();
+
+        var gLensFlares = gSun.addFolder('LensFlares');
+
+        for (var i = 0; i < self.lensFlare.lensFlares.length; i++) {
+          var gLensFlare = gLensFlares.addFolder(i);
+          gLensFlare.add(self.lensFlare.lensFlares[i], 'size', 0, 1000).listen();
+          gLensFlare.add(self.lensFlare.lensFlares[i], 'opacity', 0, 1).listen();
+          gLensFlare.add(self.lensFlare.lensFlares[i], 'distance', -1, 1).listen();
+        }
 
         gSun.add(this, 'reset').name('Reset Sun');
       }
