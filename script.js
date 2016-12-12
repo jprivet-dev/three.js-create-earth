@@ -298,7 +298,7 @@ var Cloud = (function() {
 
         self.material.color.setHex(_default.material.color);
         this.colors.color = '#' + self.material.color.getHexString();
-        
+
         params.animate.rotationFactorY = _default.animate.rotationFactorY;
       },
 
@@ -315,7 +315,7 @@ var Cloud = (function() {
           .onChange(function(color) {
             self.material.color.setHex(color.replace('#', '0x'));
           });
-        
+
         var gAnimate = gCloud.addFolder('Animate');
         gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
 
@@ -434,9 +434,11 @@ var Sun = (function() {
         sun: {
           color: COLOR_WHITE,
           intensity: 1.3,
-          positionX: 1000,
-          positionY: 200,
-          positionZ: 1000
+          position: {
+            x: 1000,
+            y: 200,
+            z: 1000,
+          }
         }
       };
     };
@@ -447,9 +449,9 @@ var Sun = (function() {
       this.sun = new THREE.DirectionalLight(params.sun.color, params.sun.intensity);
 
       this.sun.position.set(
-        params.sun.positionX,
-        params.sun.positionY,
-        params.sun.positionZ
+        params.sun.position.x,
+        params.sun.position.y,
+        params.sun.position.z
       );
 
       this.createLensFlare();
@@ -494,9 +496,9 @@ var Sun = (function() {
         self.sun.color.setHex(_default.sun.color);
         this.colors.color = '#' + self.sun.color.getHexString();
 
-        self.sun.position.x = _default.sun.positionX;
-        self.sun.position.y = _default.sun.positionY;
-        self.sun.position.z = _default.sun.positionZ;
+        self.sun.position.x = _default.sun.position.x;
+        self.sun.position.y = _default.sun.position.y;
+        self.sun.position.z = _default.sun.position.z;
       },
 
       add: function(gui) {
@@ -509,10 +511,11 @@ var Sun = (function() {
           .onChange(function(color) {
             self.sun.color.setHex(color.replace('#', '0x'));
           });
-
-        gSun.add(self.sun.position, 'x', -2000, 2000).listen();
-        gSun.add(self.sun.position, 'y', -2000, 2000).listen();
-        gSun.add(self.sun.position, 'z', -2000, 2000).listen();
+        
+        var gPosition = gSun.addFolder('Position');
+        gPosition.add(self.sun.position, 'x', -2000, 2000).listen();
+        gPosition.add(self.sun.position, 'y', -2000, 2000).listen();
+        gPosition.add(self.sun.position, 'z', -2000, 2000).listen();
 
         gSun.add(this, 'reset').name('Reset Sun');
       }
