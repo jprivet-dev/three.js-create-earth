@@ -157,7 +157,7 @@ var Camera = (function() {
       add: function(gui) {
         this.reset();
 
-        var gCamera = gui.addFolder('Camera');
+        var gCamera = gui.addFolder('CAMERA');
 
         gCamera.add(self.camera, 'fov', 0, 150).listen()
           .onChange(function() {
@@ -174,7 +174,7 @@ var Camera = (function() {
             self.updateAspect();
           });
 
-        gCamera.add(this, 'reset').name('Reset Camera');
+        gCamera.add(this, 'reset').name('RESET CAMERA');
       }
     };
 
@@ -305,7 +305,7 @@ var Cloud = (function() {
       add: function(gui) {
         this.reset();
 
-        var gCloud = gui.addFolder('Cloud');
+        var gCloud = gui.addFolder('CLOUD');
 
         var gMaterial = gCloud.addFolder('Material');
         gMaterial.add(self.material, 'transparent').listen();
@@ -319,7 +319,7 @@ var Cloud = (function() {
         var gAnimate = gCloud.addFolder('Animate');
         gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
 
-        gCloud.add(this, 'reset').name('Reset Cloud');
+        gCloud.add(this, 'reset').name('RESET CLOUD');
       }
     };
 
@@ -399,7 +399,7 @@ var Earth = (function() {
       add: function(gui) {
         this.reset();
 
-        var gEarth = gui.addFolder('Earth');
+        var gEarth = gui.addFolder('EARTH');
 
         var gMaterial = gEarth.addFolder('Material');
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
@@ -412,7 +412,7 @@ var Earth = (function() {
         var gAnimate = gEarth.addFolder('Animate');
         gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
 
-        gEarth.add(this, 'reset').name('Reset Earth');
+        gEarth.add(this, 'reset').name('RESET EARTH');
       }
     };
 
@@ -531,10 +531,11 @@ var Sun = (function() {
       add: function(gui) {
         this.reset();
 
-        var gSun = gui.addFolder('Sun');
-        gSun.add(self.sun, 'intensity', 0, 10).listen();
-
-        gSun.addColor(this.colors, 'color').listen()
+        var gSun = gui.addFolder('SUN');
+        
+        var gLight = gSun.addFolder('Light');
+        gLight.add(self.sun, 'intensity', 0, 10).listen();
+        gLight.addColor(this.colors, 'color').listen()
           .onChange(function(color) {
             self.sun.color.setHex(color.replace('#', '0x'));
           });
@@ -547,13 +548,12 @@ var Sun = (function() {
         var gLensFlares = gSun.addFolder('LensFlares');
 
         for (var i = 0; i < self.lensFlare.lensFlares.length; i++) {
-          var gLensFlare = gLensFlares.addFolder(i);
-          gLensFlare.add(self.lensFlare.lensFlares[i], 'size', 0, 1000).listen();
-          gLensFlare.add(self.lensFlare.lensFlares[i], 'opacity', 0, 1).listen();
-          gLensFlare.add(self.lensFlare.lensFlares[i], 'distance', -1, 1).listen();
+          gLensFlares.add(self.lensFlare.lensFlares[i], 'size', 0, 1000).name(i + '. size').listen();
+          gLensFlares.add(self.lensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
+          gLensFlares.add(self.lensFlare.lensFlares[i], 'distance', -1, 1).name(i + '. distance').listen();
         }
 
-        gSun.add(this, 'reset').name('Reset Sun');
+        gSun.add(this, 'reset').name('RESET SUN');
       }
     };
 
@@ -577,14 +577,14 @@ var Scene = (function() {
 
       this.scene.background = Skymap.skymapTexture;
 
-      this.enableControls();
+      this.enableOrbitControls();
     };
 
-    this.enableControls = function() {
-      this.controls = new THREE.OrbitControls(Camera.camera, Renderer.renderer.domElement);
-      this.controls.autoRotate = true;
-      this.controls.autoRotateSpeed = 0.07;
-      this.controls.enableDamping = true;
+    this.enableOrbitControls = function() {
+      this.orbitControls = new THREE.OrbitControls(Camera.camera, Renderer.renderer.domElement);
+      this.orbitControls.autoRotate = true;
+      this.orbitControls.autoRotateSpeed = 0.07;
+      this.orbitControls.enableDamping = true;
     };
 
     this.init();
@@ -625,7 +625,7 @@ var View = (function() {
       Earth.animate();
       Cloud.animate();
 
-      Scene.controls.update();
+      Scene.orbitControls.update();
       Renderer.renderer.render(Scene.scene, Camera.camera);
     };
 
