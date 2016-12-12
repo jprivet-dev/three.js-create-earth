@@ -305,7 +305,7 @@ var Cloud = (function() {
       add: function(gui) {
         this.reset();
 
-        var gCloud = gui.addFolder('CLOUD');
+        var gCloud = gui.addFolder('EARTH / CLOUD');
 
         var gMaterial = gCloud.addFolder('Material');
         gMaterial.add(self.material, 'transparent').listen();
@@ -532,7 +532,7 @@ var Sun = (function() {
         this.reset();
 
         var gSun = gui.addFolder('SUN');
-        
+
         var gLight = gSun.addFolder('Light');
         gLight.add(self.sun, 'intensity', 0, 10).listen();
         gLight.addColor(this.colors, 'color').listen()
@@ -568,6 +568,19 @@ var Sun = (function() {
  */
 var Scene = (function() {
   var _Scene = function() {
+    var self = this;
+
+    var paramsDefault = function() {
+      return {
+        orbitControls: {
+          autoRotate: true,
+          autoRotateSpeed: 0.07
+        }
+      };
+    };
+
+    var params = paramsDefault();
+
     this.init = function() {
       Earth.earth.add(Cloud.cloud);
 
@@ -582,9 +595,30 @@ var Scene = (function() {
 
     this.enableOrbitControls = function() {
       this.orbitControls = new THREE.OrbitControls(Camera.camera, Renderer.renderer.domElement);
-      this.orbitControls.autoRotate = true;
-      this.orbitControls.autoRotateSpeed = 0.07;
+      this.orbitControls.autoRotate = params.orbitControls.autoRotate;
+      this.orbitControls.autoRotateSpeed = params.orbitControls.autoRotateSpeed;
       this.orbitControls.enableDamping = true;
+    };
+
+    this.gui = {
+      colors: {},
+
+      reset: function() {
+        var _default = paramsDefault();
+
+        self.orbitControls.autoRotate = _default.orbitControls.autoRotate;
+        self.orbitControls.autoRotateSpeed = _default.orbitControls.autoRotateSpeed;
+      },
+
+      add: function(gui) {
+        this.reset();
+
+        var gOrbitControls = gui.addFolder('ORBIT CONTROLS');
+        gOrbitControls.add(self.orbitControls, 'autoRotate').listen();
+        gOrbitControls.add(self.orbitControls, 'autoRotateSpeed', -0.5, 0.5).listen();
+
+        gOrbitControls.add(this, 'reset').name('RESET CONTR.');
+      }
     };
 
     this.init();
@@ -608,6 +642,8 @@ var View = (function() {
 
     var addGui = function() {
       var gui = new dat.GUI();
+
+      Scene.gui.add(gui);
       Camera.gui.add(gui);
       Sun.gui.add(gui);
       Earth.gui.add(gui);
