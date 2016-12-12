@@ -256,7 +256,7 @@ var Cloud = (function() {
           segments: 64
         },
         animate: {
-          rotationY: 100
+          rotationFactorY: -0.00005
         }
       };
     };
@@ -283,7 +283,7 @@ var Cloud = (function() {
     };
 
     this.animate = function() {
-      //this.cloud.rotation.y += params.animate.rotationY;
+      this.cloud.rotation.y += Math.PI * params.animate.rotationFactorY;
     };
 
     this.gui = {
@@ -298,6 +298,8 @@ var Cloud = (function() {
 
         self.material.color.setHex(_default.material.color);
         this.colors.color = '#' + self.material.color.getHexString();
+        
+        params.animate.rotationFactorY = _default.animate.rotationFactorY;
       },
 
       add: function(gui) {
@@ -313,6 +315,9 @@ var Cloud = (function() {
           .onChange(function(color) {
             self.material.color.setHex(color.replace('#', '0x'));
           });
+        
+        var gAnimate = gCloud.addFolder('Animate');
+        gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
 
         gCloud.add(this, 'reset').name('Reset Cloud');
       }
@@ -346,7 +351,7 @@ var Earth = (function() {
           segments: 64
         },
         animate: {
-          rotationFactorY: 2
+          rotationFactorY: 0.0002
         }
       };
     };
@@ -373,7 +378,7 @@ var Earth = (function() {
     };
 
     this.animate = function() {
-      this.earth.rotation.y += Math.PI * params.animate.rotationFactorY / 5000;
+      this.earth.rotation.y += Math.PI * params.animate.rotationFactorY;
     };
 
     this.gui = {
@@ -405,7 +410,7 @@ var Earth = (function() {
           });
 
         var gAnimate = gEarth.addFolder('Animate');
-        gAnimate.add(params.animate, 'rotationFactorY', -20, 20).listen();
+        gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
 
         gEarth.add(this, 'reset').name('Reset Earth');
       }
