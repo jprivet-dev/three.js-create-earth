@@ -315,7 +315,7 @@ var Cloud = (function() {
       add: function(gui) {
         this.reset();
 
-        var gCloud = gui.addFolder('EARTH / CLOUD');
+        var gCloud = gui.addFolder('CLOUD');
 
         var gMaterial = gCloud.addFolder('Material');
         gMaterial.add(self.material, 'transparent').listen();
@@ -386,6 +386,8 @@ var Earth = (function(Cloud) {
 
       this.earth = new THREE.Mesh(this.geometry, this.material);
       
+      this.earth.add(Cloud.obj);
+      
       this.obj = this.earth;
     };
 
@@ -425,6 +427,8 @@ var Earth = (function(Cloud) {
         gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
 
         gEarth.add(this, 'reset').name('RESET EARTH');
+        
+        Cloud.gui.add(gEarth);
       }
     };
 
@@ -742,8 +746,6 @@ var Scene = (function() {
     var params = paramsDefault();
 
     this.init = function() {
-      Earth.earth.add(Cloud.obj);
-
       this.scene = new THREE.Scene();
       this.scene.add(Earth.obj);
       this.scene.add(Moon.obj);
@@ -810,7 +812,6 @@ var View = (function() {
       Camera.gui.add(gui);
       Sun.gui.add(gui);
       Earth.gui.add(gui);
-      Cloud.gui.add(gui);
       Moon.gui.add(gui);
     };
 
