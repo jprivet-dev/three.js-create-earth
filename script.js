@@ -9,6 +9,7 @@
  * https://threejs.org/examples/webgl_materials_cars.html
  * https://stemkoski.github.io/Three.js/
  * https://threejs.org/examples/webgl_lensflares.html
+ * https://github.com/mrdoob/three.js/issues/1830
  *
  * Specials :
  * https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js
@@ -426,7 +427,7 @@ var Earth = (function() {
 /**
  * Moon
  */
-var Moon = (function() {
+var Moon = (function(Earth) {
   var _Moon = function() {
     var self = this;
 
@@ -434,9 +435,9 @@ var Moon = (function() {
       return {
         moon: {
           position: {
-            x: 100,
+            x: 0,
             y: 0,
-            z: 0,
+            z: -100,
           },          
         },
         material: {
@@ -452,7 +453,7 @@ var Moon = (function() {
           segments: 64
         },
         animate: {
-          rotationFactorY: 0.0002
+          pivotRotationFactorY: 0.0015
         }
       };
     };
@@ -482,10 +483,22 @@ var Moon = (function() {
         params.moon.position.y,
         params.moon.position.z
       );
+      
+      this.pivot = this.createPivot();
+
+      this.obj = this.pivot;
     };
+    
+    this.createPivot = function() {
+      var pivot = new THREE.Object3D();
+      pivot.position = Earth.earth.position;
+      pivot.add(this.moon);
+      
+      return pivot;
+    }
 
     this.animate = function() {
-      this.moon.rotation.y += Math.PI * params.animate.rotationFactorY;
+      this.pivot.rotation.y += Math.PI * params.animate.pivotRotationFactorY;
     };
 
     this.gui = {
@@ -500,11 +513,11 @@ var Moon = (function() {
         self.material.specular.setHex(_default.material.specular);
         this.colors.specular = '#' + self.material.specular.getHexString();
 
-        params.animate.rotationFactorY = _default.animate.rotationFactorY;
-        
         self.moon.position.x = _default.moon.position.x;
         self.moon.position.y = _default.moon.position.y;
         self.moon.position.z = _default.moon.position.z;
+
+        params.animate.pivotRotationFactorY = _default.animate.pivotRotationFactorY;
       },
 
       add: function(gui) {
@@ -526,7 +539,7 @@ var Moon = (function() {
           });
 
         var gAnimate = gMoon.addFolder('Animate');
-        gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
+        gAnimate.add(params.animate, 'pivotRotationFactorY', -0.005, 0.005).listen();
 
         gMoon.add(this, 'reset').name('RESET MOON');
       }
@@ -536,7 +549,7 @@ var Moon = (function() {
   };
 
   return new _Moon();
-})();
+})(Earth);
 
 /**
  * Sun
@@ -721,7 +734,7 @@ var Scene = (function() {
 
       this.scene = new THREE.Scene();
       this.scene.add(Earth.earth);
-      this.scene.add(Moon.moon);
+      this.scene.add(Moon.obj);
       this.scene.add(Sun.sun);
 
       this.scene.background = Skymap.skymapTexture;
@@ -797,6 +810,7 @@ var View = (function() {
 
       Earth.animate();
       Cloud.animate();
+      Moon.animate();
 
       Scene.orbitControls.update();
       Renderer.renderer.render(Scene.scene, Camera.camera);
