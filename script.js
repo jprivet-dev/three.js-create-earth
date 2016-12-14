@@ -17,6 +17,7 @@
  * http://workshop.chromeexperiments.com/examples/gui
  *
  * Resources textures :
+ * https://nasa3d.arc.nasa.gov/
  * http://planetpixelemporium.com/earth.html
  * http://earthobservatory.nasa.gov/blogs/elegantfigures/2011/10/06/crafting-the-blue-marble/
  * http://visibleearth.nasa.gov/view.php?id=79765
@@ -336,10 +337,7 @@ var Earth = (function(Cloud) {
         material: {
           map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
           bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
-          bumpScale: 0.45,
-          specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
-          specular: 0x2d4ea0,
-          shininess: 6
+          bumpScale: 0.1
         },
         geometry: {
           radius: 50,
@@ -363,10 +361,7 @@ var Earth = (function(Cloud) {
       this.material = new THREE.MeshPhongMaterial({
         map: new THREE.TextureLoader().load(params.material.map),
         bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
-        specularMap: new THREE.TextureLoader().load(params.material.specularMap),
-        bumpScale: params.material.bumpScale,
-        specular: params.material.specular,
-        shininess: params.material.shininess
+        bumpScale: params.material.bumpScale
       });
 
       this.earth = new THREE.Mesh(this.geometry, this.material);
@@ -389,9 +384,6 @@ var Earth = (function(Cloud) {
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
 
-        self.material.specular.setHex(_default.material.specular);
-        this.colors.specular = '#' + self.material.specular.getHexString();
-
         params.animate.rotationFactorY = _default.animate.rotationFactorY;
       },
 
@@ -402,11 +394,6 @@ var Earth = (function(Cloud) {
 
         var gMaterial = gEarth.addFolder('Material');
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
-        gMaterial.add(self.material, 'shininess', 0, 10).listen();
-        gMaterial.addColor(this.colors, 'specular').listen()
-          .onChange(function(color) {
-            self.material.specular.setHex(color.replace('#', '0x'));
-          });
 
         var gAnimate = gEarth.addFolder('Animate');
         gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
@@ -440,12 +427,9 @@ var Moon = (function(Earth) {
           },          
         },
         material: {
-          map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
-          bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
-          bumpScale: 0.45,
-          specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
-          specular: 0x2d4ea0,
-          shininess: 6
+          map: ASSETS_PATH + 'moon_map_1024x512.jpg',
+          bumpMap: ASSETS_PATH + 'moon_bump_1024x512.jpg',
+          bumpScale: 0.1
         },
         geometry: {
           radius: 10,
@@ -469,7 +453,6 @@ var Moon = (function(Earth) {
       this.material = new THREE.MeshPhongMaterial({
         map: new THREE.TextureLoader().load(params.material.map),
         bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
-        specularMap: new THREE.TextureLoader().load(params.material.specularMap),
         bumpScale: params.material.bumpScale,
         specular: params.material.specular,
         shininess: params.material.shininess
