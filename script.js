@@ -108,7 +108,7 @@ var Camera = (function() {
         camera: {
           positionX: 0,
           positionY: 0,
-          positionZ: 140,
+          positionZ: 150,
           fov: 63,
           near: 1,
           far: 8000
@@ -424,6 +424,121 @@ var Earth = (function() {
 })();
 
 /**
+ * Moon
+ */
+var Moon = (function() {
+  var _Moon = function() {
+    var self = this;
+
+    var paramsDefault = function() {
+      return {
+        moon: {
+          position: {
+            x: 100,
+            y: 0,
+            z: 0,
+          },          
+        },
+        material: {
+          map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
+          bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
+          bumpScale: 0.45,
+          specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
+          specular: 0x2d4ea0,
+          shininess: 6
+        },
+        geometry: {
+          radius: 10,
+          segments: 64
+        },
+        animate: {
+          rotationFactorY: 0.0002
+        }
+      };
+    };
+
+    var params = paramsDefault();
+
+    this.init = function() {
+      this.geometry = new THREE.SphereGeometry(
+        params.geometry.radius,
+        params.geometry.segments,
+        params.geometry.segments
+      );
+
+      this.material = new THREE.MeshPhongMaterial({
+        map: new THREE.TextureLoader().load(params.material.map),
+        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
+        specularMap: new THREE.TextureLoader().load(params.material.specularMap),
+        bumpScale: params.material.bumpScale,
+        specular: params.material.specular,
+        shininess: params.material.shininess
+      });
+
+      this.moon = new THREE.Mesh(this.geometry, this.material);
+
+      this.moon.position.set(
+        params.moon.position.x,
+        params.moon.position.y,
+        params.moon.position.z
+      );
+    };
+
+    this.animate = function() {
+      this.moon.rotation.y += Math.PI * params.animate.rotationFactorY;
+    };
+
+    this.gui = {
+      colors: {},
+
+      reset: function() {
+        var _default = paramsDefault();
+
+        self.material.bumpScale = _default.material.bumpScale;
+        self.material.shininess = _default.material.shininess;
+
+        self.material.specular.setHex(_default.material.specular);
+        this.colors.specular = '#' + self.material.specular.getHexString();
+
+        params.animate.rotationFactorY = _default.animate.rotationFactorY;
+        
+        self.moon.position.x = _default.moon.position.x;
+        self.moon.position.y = _default.moon.position.y;
+        self.moon.position.z = _default.moon.position.z;
+      },
+
+      add: function(gui) {
+        this.reset();
+
+        var gMoon = gui.addFolder('MOON');
+        
+        var gPosition = gMoon.addFolder('Position');
+        gPosition.add(self.moon.position, 'x', -100, 100).listen();
+        gPosition.add(self.moon.position, 'y', -100, 100).listen();
+        gPosition.add(self.moon.position, 'z', -100, 100).listen();
+
+        var gMaterial = gMoon.addFolder('Material');
+        gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
+        gMaterial.add(self.material, 'shininess', 0, 10).listen();
+        gMaterial.addColor(this.colors, 'specular').listen()
+          .onChange(function(color) {
+            self.material.specular.setHex(color.replace('#', '0x'));
+          });
+
+        var gAnimate = gMoon.addFolder('Animate');
+        gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
+
+        gMoon.add(this, 'reset').name('RESET MOON');
+      }
+    };
+
+    this.init();
+  };
+
+  return new _Moon();
+})();
+
+/**
  * Sun
  */
 var Sun = (function() {
@@ -606,6 +721,7 @@ var Scene = (function() {
 
       this.scene = new THREE.Scene();
       this.scene.add(Earth.earth);
+      this.scene.add(Moon.moon);
       this.scene.add(Sun.sun);
 
       this.scene.background = Skymap.skymapTexture;
@@ -668,6 +784,7 @@ var View = (function() {
       Sun.gui.add(gui);
       Earth.gui.add(gui);
       Cloud.gui.add(gui);
+      Moon.gui.add(gui);
     };
 
     var updateAll = function() {
