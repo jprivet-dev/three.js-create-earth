@@ -23,7 +23,8 @@
  */
 var
   ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
-  COLOR_WHITE = 0xffffff;
+  COLOR_WHITE = 0xffffff,
+  COLOR_BLACK = 0x000000;
 
 /**
  * Utils
@@ -60,7 +61,7 @@ var Renderer = (function() {
       return {
         renderer: {
           antialias: true,
-          clearColor: COLOR_WHITE
+          clearColor: COLOR_BLACK
         }
       };
     };
@@ -435,30 +436,46 @@ var Sun = (function() {
           color: COLOR_WHITE,
           intensity: 1.3,
           position: {
-            x: 1000,
-            y: 200,
-            z: 1000,
+            x: -380,
+            y: 460,
+            z: -1000,
           }
         },
         lensFlares: [{
-          size: 700,
+          size: 1400,
           opacity: 1,
           distance: 0
         }, {
-          size: 60,
-          opacity: 1,
-          distance: 0.6
+          size: 20,
+          opacity: 0.4,
+          distance: 0.63
+        }, {
+          size: 40,
+          opacity: 0.3,
+          distance: 0.64
         }, {
           size: 70,
-          opacity: 1,
+          opacity: 0.8,
           distance: 0.7
         }, {
+          size: 110,
+          opacity: 0.7,
+          distance: 0.8
+        }, {
+          size: 60,
+          opacity: 0.4,
+          distance: 0.85
+        }, {
+          size: 30,
+          opacity: 0.4,
+          distance: 0.86
+        }, {
           size: 120,
-          opacity: 1,
+          opacity: 0.3,
           distance: 0.9
         }, {
-          size: 70,
-          opacity: 1,
+          size: 260,
+          opacity: 0.4,
           distance: 1
         }]
       };
@@ -480,8 +497,9 @@ var Sun = (function() {
 
     this.createLensFlare = function() {
       var textureLoader = new THREE.TextureLoader();
-      var textureFlare0 = textureLoader.load(ASSETS_PATH + 'lensflare0.png');
-      var textureFlare3 = textureLoader.load(ASSETS_PATH + 'lensflare3.png');
+      var textureFlare0 = textureLoader.load(ASSETS_PATH + 'lens-flare-01.jpg');
+      var textureFlare10 = textureLoader.load(ASSETS_PATH + 'lens-flare-10.jpg');
+      var textureFlare20 = textureLoader.load(ASSETS_PATH + 'lens-flare-20.jpg');
 
       this.lensFlare = new THREE.LensFlare(
         textureFlare0,
@@ -491,8 +509,10 @@ var Sun = (function() {
       );
 
       for (var i = 1; i < params.lensFlares.length; i++) {
+        var texture = params.lensFlares[i].size < 70 ? textureFlare10 : textureFlare20;
+
         this.lensFlare.add(
-          textureFlare3,
+          texture,
           params.lensFlares[i].size,
           params.lensFlares[i].distance,
           THREE.AdditiveBlending
@@ -548,7 +568,7 @@ var Sun = (function() {
         var gLensFlares = gSun.addFolder('LensFlares');
 
         for (var i = 0; i < self.lensFlare.lensFlares.length; i++) {
-          gLensFlares.add(self.lensFlare.lensFlares[i], 'size', 0, 1000).name(i + '. size').listen();
+          gLensFlares.add(self.lensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
           gLensFlares.add(self.lensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
           gLensFlares.add(self.lensFlare.lensFlares[i], 'distance', -1, 1).name(i + '. distance').listen();
         }
