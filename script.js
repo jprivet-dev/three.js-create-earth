@@ -79,6 +79,8 @@ var Renderer = (function() {
       this.renderer.setClearColor(params.renderer.clearColor);
       this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderView();
+      
+      this.obj = this.renderer;
     };
 
     this.renderView = function() {
@@ -132,6 +134,8 @@ var Camera = (function() {
         params.camera.positionY,
         params.camera.positionZ
       );
+      
+      this.obj = this.camera;
     };
 
     this.updateAspect = function() {
@@ -209,6 +213,8 @@ var Skymap = (function() {
       this.skymapTexture = new THREE.CubeTextureLoader()
         .setPath(ASSETS_PATH)
         .load(this.getFilenames());
+      
+      this.obj = this.skymapTexture;
     };
 
     this.getFilenames = function() {
@@ -282,6 +288,8 @@ var Cloud = (function() {
       );
 
       this.cloud = new THREE.Mesh(this.geometry, this.material);
+      
+      this.obj = this.cloud;
     };
 
     this.animate = function() {
@@ -334,7 +342,7 @@ var Cloud = (function() {
 /**
  * Earth
  */
-var Earth = (function() {
+var Earth = (function(Cloud) {
   var _Earth = function() {
     var self = this;
 
@@ -377,6 +385,8 @@ var Earth = (function() {
       });
 
       this.earth = new THREE.Mesh(this.geometry, this.material);
+      
+      this.obj = this.earth;
     };
 
     this.animate = function() {
@@ -422,7 +432,7 @@ var Earth = (function() {
   };
 
   return new _Earth();
-})();
+})(Cloud);
 
 /**
  * Moon
@@ -621,6 +631,8 @@ var Sun = (function() {
       );
 
       this.createLensFlare();
+      
+      this.obj = this.sun;
     };
 
     this.createLensFlare = function() {
@@ -730,20 +742,22 @@ var Scene = (function() {
     var params = paramsDefault();
 
     this.init = function() {
-      Earth.earth.add(Cloud.cloud);
+      Earth.earth.add(Cloud.obj);
 
       this.scene = new THREE.Scene();
-      this.scene.add(Earth.earth);
+      this.scene.add(Earth.obj);
       this.scene.add(Moon.obj);
-      this.scene.add(Sun.sun);
+      this.scene.add(Sun.obj);
 
-      this.scene.background = Skymap.skymapTexture;
+      this.scene.background = Skymap.obj;
 
       this.enableOrbitControls();
+      
+      this.obj = this.scene;
     };
 
     this.enableOrbitControls = function() {
-      this.orbitControls = new THREE.OrbitControls(Camera.camera, Renderer.renderer.domElement);
+      this.orbitControls = new THREE.OrbitControls(Camera.obj, Renderer.obj.domElement);
       this.orbitControls.autoRotate = params.orbitControls.autoRotate;
       this.orbitControls.autoRotateSpeed = params.orbitControls.autoRotateSpeed;
       this.orbitControls.enableDamping = true;
@@ -813,7 +827,7 @@ var View = (function() {
       Moon.animate();
 
       Scene.orbitControls.update();
-      Renderer.renderer.render(Scene.scene, Camera.camera);
+      Renderer.obj.render(Scene.obj, Camera.obj);
     };
 
     init();
