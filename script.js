@@ -65,7 +65,7 @@ var Renderer = (function() {
       this.renderer.setClearColor(params.renderer.clearColor);
       this.renderer.setPixelRatio(window.devicePixelRatio);
       this.renderView();
-      
+
       this.obj = this.renderer;
     };
 
@@ -120,7 +120,7 @@ var Camera = (function() {
         params.camera.positionY,
         params.camera.positionZ
       );
-      
+
       this.obj = this.camera;
     };
 
@@ -199,7 +199,7 @@ var Skymap = (function() {
       this.skymapTexture = new THREE.CubeTextureLoader()
         .setPath(ASSETS_PATH)
         .load(this.getFilenames());
-      
+
       this.obj = this.skymapTexture;
     };
 
@@ -274,7 +274,7 @@ var Cloud = (function() {
       );
 
       this.cloud = new THREE.Mesh(this.geometry, this.material);
-      
+
       this.obj = this.cloud;
     };
 
@@ -337,7 +337,10 @@ var Earth = (function(Cloud) {
         material: {
           map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
           bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
-          bumpScale: 0.1
+          bumpScale: 0.45,
+          specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
+          specular: 0x2d4ea0,
+          shininess: 6
         },
         geometry: {
           radius: 50,
@@ -361,13 +364,16 @@ var Earth = (function(Cloud) {
       this.material = new THREE.MeshPhongMaterial({
         map: new THREE.TextureLoader().load(params.material.map),
         bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
-        bumpScale: params.material.bumpScale
+        specularMap: new THREE.TextureLoader().load(params.material.specularMap),
+        bumpScale: params.material.bumpScale,
+        specular: params.material.specular,
+        shininess: params.material.shininess
       });
 
       this.earth = new THREE.Mesh(this.geometry, this.material);
-      
+
       this.earth.add(Cloud.obj);
-      
+
       this.obj = this.earth;
     };
 
@@ -384,6 +390,9 @@ var Earth = (function(Cloud) {
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
 
+        self.material.specular.setHex(_default.material.specular);
+        this.colors.specular = '#' + self.material.specular.getHexString();
+
         params.animate.rotationFactorY = _default.animate.rotationFactorY;
       },
 
@@ -394,12 +403,17 @@ var Earth = (function(Cloud) {
 
         var gMaterial = gEarth.addFolder('Material');
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
+        gMaterial.add(self.material, 'shininess', 0, 10).listen();
+        gMaterial.addColor(this.colors, 'specular').listen()
+          .onChange(function(color) {
+            self.material.specular.setHex(color.replace('#', '0x'));
+          });
 
         var gAnimate = gEarth.addFolder('Animate');
         gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
 
         gEarth.add(this, 'reset').name('RESET EARTH');
-        
+
         Cloud.gui.add(gEarth);
       }
     };
@@ -424,12 +438,13 @@ var Moon = (function(Earth) {
             x: 0,
             y: 0,
             z: -100,
-          },          
+          },
         },
         material: {
           map: ASSETS_PATH + 'moon_map_1024x512.jpg',
           bumpMap: ASSETS_PATH + 'moon_bump_1024x512.jpg',
-          bumpScale: 0.1
+          bumpScale: 0.1,
+          shininess: 0
         },
         geometry: {
           radius: 10,
@@ -454,7 +469,6 @@ var Moon = (function(Earth) {
         map: new THREE.TextureLoader().load(params.material.map),
         bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
         bumpScale: params.material.bumpScale,
-        specular: params.material.specular,
         shininess: params.material.shininess
       });
 
@@ -465,19 +479,19 @@ var Moon = (function(Earth) {
         params.moon.position.y,
         params.moon.position.z
       );
-      
+
       this.pivot = this.createPivot();
 
       this.obj = this.pivot;
     };
-    
+
     this.createPivot = function() {
       var pivot = new THREE.Object3D();
       pivot.position = Earth.earth.position;
       pivot.add(this.moon);
-      
+
       return pivot;
-    }
+    };
 
     this.animate = function() {
       this.pivot.rotation.y += Math.PI * params.animate.pivotRotationFactorY;
@@ -492,9 +506,6 @@ var Moon = (function(Earth) {
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
 
-        self.material.specular.setHex(_default.material.specular);
-        this.colors.specular = '#' + self.material.specular.getHexString();
-
         self.moon.position.x = _default.moon.position.x;
         self.moon.position.y = _default.moon.position.y;
         self.moon.position.z = _default.moon.position.z;
@@ -506,7 +517,7 @@ var Moon = (function(Earth) {
         this.reset();
 
         var gMoon = gui.addFolder('MOON');
-        
+
         var gPosition = gMoon.addFolder('Position');
         gPosition.add(self.moon.position, 'x', -100, 100).listen();
         gPosition.add(self.moon.position, 'y', -100, 100).listen();
@@ -515,10 +526,6 @@ var Moon = (function(Earth) {
         var gMaterial = gMoon.addFolder('Material');
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
-        gMaterial.addColor(this.colors, 'specular').listen()
-          .onChange(function(color) {
-            self.material.specular.setHex(color.replace('#', '0x'));
-          });
 
         var gAnimate = gMoon.addFolder('Animate');
         gAnimate.add(params.animate, 'pivotRotationFactorY', -0.005, 0.005).listen();
@@ -603,7 +610,7 @@ var Sun = (function() {
       );
 
       this.createLensFlare();
-      
+
       this.obj = this.sun;
     };
 
@@ -720,10 +727,25 @@ var Scene = (function() {
       this.scene.add(Sun.obj);
 
       this.scene.background = Skymap.obj;
-
-      this.enableOrbitControls();
       
+      this.setShadowConfiguration();
+      
+      this.enableOrbitControls();
+
       this.obj = this.scene;
+    };
+
+    this.setShadowConfiguration = function() {
+      Sun.obj.castShadow = true;
+      Sun.obj.shadow.camera.near = 1;
+      Sun.obj.shadow.camera.far = 30;
+
+      var cameraHelper = new THREE.CameraHelper(Sun.obj.shadow.camera);
+      this.scene.add(cameraHelper);
+
+      Sun.obj.shadow.mapSize.width = 2048;
+      Sun.obj.shadow.mapSize.height = 1024;
+      Sun.obj.shadow.bias = 0.1;
     };
 
     this.enableOrbitControls = function() {
