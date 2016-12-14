@@ -31,21 +31,6 @@ var
  * Utils
  */
 var Utils = {
-  MOUSE_WHEEL_DELTA_Y_FACTOR: 0.01,
-
-  mousePosition: function(e) {
-    return {
-      x: (e.clientX - this.windowHalf.x),
-      y: (e.clientY - this.windowHalf.y)
-    };
-  },
-  mouseWheelDeltaY: function(e) {
-    return e.deltaY * this.MOUSE_WHEEL_DELTA_Y_FACTOR;
-  },
-  windowHalf: {
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2
-  },
   windowRatio: function() {
     return window.innerWidth / window.innerHeight;
   }
@@ -641,9 +626,9 @@ var Sun = (function() {
 
     this.createLensFlare = function() {
       var textureLoader = new THREE.TextureLoader();
-      var textureFlare0 = textureLoader.load(ASSETS_PATH + 'lens-flare-01.jpg');
-      var textureFlare10 = textureLoader.load(ASSETS_PATH + 'lens-flare-10.jpg');
-      var textureFlare20 = textureLoader.load(ASSETS_PATH + 'lens-flare-20.jpg');
+      var textureFlare0 = textureLoader.load(ASSETS_PATH + 'lens_flare_sun_1024x1024.jpg');
+      var textureFlare10 = textureLoader.load(ASSETS_PATH + 'lens_flare_circle_64x64.jpg');
+      var textureFlare20 = textureLoader.load(ASSETS_PATH + 'lens_flare_hexagon_256x256.jpg');
 
       this.lensFlare = new THREE.LensFlare(
         textureFlare0,
