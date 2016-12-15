@@ -372,7 +372,7 @@ var Earth = (function(Cloud) {
 
       this.earth = new THREE.Mesh(this.geometry, this.material);
 
-      this.earth.add(Cloud.obj);
+      //this.earth.add(Cloud.obj);
 
       this.obj = this.earth;
     };
@@ -494,7 +494,7 @@ var Moon = (function(Earth) {
     };
 
     this.animate = function() {
-      this.pivot.rotation.y += Math.PI * params.animate.pivotRotationFactorY;
+      //this.pivot.rotation.y += Math.PI * params.animate.pivotRotationFactorY;
     };
 
     this.gui = {
@@ -553,8 +553,8 @@ var Sun = (function() {
           color: COLOR_WHITE,
           intensity: 1.3,
           position: {
-            x: -380,
-            y: 460,
+            x: 0, //-380
+            y: 0, //240
             z: -1000,
           }
         },
@@ -712,8 +712,26 @@ var Scene = (function() {
     var paramsDefault = function() {
       return {
         orbitControls: {
-          autoRotate: true,
+          autoRotate: false,
           autoRotateSpeed: 0.07
+        },
+        shadow: {
+          castShadow: true,
+          camera: {
+            near: 800,
+            far: 1200,
+            right: 150,
+            left: -150,
+            top: 150,
+            bottom: -150,
+            visible: true
+          },
+          darkness: 0.5,
+          mapSize: {
+            width: 1024,
+            height: 1024
+          },
+          bias: 0.001
         }
       };
     };
@@ -727,27 +745,42 @@ var Scene = (function() {
       this.scene.add(Sun.obj);
 
       this.scene.background = Skymap.obj;
-      
+
       this.setShadowConfiguration();
-      
+
       this.enableOrbitControls();
 
       this.obj = this.scene;
     };
 
     this.setShadowConfiguration = function() {
-      Sun.obj.castShadow = true;
-      Sun.obj.shadow.camera.near = 1;
-      Sun.obj.shadow.camera.far = 30;
+      Sun.obj.castShadow = params.shadow.castShadow;
+      Sun.obj.shadow.camera.near = params.shadow.camera.near;
+      Sun.obj.shadow.camera.far = params.shadow.camera.far;
+      Sun.obj.shadow.darkness = params.shadow.darkness;
+      Sun.obj.shadow.mapSize.width = params.shadow.mapSize.width;
+      Sun.obj.shadow.mapSize.height = params.shadow.mapSize.height;
+      Sun.obj.shadow.bias = params.shadow.bias;
 
-      var cameraHelper = new THREE.CameraHelper(Sun.obj.shadow.camera);
-      this.scene.add(cameraHelper);
+      Sun.obj.shadow.camera.right = params.shadow.camera.right;
+      Sun.obj.shadow.camera.left = params.shadow.camera.left;
+      Sun.obj.shadow.camera.top = params.shadow.camera.top;
+      Sun.obj.shadow.camera.bottom = params.shadow.camera.bottom;
+      Sun.obj.shadow.camera.visible = params.shadow.camera.visible;
 
-      Sun.obj.shadow.mapSize.width = 2048;
-      Sun.obj.shadow.mapSize.height = 1024;
-      Sun.obj.shadow.bias = 0.1;
+      Earth.obj.castShadow = true;
+      Earth.obj.receiveShadow = true;
+
+      Moon.obj.castShadow = true;
+      Moon.obj.receiveShadow = true;
+
+      Renderer.obj.shadowMap.enabled = true;
+      //Renderer.obj.shadowMap.type = THREE.BasicShadowMap;
+      
+      this.cameraHelper = new THREE.CameraHelper(Sun.obj.shadow.camera);
+      this.scene.add(this.cameraHelper);
     };
-
+    
     this.enableOrbitControls = function() {
       this.orbitControls = new THREE.OrbitControls(Camera.obj, Renderer.obj.domElement);
       this.orbitControls.autoRotate = params.orbitControls.autoRotate;
@@ -764,7 +797,27 @@ var Scene = (function() {
         self.orbitControls.autoRotate = _default.orbitControls.autoRotate;
         self.orbitControls.autoRotateSpeed = _default.orbitControls.autoRotateSpeed;
       },
+      
+      _reset: function() {
+        var _default = paramsDefault();
+        
+        Sun.obj.castShadow = _default.shadow.castShadow;
+        Sun.obj.shadow.camera.near = _default.shadow.camera.near;
+        Sun.obj.shadow.camera.far = _default.shadow.camera.far;
+        Sun.obj.shadow.darkness = _default.shadow.darkness;
+        Sun.obj.shadow.mapSize.width = _default.shadow.mapSize.width;
+        Sun.obj.shadow.mapSize.height = _default.shadow.mapSize.height;
+        Sun.obj.shadow.bias = _default.shadow.bias;
 
+        Sun.obj.shadow.camera.right = _default.shadow.camera.right;
+        Sun.obj.shadow.camera.left = _default.shadow.camera.left;
+        Sun.obj.shadow.camera.top = _default.shadow.camera.top;
+        Sun.obj.shadow.camera.bottom = _default.shadow.camera.bottom;
+        Sun.obj.shadow.camera.visible = _default.shadow.camera.visible;
+        
+        this._updateShadow();
+      },
+      
       add: function(gui) {
         this.reset();
 
@@ -773,6 +826,56 @@ var Scene = (function() {
         gOrbitControls.add(self.orbitControls, 'autoRotateSpeed', -0.5, 0.5).listen();
 
         gOrbitControls.add(this, 'reset').name('RESET CONTR.');
+
+        this._addShadow(gui);
+      },
+
+      _updateShadow: function() {
+        Sun.obj.shadow.camera.updateProjectionMatrix();
+        self.cameraHelper.update();
+      },
+
+      _addShadow: function(gui) {
+        var gShadow = gui.addFolder('SHADOW');
+
+        gShadow.add(Sun.obj, 'castShadow').listen();
+        gShadow.add(Sun.obj.shadow.camera, 'near').listen()
+          .onChange(function() {
+            self.gui._updateShadow();
+          });
+        gShadow.add(Sun.obj.shadow.camera, 'far').listen()
+          .onChange(function() {
+            self.gui._updateShadow();
+          });
+
+        gShadow.add(Sun.obj.shadow, 'darkness').listen();
+        gShadow.add(Sun.obj.shadow.mapSize, 'width').listen();
+        gShadow.add(Sun.obj.shadow.mapSize, 'height').listen();
+        gShadow.add(Sun.obj.shadow, 'bias').listen();
+
+        gShadow.add(Sun.obj.shadow.camera, 'right').listen()
+          .onChange(function() {
+            self.gui._updateShadow();
+          });
+        gShadow.add(Sun.obj.shadow.camera, 'left').listen()
+          .onChange(function() {
+            self.gui._updateShadow();
+          });
+        gShadow.add(Sun.obj.shadow.camera, 'top').listen()
+          .onChange(function() {
+            self.gui._updateShadow();
+          });
+        gShadow.add(Sun.obj.shadow.camera, 'bottom').listen()
+          .onChange(function() {
+            self.gui._updateShadow();
+          });
+
+        gShadow.add(Sun.obj.shadow.camera, 'visible').listen()
+          .onChange(function() {
+            self.gui._updateShadow();
+          });
+        
+        gShadow.add(this, '_reset').name('RESET SHADOW');
       }
     };
 
