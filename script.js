@@ -176,6 +176,8 @@ var Camera = (function() {
           });
 
         gCamera.add(this, 'reset').name('RESET CAMERA');
+        
+        return gCamera;
       }
     };
 
@@ -330,6 +332,8 @@ var Cloud = (function() {
         gAnimate.add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
 
         gCloud.add(this, 'reset').name('RESET CLOUD');
+        
+        return gCloud;
       }
     };
 
@@ -432,8 +436,8 @@ var Earth = (function(Cloud) {
         gAnimate.add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
 
         gEarth.add(this, 'reset').name('RESET EARTH');
-
-        Cloud.gui.add(gEarth);
+        
+        return gEarth;
       }
     };
 
@@ -555,6 +559,8 @@ var Moon = (function(Earth) {
         gAnimate.add(params.animate, 'pivotRotationsPerSecond', -2, 2).listen();
 
         gMoon.add(this, 'reset').name('RESET MOON');
+        
+        return gMoon;
       }
     };
 
@@ -717,6 +723,8 @@ var Sun = (function() {
         }
 
         gSun.add(this, 'reset').name('RESET SUN');
+        
+        return gSun;
       }
     };
 
@@ -782,6 +790,8 @@ var Scene = (function() {
         gOrbitControls.add(self.orbitControls, 'autoRotateSpeed', -0.5, 0.5).listen();
 
         gOrbitControls.add(this, 'reset').name('RESET CONTR.');
+        
+        return gOrbitControls;
       }
     };
 
@@ -924,6 +934,8 @@ var SceneShadow = (function(Scene) {
           });
 
         gShadow.add(this, 'reset').name('RESET SHADOW');
+        
+        return gShadow;
       }
     };
 
@@ -937,41 +949,54 @@ var SceneShadow = (function(Scene) {
  * View
  */
 var View = (function() {
-  var clock, delta;
+  var self = this,
+      clock, delta;
 
   var _View = function() {
-    var init = function() {
+    this.init = function() {
       clock = new THREE.Clock();
 
-      updateAll();
+      this.updateAll();
+      this.addGui();
+      
       animate();
-      addGui();
 
-      window.addEventListener('resize', updateAll, false);
+      window.addEventListener('resize', this.updateAll, false);
     };
 
-    var addGui = function() {
+    this.addGui = function() {
       var gui = new dat.GUI();
 
       Scene.gui.add(gui);
       Camera.gui.add(gui);
       Sun.gui.add(gui);
-      Earth.gui.add(gui);
+      gEarth = Earth.gui.add(gui);
+      Cloud.gui.add(gEarth);
       Moon.gui.add(gui);
       SceneShadow.gui.add(gui);
+      
+      gui.add(this, 'resetAll').name('RESET ALL');
+    };
+    
+    this.resetAll = function() {
+      Scene.gui.reset();
+      Camera.gui.reset();
+      Sun.gui.reset();
+      Earth.gui.reset();
+      Cloud.gui.reset();
+      Moon.gui.reset();
+      SceneShadow.gui.reset();      
     };
 
-    var updateAll = function() {
+    this.updateAll = function() {
       Camera.updateAspect();
       Renderer.updateSize();
     };
 
-    var animate = function(delta) {
+    var animate = function() {
       requestAnimationFrame(animate);
 
       delta = clock.getDelta();
-
-      //console.log(delta);
 
       Earth.animate(delta);
       Cloud.animate(delta);
@@ -981,7 +1006,7 @@ var View = (function() {
       Renderer.obj.render(Scene.obj, Camera.obj);
     };
 
-    init();
+    this.init();
   };
 
   return new _View();
