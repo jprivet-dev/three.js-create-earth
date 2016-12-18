@@ -820,10 +820,9 @@ var SceneShadow = (function(Scene) {
             top: 150,
             bottom: -150
           },
-          darkness: 0.1,
           mapSize: {
-            width: 2048,
-            height: 1024
+            width: 512,
+            height: 512
           },
           bias: 0.0001
         }
@@ -843,7 +842,6 @@ var SceneShadow = (function(Scene) {
 
       Sun.obj.shadow.camera.near = params.shadow.camera.near;
       Sun.obj.shadow.camera.far = params.shadow.camera.far;
-      Sun.obj.shadow.darkness = params.shadow.darkness;
       Sun.obj.shadow.mapSize.width = params.shadow.mapSize.width;
       Sun.obj.shadow.mapSize.height = params.shadow.mapSize.height;
       Sun.obj.shadow.bias = params.shadow.bias;
@@ -883,7 +881,6 @@ var SceneShadow = (function(Scene) {
         Sun.obj.castShadow = _default.shadow.castShadow;
         Sun.obj.shadow.camera.near = _default.shadow.camera.near;
         Sun.obj.shadow.camera.far = _default.shadow.camera.far;
-        Sun.obj.shadow.darkness = _default.shadow.darkness;
         Sun.obj.shadow.mapSize.width = _default.shadow.mapSize.width;
         Sun.obj.shadow.mapSize.height = _default.shadow.mapSize.height;
         Sun.obj.shadow.bias = _default.shadow.bias;
@@ -911,10 +908,12 @@ var SceneShadow = (function(Scene) {
             self.updateShadow();
           });
 
-        gShadow.add(Sun.obj.shadow, 'darkness').listen();
-        gShadow.add(Sun.obj.shadow.mapSize, 'width').listen();
-        gShadow.add(Sun.obj.shadow.mapSize, 'height').listen();
-        gShadow.add(Sun.obj.shadow, 'bias').listen();
+        gShadow.add(Sun.obj.shadow.mapSize, 'width', 0, 2048).listen();
+        gShadow.add(Sun.obj.shadow.mapSize, 'height', 0, 2048).listen();
+        gShadow.add(Sun.obj.shadow, 'bias', 0, 0.4).step(0.001).listen()
+          .onChange(function() {
+            self.updateShadow();
+          });
 
         gShadow.add(Sun.obj.shadow.camera, 'right').listen()
           .onChange(function() {
