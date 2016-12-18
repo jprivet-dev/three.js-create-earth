@@ -27,6 +27,9 @@
  * http://earthobservatory.nasa.gov/blogs/elegantfigures/2011/10/06/crafting-the-blue-marble/
  * http://visibleearth.nasa.gov/view.php?id=79765
  * http://visibleearth.nasa.gov/view.php?id=57747
+ *
+ * Animation :
+ * https://threejs.org/examples/webgl_animation_skinning_blending.html
  */
 var
   ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
@@ -69,6 +72,7 @@ var Renderer = (function() {
 
       this.renderer.setClearColor(params.renderer.clearColor);
       this.renderer.setPixelRatio(window.devicePixelRatio);
+
       this.renderView();
 
       this.obj = this.renderer;
@@ -283,7 +287,7 @@ var Cloud = (function() {
       this.obj = this.cloud;
     };
 
-    this.animate = function() {
+    this.animate = function(delta) {
       this.cloud.rotation.y += Math.PI * params.animate.rotationFactorY;
     };
 
@@ -367,22 +371,22 @@ var Earth = (function(Cloud) {
       );
 
       this.material = new THREE.MeshPhongMaterial({
-        //map: new THREE.TextureLoader().load(params.material.map),
-        //bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
-        //specularMap: new THREE.TextureLoader().load(params.material.specularMap),
-        //bumpScale: params.material.bumpScale,
-        //specular: params.material.specular,
+        map: new THREE.TextureLoader().load(params.material.map),
+        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
+        specularMap: new THREE.TextureLoader().load(params.material.specularMap),
+        bumpScale: params.material.bumpScale,
+        specular: params.material.specular,
         shininess: params.material.shininess
       });
 
       this.earth = new THREE.Mesh(this.geometry, this.material);
 
-      //this.earth.add(Cloud.obj);
+      this.earth.add(Cloud.obj);
 
       this.obj = this.earth;
     };
 
-    this.animate = function() {
+    this.animate = function(delta) {
       this.earth.rotation.y += Math.PI * params.animate.rotationFactorY;
     };
 
@@ -498,8 +502,8 @@ var Moon = (function(Earth) {
       return pivot;
     };
 
-    this.animate = function() {
-      //this.pivot.rotation.y += Math.PI * params.animate.pivotRotationFactorY;
+    this.animate = function(delta) {
+      this.pivot.rotation.y += Math.PI * params.animate.pivotRotationFactorY;
     };
 
     this.gui = {
@@ -558,8 +562,8 @@ var Sun = (function() {
           color: COLOR_WHITE,
           intensity: 1.3,
           position: {
-            x: 0, //-380
-            y: 0, //240
+            x: -380,
+            y: 240,
             z: -1000,
           }
         },
@@ -717,7 +721,7 @@ var Scene = (function() {
     var paramsDefault = function() {
       return {
         orbitControls: {
-          autoRotate: false,
+          autoRotate: true,
           autoRotateSpeed: 0.07
         }
       };
@@ -730,7 +734,7 @@ var Scene = (function() {
       this.scene.add(Earth.obj);
       this.scene.add(Moon.obj);
       this.scene.add(Sun.obj);
-
+      
       this.scene.background = Skymap.obj;
 
       this.enableOrbitControls();
@@ -754,7 +758,7 @@ var Scene = (function() {
         self.orbitControls.autoRotate = _default.orbitControls.autoRotate;
         self.orbitControls.autoRotateSpeed = _default.orbitControls.autoRotateSpeed;
       },
-      
+
       add: function(gui) {
         this.reset();
 
@@ -789,10 +793,9 @@ var SceneShadow = (function(Scene) {
             right: 150,
             left: -150,
             top: 150,
-            bottom: -150,
-            visible: true
+            bottom: -150
           },
-          darkness: 0.5,
+          darkness: 0.1,
           mapSize: {
             width: 2048,
             height: 1024
@@ -812,11 +815,9 @@ var SceneShadow = (function(Scene) {
 
     this.setShadowConfiguration = function() {
       Sun.obj.castShadow = params.shadow.castShadow;
-      //Sun.obj.shadow = new THREE.LightShadow( new THREE.PerspectiveCamera( 50, 1, 1200, 2500 ) );
 
       Sun.obj.shadow.camera.near = params.shadow.camera.near;
       Sun.obj.shadow.camera.far = params.shadow.camera.far;
-      Sun.obj.shadow.camera.fov = 30;
       Sun.obj.shadow.darkness = params.shadow.darkness;
       Sun.obj.shadow.mapSize.width = params.shadow.mapSize.width;
       Sun.obj.shadow.mapSize.height = params.shadow.mapSize.height;
@@ -826,34 +827,34 @@ var SceneShadow = (function(Scene) {
       Sun.obj.shadow.camera.left = params.shadow.camera.left;
       Sun.obj.shadow.camera.top = params.shadow.camera.top;
       Sun.obj.shadow.camera.bottom = params.shadow.camera.bottom;
-      Sun.obj.shadow.camera.visible = params.shadow.camera.visible;
 
       Earth.obj.castShadow = true;
       Earth.obj.receiveShadow = true;
 
-      Moon.obj.castShadow = true;
-      Moon.obj.receiveShadow = true;
+      Cloud.obj.receiveShadow = true;
 
-      Renderer.obj.shadowMap.enabled = true;
-      //Renderer.obj.shadowMap.type = THREE.PCFSoftShadowMap;
-      Renderer.obj.shadowMap.type = THREE.BasicShadowMap;
-      Renderer.obj.shadowMapSoft = true;
+      Moon.moon.castShadow = true;
+      Moon.moon.receiveShadow = true;
       
+      Renderer.obj.shadowMap.enabled = true;
+      Renderer.obj.shadowMap.type = THREE.PCFSoftShadowMap;
+      Renderer.obj.shadowMapSoft = true;
+
       this.cameraHelper = new THREE.CameraHelper(Sun.obj.shadow.camera);
-      Scene.obj.add(this.cameraHelper);
+      //Scene.obj.add(this.cameraHelper);
     };
 
     this.updateShadow = function() {
       Sun.obj.shadow.camera.updateProjectionMatrix();
       this.cameraHelper.update();
     };
-        
+
     this.gui = {
       colors: {},
 
       reset: function() {
         var _default = paramsDefault();
-        
+
         Sun.obj.castShadow = _default.shadow.castShadow;
         Sun.obj.shadow.camera.near = _default.shadow.camera.near;
         Sun.obj.shadow.camera.far = _default.shadow.camera.far;
@@ -866,8 +867,7 @@ var SceneShadow = (function(Scene) {
         Sun.obj.shadow.camera.left = _default.shadow.camera.left;
         Sun.obj.shadow.camera.top = _default.shadow.camera.top;
         Sun.obj.shadow.camera.bottom = _default.shadow.camera.bottom;
-        Sun.obj.shadow.camera.visible = _default.shadow.camera.visible;
-        
+
         self.updateShadow();
       },
 
@@ -908,11 +908,6 @@ var SceneShadow = (function(Scene) {
             self.updateShadow();
           });
 
-        gShadow.add(Sun.obj.shadow.camera, 'visible').listen()
-          .onChange(function() {
-            self.updateShadow();
-          });
-        
         gShadow.add(this, 'reset').name('RESET SHADOW');
       }
     };
@@ -927,8 +922,12 @@ var SceneShadow = (function(Scene) {
  * View
  */
 var View = (function() {
+  var clock, delta;
+  
   var _View = function() {
     var init = function() {
+      clock = new THREE.Clock();
+
       updateAll();
       animate();
       addGui();
@@ -940,11 +939,11 @@ var View = (function() {
       var gui = new dat.GUI();
 
       Scene.gui.add(gui);
-      SceneShadow.gui.add(gui);
       Camera.gui.add(gui);
       Sun.gui.add(gui);
       Earth.gui.add(gui);
       Moon.gui.add(gui);
+      SceneShadow.gui.add(gui);
     };
 
     var updateAll = function() {
@@ -952,12 +951,14 @@ var View = (function() {
       Renderer.updateSize();
     };
 
-    var animate = function() {
+    var animate = function(delta) {
       requestAnimationFrame(animate);
+      
+      delta = clock.getDelta();
 
-      Earth.animate();
-      Cloud.animate();
-      Moon.animate();
+      Earth.animate(delta);
+      Cloud.animate(delta);
+      Moon.animate(delta);
 
       Scene.orbitControls.update();
       Renderer.obj.render(Scene.obj, Camera.obj);
