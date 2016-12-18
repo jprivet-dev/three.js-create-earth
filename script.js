@@ -460,7 +460,8 @@ var Moon = (function(Earth) {
           segments: 64
         },
         animate: {
-          pivotRotationFactorY: 0.0015
+          pivotRotationsPerSecondActive: true,
+          pivotRotationsPerSecond: 0.05
         }
       };
     };
@@ -503,7 +504,10 @@ var Moon = (function(Earth) {
     };
 
     this.animate = function(delta) {
-      this.pivot.rotation.y += Math.PI * params.animate.pivotRotationFactorY;
+      if (params.animate.pivotRotationsPerSecondActive) {
+        this.pivot.rotation.y += delta * 2 * Math.PI * params.animate.pivotRotationsPerSecond;
+
+      }
     };
 
     this.gui = {
@@ -519,7 +523,8 @@ var Moon = (function(Earth) {
         self.moon.position.y = _default.moon.position.y;
         self.moon.position.z = _default.moon.position.z;
 
-        params.animate.pivotRotationFactorY = _default.animate.pivotRotationFactorY;
+        params.animate.pivotRotationsPerSecondActive = _default.animate.pivotRotationsPerSecondActive;
+        params.animate.pivotRotationsPerSecond = _default.animate.pivotRotationsPerSecond;
       },
 
       add: function(gui) {
@@ -537,7 +542,8 @@ var Moon = (function(Earth) {
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
 
         var gAnimate = gMoon.addFolder('Animate');
-        gAnimate.add(params.animate, 'pivotRotationFactorY', -0.005, 0.005).listen();
+        gAnimate.add(params.animate, 'pivotRotationsPerSecondActive').listen();
+        gAnimate.add(params.animate, 'pivotRotationsPerSecond', -2, 2).listen();
 
         gMoon.add(this, 'reset').name('RESET MOON');
       }
@@ -734,7 +740,7 @@ var Scene = (function() {
       this.scene.add(Earth.obj);
       this.scene.add(Moon.obj);
       this.scene.add(Sun.obj);
-      
+
       this.scene.background = Skymap.obj;
 
       this.enableOrbitControls();
@@ -835,7 +841,7 @@ var SceneShadow = (function(Scene) {
 
       Moon.moon.castShadow = true;
       Moon.moon.receiveShadow = true;
-      
+
       Renderer.obj.shadowMap.enabled = true;
       Renderer.obj.shadowMap.type = THREE.PCFSoftShadowMap;
       Renderer.obj.shadowMapSoft = true;
@@ -923,7 +929,7 @@ var SceneShadow = (function(Scene) {
  */
 var View = (function() {
   var clock, delta;
-  
+
   var _View = function() {
     var init = function() {
       clock = new THREE.Clock();
@@ -953,8 +959,10 @@ var View = (function() {
 
     var animate = function(delta) {
       requestAnimationFrame(animate);
-      
+
       delta = clock.getDelta();
+
+      //console.log(delta);
 
       Earth.animate(delta);
       Cloud.animate(delta);
