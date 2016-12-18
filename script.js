@@ -248,6 +248,7 @@ var Cloud = (function() {
 
     var paramsDefault = function() {
       return {
+        visible: true,
         material: {
           wireframe: false,
           transparent: true,
@@ -288,6 +289,7 @@ var Cloud = (function() {
       );
 
       this.cloud = new THREE.Mesh(this.geometry, this.material);
+      this.cloud.visible = params.visible;
 
       this.obj = this.cloud;
     };
@@ -303,6 +305,8 @@ var Cloud = (function() {
 
       reset: function() {
         var _default = paramsDefault();
+
+        self.cloud.visible= _default.visible;
 
         self.material.wireframe = _default.material.wireframe;
         self.material.transparent = _default.material.transparent;
@@ -320,6 +324,7 @@ var Cloud = (function() {
         this.reset();
 
         var gCloud = gui.addFolder('CLOUD');
+        gCloud.add(self.cloud, 'visible').listen();
 
         var gMaterial = gCloud.addFolder('Material');
         gMaterial.add(self.material, 'wireframe').listen();
@@ -356,6 +361,7 @@ var Earth = (function(Cloud) {
 
     var paramsDefault = function() {
       return {
+        visible: true,
         material: {
           wireframe: false,
           map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
@@ -396,6 +402,7 @@ var Earth = (function(Cloud) {
       });
 
       this.earth = new THREE.Mesh(this.geometry, this.material);
+      this.earth.visible = params.visible;
 
       this.earth.add(Cloud.obj);
 
@@ -413,6 +420,8 @@ var Earth = (function(Cloud) {
 
       reset: function() {
         var _default = paramsDefault();
+        
+        self.earth.visible = _default.visible;
 
         self.material.wireframe = _default.material.wireframe;
         self.material.bumpScale = _default.material.bumpScale;
@@ -429,6 +438,7 @@ var Earth = (function(Cloud) {
         this.reset();
 
         var gEarth = gui.addFolder('EARTH');
+        gEarth.add(self.earth, 'visible').listen();
 
         var gMaterial = gEarth.addFolder('Material');
         gMaterial.add(self.material, 'wireframe').listen();
@@ -465,6 +475,7 @@ var Moon = (function(Earth) {
     var paramsDefault = function() {
       return {
         moon: {
+          visible: true,
           position: {
             x: 0,
             y: 0,
@@ -514,6 +525,7 @@ var Moon = (function(Earth) {
         params.moon.position.z
       );
 
+      this.moon.visible = params.moon.visible;
       this.pivot = this.createPivot();
 
       this.obj = this.pivot;
@@ -539,6 +551,8 @@ var Moon = (function(Earth) {
       reset: function() {
         var _default = paramsDefault();
 
+        self.moon.visible = _default.moon.visible;
+        
         self.material.wireframe = _default.material.wireframe;
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
@@ -555,6 +569,7 @@ var Moon = (function(Earth) {
         this.reset();
 
         var gMoon = gui.addFolder('MOON');
+        gMoon.add(self.moon, 'visible').listen();
 
         var gPosition = gMoon.addFolder('Position');
         gPosition.add(self.moon.position, 'x', -100, 100).listen();
@@ -592,6 +607,7 @@ var Sun = (function() {
     var paramsDefault = function() {
       return {
         sun: {
+          visible: true,
           color: COLOR_WHITE,
           intensity: 1.3,
           position: {
@@ -650,6 +666,8 @@ var Sun = (function() {
         params.sun.position.y,
         params.sun.position.z
       );
+      
+      this.sun.visible = params.sun.visible;
 
       this.createLensFlare();
 
@@ -692,7 +710,8 @@ var Sun = (function() {
 
       reset: function() {
         var _default = paramsDefault();
-
+        
+        self.sun.visible = _default.sun.visible;
         self.sun.intensity = _default.sun.intensity;
 
         self.sun.color.setHex(_default.sun.color);
@@ -713,6 +732,7 @@ var Sun = (function() {
         this.reset();
 
         var gSun = gui.addFolder('SUN');
+        gSun.add(self.sun, 'visible').listen();
 
         var gLight = gSun.addFolder('Light');
         gLight.add(self.sun, 'intensity', 0, 10).listen();
