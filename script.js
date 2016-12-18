@@ -810,11 +810,14 @@ var SceneShadow = (function(Scene) {
 
     var paramsDefault = function() {
       return {
+        cameraHelper: {
+          visible: false
+        },
         shadow: {
           castShadow: true,
           camera: {
-            near: 800,
-            far: 1200,
+            near: 950,
+            far: 1250,
             right: 150,
             left: -150,
             top: 150,
@@ -824,7 +827,7 @@ var SceneShadow = (function(Scene) {
             width: 512,
             height: 512
           },
-          bias: 0.0001
+          bias: 0
         }
       };
     };
@@ -838,8 +841,11 @@ var SceneShadow = (function(Scene) {
     };
 
     this.setShadowConfiguration = function() {
+      this.cameraHelper = new THREE.CameraHelper(Sun.obj.shadow.camera);
+      Scene.obj.add(this.cameraHelper);
+      this.cameraHelper.visible = params.cameraHelper.visible;
+      
       Sun.obj.castShadow = params.shadow.castShadow;
-
       Sun.obj.shadow.camera.near = params.shadow.camera.near;
       Sun.obj.shadow.camera.far = params.shadow.camera.far;
       Sun.obj.shadow.mapSize.width = params.shadow.mapSize.width;
@@ -862,9 +868,6 @@ var SceneShadow = (function(Scene) {
       Renderer.obj.shadowMap.enabled = true;
       Renderer.obj.shadowMap.type = THREE.PCFSoftShadowMap;
       Renderer.obj.shadowMapSoft = true;
-
-      this.cameraHelper = new THREE.CameraHelper(Sun.obj.shadow.camera);
-      //Scene.obj.add(this.cameraHelper);
     };
 
     this.updateShadow = function() {
@@ -877,6 +880,8 @@ var SceneShadow = (function(Scene) {
 
       reset: function() {
         var _default = paramsDefault();
+        
+        //self.cameraHelper.visible = _default.cameraHelper.visible;
 
         Sun.obj.castShadow = _default.shadow.castShadow;
         Sun.obj.shadow.camera.near = _default.shadow.camera.near;
@@ -898,36 +903,40 @@ var SceneShadow = (function(Scene) {
 
         var gShadow = gui.addFolder('SHADOW');
 
+        gShadow.add(self.cameraHelper, 'visible').name('cameraHelper').listen();
+        
         gShadow.add(Sun.obj, 'castShadow').listen();
-        gShadow.add(Sun.obj.shadow.camera, 'near').listen()
+        
+        gShadow.add(Sun.obj.shadow.camera, 'near').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
-        gShadow.add(Sun.obj.shadow.camera, 'far').listen()
+        gShadow.add(Sun.obj.shadow.camera, 'far').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
 
         gShadow.add(Sun.obj.shadow.mapSize, 'width', 0, 2048).listen();
         gShadow.add(Sun.obj.shadow.mapSize, 'height', 0, 2048).listen();
+        
         gShadow.add(Sun.obj.shadow, 'bias', 0, 0.4).step(0.001).listen()
           .onChange(function() {
             self.updateShadow();
           });
 
-        gShadow.add(Sun.obj.shadow.camera, 'right').listen()
+        gShadow.add(Sun.obj.shadow.camera, 'right').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
-        gShadow.add(Sun.obj.shadow.camera, 'left').listen()
+        gShadow.add(Sun.obj.shadow.camera, 'left').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
-        gShadow.add(Sun.obj.shadow.camera, 'top').listen()
+        gShadow.add(Sun.obj.shadow.camera, 'top').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
-        gShadow.add(Sun.obj.shadow.camera, 'bottom').listen()
+        gShadow.add(Sun.obj.shadow.camera, 'bottom').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
