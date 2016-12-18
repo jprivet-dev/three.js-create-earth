@@ -799,7 +799,7 @@ var Scene = (function() {
 
         var gOrbitControls = gui.addFolder('ORBIT CONTROLS');
         gOrbitControls.add(self.orbitControls, 'autoRotate').listen();
-        gOrbitControls.add(self.orbitControls, 'autoRotateSpeed', -0.5, 0.5).listen();
+        gOrbitControls.add(self.orbitControls, 'autoRotateSpeed', -1, 1).listen();
 
         gOrbitControls.add(this, 'reset').name('RESET CONTR.');
 
