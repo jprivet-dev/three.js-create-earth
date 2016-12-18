@@ -260,7 +260,8 @@ var Cloud = (function() {
         },
         geometry: {
           radius: 50.3,
-          segments: 32
+          widthSegments: 64,
+          heightSegments: 32
         },
         animate: {
           enabled: true,
@@ -284,8 +285,8 @@ var Cloud = (function() {
 
       this.geometry = new THREE.SphereGeometry(
         params.geometry.radius,
-        params.geometry.segments,
-        params.geometry.segments
+        params.geometry.widthSegments,
+        params.geometry.heightSegments
       );
 
       this.cloud = new THREE.Mesh(this.geometry, this.material);
@@ -306,7 +307,7 @@ var Cloud = (function() {
       reset: function() {
         var _default = paramsDefault();
 
-        self.cloud.visible= _default.visible;
+        self.cloud.visible = _default.visible;
 
         self.material.wireframe = _default.material.wireframe;
         self.material.transparent = _default.material.transparent;
@@ -373,7 +374,8 @@ var Earth = (function(Cloud) {
         },
         geometry: {
           radius: 50,
-          segments: 32
+          widthSegments: 64,
+          heightSegments: 32
         },
         animate: {
           enabled: true,
@@ -387,8 +389,8 @@ var Earth = (function(Cloud) {
     this.init = function() {
       this.geometry = new THREE.SphereGeometry(
         params.geometry.radius,
-        params.geometry.segments,
-        params.geometry.segments
+        params.geometry.widthSegments,
+        params.geometry.heightSegments
       );
 
       this.material = new THREE.MeshPhongMaterial({
@@ -420,7 +422,7 @@ var Earth = (function(Cloud) {
 
       reset: function() {
         var _default = paramsDefault();
-        
+
         self.earth.visible = _default.visible;
 
         self.material.wireframe = _default.material.wireframe;
@@ -491,7 +493,8 @@ var Moon = (function(Earth) {
         },
         geometry: {
           radius: 10,
-          segments: 16
+          widthSegments: 32,
+          heightSegments: 16
         },
         animate: {
           enabled: true,
@@ -505,8 +508,8 @@ var Moon = (function(Earth) {
     this.init = function() {
       this.geometry = new THREE.SphereGeometry(
         params.geometry.radius,
-        params.geometry.segments,
-        params.geometry.segments
+        params.geometry.widthSegments,
+        params.geometry.heightSegments
       );
 
       this.material = new THREE.MeshPhongMaterial({
@@ -552,7 +555,7 @@ var Moon = (function(Earth) {
         var _default = paramsDefault();
 
         self.moon.visible = _default.moon.visible;
-        
+
         self.material.wireframe = _default.material.wireframe;
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
@@ -666,7 +669,7 @@ var Sun = (function() {
         params.sun.position.y,
         params.sun.position.z
       );
-      
+
       this.sun.visible = params.sun.visible;
 
       this.createLensFlare();
@@ -710,7 +713,7 @@ var Sun = (function() {
 
       reset: function() {
         var _default = paramsDefault();
-        
+
         self.sun.visible = _default.sun.visible;
         self.sun.intensity = _default.sun.intensity;
 
