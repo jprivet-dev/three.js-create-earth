@@ -176,7 +176,7 @@ var Camera = (function() {
           });
 
         gCamera.add(this, 'reset').name('RESET CAMERA');
-        
+
         return gCamera;
       }
     };
@@ -249,6 +249,7 @@ var Cloud = (function() {
     var paramsDefault = function() {
       return {
         material: {
+          wireframe: false,
           transparent: true,
           color: COLOR_WHITE,
           bumpScale: 0.1,
@@ -258,7 +259,7 @@ var Cloud = (function() {
         },
         geometry: {
           radius: 50.3,
-          segments: 64
+          segments: 32
         },
         animate: {
           enabled: true,
@@ -271,6 +272,7 @@ var Cloud = (function() {
 
     this.init = function() {
       this.material = new THREE.MeshPhongMaterial({
+        wireframe: params.material.wireframe,
         color: params.material.color,
         opacity: params.material.opacity,
         transparent: params.material.transparent,
@@ -302,6 +304,7 @@ var Cloud = (function() {
       reset: function() {
         var _default = paramsDefault();
 
+        self.material.wireframe = _default.material.wireframe;
         self.material.transparent = _default.material.transparent;
         self.material.opacity = _default.material.opacity;
         self.material.bumpScale = _default.material.bumpScale;
@@ -319,6 +322,7 @@ var Cloud = (function() {
         var gCloud = gui.addFolder('CLOUD');
 
         var gMaterial = gCloud.addFolder('Material');
+        gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'transparent').listen();
         gMaterial.add(self.material, 'opacity', 0, 1).listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
@@ -332,7 +336,7 @@ var Cloud = (function() {
         gAnimate.add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
 
         gCloud.add(this, 'reset').name('RESET CLOUD');
-        
+
         return gCloud;
       }
     };
@@ -353,6 +357,7 @@ var Earth = (function(Cloud) {
     var paramsDefault = function() {
       return {
         material: {
+          wireframe: false,
           map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
           bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
           bumpScale: 0.45,
@@ -362,7 +367,7 @@ var Earth = (function(Cloud) {
         },
         geometry: {
           radius: 50,
-          segments: 64
+          segments: 32
         },
         animate: {
           enabled: true,
@@ -381,6 +386,7 @@ var Earth = (function(Cloud) {
       );
 
       this.material = new THREE.MeshPhongMaterial({
+        wireframe: params.material.wireframe,
         map: new THREE.TextureLoader().load(params.material.map),
         bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
         specularMap: new THREE.TextureLoader().load(params.material.specularMap),
@@ -408,6 +414,7 @@ var Earth = (function(Cloud) {
       reset: function() {
         var _default = paramsDefault();
 
+        self.material.wireframe = _default.material.wireframe;
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
 
@@ -424,6 +431,7 @@ var Earth = (function(Cloud) {
         var gEarth = gui.addFolder('EARTH');
 
         var gMaterial = gEarth.addFolder('Material');
+        gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
         gMaterial.addColor(this.colors, 'specular').listen()
@@ -436,7 +444,7 @@ var Earth = (function(Cloud) {
         gAnimate.add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
 
         gEarth.add(this, 'reset').name('RESET EARTH');
-        
+
         return gEarth;
       }
     };
@@ -464,6 +472,7 @@ var Moon = (function(Earth) {
           },
         },
         material: {
+          wireframe: false,
           map: ASSETS_PATH + 'moon_map_1024x512.jpg',
           bumpMap: ASSETS_PATH + 'moon_bump_1024x512.jpg',
           bumpScale: 0.1,
@@ -471,7 +480,7 @@ var Moon = (function(Earth) {
         },
         geometry: {
           radius: 10,
-          segments: 64
+          segments: 16
         },
         animate: {
           enabled: true,
@@ -490,6 +499,7 @@ var Moon = (function(Earth) {
       );
 
       this.material = new THREE.MeshPhongMaterial({
+        wireframe: params.material.wireframe,
         map: new THREE.TextureLoader().load(params.material.map),
         bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
         bumpScale: params.material.bumpScale,
@@ -529,6 +539,7 @@ var Moon = (function(Earth) {
       reset: function() {
         var _default = paramsDefault();
 
+        self.material.wireframe = _default.material.wireframe;
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
 
@@ -551,6 +562,7 @@ var Moon = (function(Earth) {
         gPosition.add(self.moon.position, 'z', -100, 100).listen();
 
         var gMaterial = gMoon.addFolder('Material');
+        gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
 
@@ -559,7 +571,7 @@ var Moon = (function(Earth) {
         gAnimate.add(params.animate, 'pivotRotationsPerSecond', -2, 2).listen();
 
         gMoon.add(this, 'reset').name('RESET MOON');
-        
+
         return gMoon;
       }
     };
@@ -723,7 +735,7 @@ var Sun = (function() {
         }
 
         gSun.add(this, 'reset').name('RESET SUN');
-        
+
         return gSun;
       }
     };
@@ -790,7 +802,7 @@ var Scene = (function() {
         gOrbitControls.add(self.orbitControls, 'autoRotateSpeed', -0.5, 0.5).listen();
 
         gOrbitControls.add(this, 'reset').name('RESET CONTR.');
-        
+
         return gOrbitControls;
       }
     };
@@ -844,7 +856,7 @@ var SceneShadow = (function(Scene) {
       this.cameraHelper = new THREE.CameraHelper(Sun.obj.shadow.camera);
       Scene.obj.add(this.cameraHelper);
       this.cameraHelper.visible = params.cameraHelper.visible;
-      
+
       Sun.obj.castShadow = params.shadow.castShadow;
       Sun.obj.shadow.camera.near = params.shadow.camera.near;
       Sun.obj.shadow.camera.far = params.shadow.camera.far;
@@ -880,7 +892,7 @@ var SceneShadow = (function(Scene) {
 
       reset: function() {
         var _default = paramsDefault();
-        
+
         //self.cameraHelper.visible = _default.cameraHelper.visible;
 
         Sun.obj.castShadow = _default.shadow.castShadow;
@@ -904,9 +916,9 @@ var SceneShadow = (function(Scene) {
         var gShadow = gui.addFolder('SHADOW');
 
         gShadow.add(self.cameraHelper, 'visible').name('cameraHelper').listen();
-        
+
         gShadow.add(Sun.obj, 'castShadow').listen();
-        
+
         gShadow.add(Sun.obj.shadow.camera, 'near').step(10).listen()
           .onChange(function() {
             self.updateShadow();
@@ -918,7 +930,7 @@ var SceneShadow = (function(Scene) {
 
         gShadow.add(Sun.obj.shadow.mapSize, 'width', 0, 2048).listen();
         gShadow.add(Sun.obj.shadow.mapSize, 'height', 0, 2048).listen();
-        
+
         gShadow.add(Sun.obj.shadow, 'bias', 0, 0.4).step(0.001).listen()
           .onChange(function() {
             self.updateShadow();
@@ -942,7 +954,7 @@ var SceneShadow = (function(Scene) {
           });
 
         gShadow.add(this, 'reset').name('RESET SHADOW');
-        
+
         return gShadow;
       }
     };
@@ -958,7 +970,7 @@ var SceneShadow = (function(Scene) {
  */
 var View = (function() {
   var self = this,
-      clock, delta;
+    clock, delta;
 
   var _View = function() {
     this.init = function() {
@@ -966,7 +978,7 @@ var View = (function() {
 
       this.updateAll();
       this.addGui();
-      
+
       animate();
 
       window.addEventListener('resize', this.updateAll, false);
@@ -982,10 +994,10 @@ var View = (function() {
       Cloud.gui.add(gEarth);
       Moon.gui.add(gui);
       SceneShadow.gui.add(gui);
-      
+
       gui.add(this, 'resetAll').name('RESET ALL');
     };
-    
+
     this.resetAll = function() {
       Scene.gui.reset();
       Camera.gui.reset();
@@ -993,7 +1005,7 @@ var View = (function() {
       Earth.gui.reset();
       Cloud.gui.reset();
       Moon.gui.reset();
-      SceneShadow.gui.reset();      
+      SceneShadow.gui.reset();
     };
 
     this.updateAll = function() {
