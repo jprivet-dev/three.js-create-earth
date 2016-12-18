@@ -259,7 +259,8 @@ var Cloud = (function() {
           segments: 64
         },
         animate: {
-          rotationFactorY: -0.00005
+          enabled: true,
+          rotationsYPerSecond: -0.0012
         }
       };
     };
@@ -288,7 +289,9 @@ var Cloud = (function() {
     };
 
     this.animate = function(delta) {
-      this.cloud.rotation.y += Math.PI * params.animate.rotationFactorY;
+      if (params.animate.enabled) {
+        this.cloud.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
+      }
     };
 
     this.gui = {
@@ -304,7 +307,8 @@ var Cloud = (function() {
         self.material.color.setHex(_default.material.color);
         this.colors.color = '#' + self.material.color.getHexString();
 
-        params.animate.rotationFactorY = _default.animate.rotationFactorY;
+        params.animate.enabled = _default.animate.enabled;
+        params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
       },
 
       add: function(gui) {
@@ -322,7 +326,8 @@ var Cloud = (function() {
           });
 
         var gAnimate = gCloud.addFolder('Animate');
-        gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
+        gAnimate.add(params.animate, 'enabled').listen();
+        gAnimate.add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
 
         gCloud.add(this, 'reset').name('RESET CLOUD');
       }
@@ -356,7 +361,8 @@ var Earth = (function(Cloud) {
           segments: 64
         },
         animate: {
-          rotationFactorY: 0.0002
+          enabled: true,
+          rotationsYPerSecond: 0.01
         }
       };
     };
@@ -387,7 +393,9 @@ var Earth = (function(Cloud) {
     };
 
     this.animate = function(delta) {
-      this.earth.rotation.y += Math.PI * params.animate.rotationFactorY;
+      if (params.animate.enabled) {
+        this.earth.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
+      }
     };
 
     this.gui = {
@@ -402,7 +410,8 @@ var Earth = (function(Cloud) {
         self.material.specular.setHex(_default.material.specular);
         this.colors.specular = '#' + self.material.specular.getHexString();
 
-        params.animate.rotationFactorY = _default.animate.rotationFactorY;
+        params.animate.enabled = _default.animate.enabled;
+        params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
       },
 
       add: function(gui) {
@@ -419,7 +428,8 @@ var Earth = (function(Cloud) {
           });
 
         var gAnimate = gEarth.addFolder('Animate');
-        gAnimate.add(params.animate, 'rotationFactorY', -0.005, 0.005).listen();
+        gAnimate.add(params.animate, 'enabled').listen();
+        gAnimate.add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
 
         gEarth.add(this, 'reset').name('RESET EARTH');
 
@@ -460,7 +470,7 @@ var Moon = (function(Earth) {
           segments: 64
         },
         animate: {
-          pivotRotationsPerSecondActive: true,
+          enabled: true,
           pivotRotationsPerSecond: 0.05
         }
       };
@@ -504,9 +514,8 @@ var Moon = (function(Earth) {
     };
 
     this.animate = function(delta) {
-      if (params.animate.pivotRotationsPerSecondActive) {
+      if (params.animate.enabled) {
         this.pivot.rotation.y += delta * 2 * Math.PI * params.animate.pivotRotationsPerSecond;
-
       }
     };
 
@@ -523,7 +532,7 @@ var Moon = (function(Earth) {
         self.moon.position.y = _default.moon.position.y;
         self.moon.position.z = _default.moon.position.z;
 
-        params.animate.pivotRotationsPerSecondActive = _default.animate.pivotRotationsPerSecondActive;
+        params.animate.enabled = _default.animate.enabled;
         params.animate.pivotRotationsPerSecond = _default.animate.pivotRotationsPerSecond;
       },
 
@@ -542,7 +551,7 @@ var Moon = (function(Earth) {
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
 
         var gAnimate = gMoon.addFolder('Animate');
-        gAnimate.add(params.animate, 'pivotRotationsPerSecondActive').listen();
+        gAnimate.add(params.animate, 'enabled').listen();
         gAnimate.add(params.animate, 'pivotRotationsPerSecond', -2, 2).listen();
 
         gMoon.add(this, 'reset').name('RESET MOON');
