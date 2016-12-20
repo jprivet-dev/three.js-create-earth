@@ -69,8 +69,9 @@ var Renderer = (function() {
 
     var paramsDefault = function() {
       return {
-        renderer: {
+        webGLRenderer: {
           antialias: true,
+          alpha: true,
           clearColor: COLOR_BLACK
         }
       };
@@ -80,27 +81,25 @@ var Renderer = (function() {
 
     this.init = function() {
       // @see also THREE.CanvasRenderer()
-      this.renderer = new THREE.WebGLRenderer({
-        antialias: params.renderer.antialias,
-        alpha: true
+      this.webGLRenderer = new THREE.WebGLRenderer({
+        antialias: params.webGLRenderer.antialias,
+        alpha: params.webGLRenderer.alpha
       });
 
-      this.renderer.setClearColor(params.renderer.clearColor);
-      this.renderer.setPixelRatio(window.devicePixelRatio);
+      this.webGLRenderer.setClearColor(params.webGLRenderer.clearColor);
+      this.webGLRenderer.setPixelRatio(window.devicePixelRatio);
 
       this.renderView();
-
-      this.obj = this.renderer;
     };
 
     this.renderView = function() {
       this.view = document.body;
-      this.view.appendChild(this.renderer.domElement);
+      this.view.appendChild(this.webGLRenderer.domElement);
       this.updateSize();
     };
 
     this.updateSize = function() {
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.webGLRenderer.setSize(window.innerWidth, window.innerHeight);
     };
 
     this.init();
@@ -118,7 +117,7 @@ var Camera = (function() {
 
     var paramsDefault = function() {
       return {
-        camera: {
+        perspectiveCamera: {
           positionX: 0,
           positionY: 0,
           positionZ: 150,
@@ -132,40 +131,40 @@ var Camera = (function() {
     var params = paramsDefault();
 
     this.init = function() {
-      this.camera = new THREE.PerspectiveCamera(
-        params.camera.fov,
+      this.perspectiveCamera = new THREE.PerspectiveCamera(
+        params.perspectiveCamera.fov,
         Utils.windowRatio(),
-        params.camera.near,
-        params.camera.far
+        params.perspectiveCamera.near,
+        params.perspectiveCamera.far
       );
 
-      this.camera.position.set(
-        params.camera.positionX,
-        params.camera.positionY,
-        params.camera.positionZ
+      this.perspectiveCamera.position.set(
+        params.perspectiveCamera.positionX,
+        params.perspectiveCamera.positionY,
+        params.perspectiveCamera.positionZ
       );
-
-      this.obj = this.camera;
     };
 
     this.updateAspect = function() {
-      this.camera.aspect = Utils.windowRatio();
-      this.camera.updateProjectionMatrix();
+      this.perspectiveCamera.aspect = Utils.windowRatio();
+      this.perspectiveCamera.updateProjectionMatrix();
     };
 
     this.updateLookAt = function(target) {
-      this.camera.lookAt(target);
+      this.perspectiveCamera.lookAt(target);
     };
 
     this.gui = {
-      colors: {},
-
+      params: {
+        colors: {}
+      },
+      
       reset: function() {
         var _default = paramsDefault();
 
-        self.camera.fov = _default.camera.fov;
-        self.camera.near = _default.camera.near;
-        self.camera.far = _default.camera.far;
+        self.perspectiveCamera.fov = _default.perspectiveCamera.fov;
+        self.perspectiveCamera.near = _default.perspectiveCamera.near;
+        self.perspectiveCamera.far = _default.perspectiveCamera.far;
 
         self.updateAspect();
       },
@@ -175,17 +174,17 @@ var Camera = (function() {
 
         var gCamera = gui.addFolder('CAMERA');
 
-        gCamera.add(self.camera, 'fov', 0, 150).listen()
+        gCamera.add(self.perspectiveCamera, 'fov', 0, 150).listen()
           .onChange(function() {
             self.updateAspect();
           });
 
-        gCamera.add(self.camera, 'near', 0, 5).listen()
+        gCamera.add(self.perspectiveCamera, 'near', 0, 5).listen()
           .onChange(function() {
             self.updateAspect();
           });
 
-        gCamera.add(self.camera, 'far', 0, 10000).listen()
+        gCamera.add(self.perspectiveCamera, 'far', 0, 10000).listen()
           .onChange(function() {
             self.updateAspect();
           });
@@ -211,7 +210,7 @@ var Skymap = (function() {
 
     var paramsDefault = function() {
       return {
-        skymapTexture: {
+        cubeTextureLoader: {
           positionTag: '{pos}',
           positions: ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
           filename: 'skymap_{pos}_1024x1024.jpg'
@@ -222,19 +221,17 @@ var Skymap = (function() {
     var params = paramsDefault();
 
     this.init = function() {
-      this.skymapTexture = new THREE.CubeTextureLoader()
+      this.cubeTextureLoader = new THREE.CubeTextureLoader()
         .setPath(ASSETS_PATH)
         .load(this.getFilenames());
-
-      this.obj = this.skymapTexture;
     };
 
     this.getFilenames = function() {
       var filenames = [];
 
-      for (var i = 0; i < params.skymapTexture.positions.length; i++) {
+      for (var i = 0; i < params.cubeTextureLoader.positions.length; i++) {
         filenames.push(
-          this.getFilename(params.skymapTexture.positions[i])
+          this.getFilename(params.cubeTextureLoader.positions[i])
         );
       }
 
@@ -242,8 +239,8 @@ var Skymap = (function() {
     };
 
     this.getFilename = function(position) {
-      return params.skymapTexture.filename.replace(
-        params.skymapTexture.positionTag,
+      return params.cubeTextureLoader.filename.replace(
+        params.cubeTextureLoader.positionTag,
         position
       );
     };
@@ -304,25 +301,25 @@ var Cloud = (function() {
         params.geometry.heightSegments
       );
 
-      this.cloud = new THREE.Mesh(this.geometry, this.material);
-      this.cloud.visible = params.visible;
-
-      this.obj = this.cloud;
+      this.cloudMesh = new THREE.Mesh(this.geometry, this.material);
+      this.cloudMesh.visible = params.visible;
     };
 
     this.animate = function(delta) {
       if (params.animate.enabled) {
-        this.cloud.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
+        this.cloudMesh.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
       }
     };
 
     this.gui = {
-      colors: {},
-
+      params: {
+        colors: {}
+      },
+      
       reset: function() {
         var _default = paramsDefault();
 
-        self.cloud.visible = _default.visible;
+        self.cloudMesh.visible = _default.visible;
 
         self.material.wireframe = _default.material.wireframe;
         self.material.transparent = _default.material.transparent;
@@ -330,7 +327,7 @@ var Cloud = (function() {
         self.material.bumpScale = _default.material.bumpScale;
 
         self.material.color.setHex(_default.material.color);
-        this.colors.color = '#' + self.material.color.getHexString();
+        this.params.colors.color = '#' + self.material.color.getHexString();
 
         params.animate.enabled = _default.animate.enabled;
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
@@ -340,14 +337,14 @@ var Cloud = (function() {
         this.reset();
 
         var gCloud = gui.addFolder('CLOUD');
-        gCloud.add(self.cloud, 'visible').listen();
+        gCloud.add(self.cloudMesh, 'visible').listen();
 
         var gMaterial = gCloud.addFolder('Material');
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'transparent').listen();
         gMaterial.add(self.material, 'opacity', 0, 1).listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
-        gMaterial.addColor(this.colors, 'color').listen()
+        gMaterial.addColor(this.params.colors, 'color').listen()
           .onChange(function(color) {
             self.material.color.setHex(color.replace('#', '0x'));
           });
@@ -418,34 +415,34 @@ var Earth = (function(Cloud) {
         shininess: params.material.shininess
       });
 
-      this.earth = new THREE.Mesh(this.geometry, this.material);
-      this.earth.visible = params.visible;
+      this.earthMesh = new THREE.Mesh(this.geometry, this.material);
+      this.earthMesh.visible = params.visible;
 
-      this.earth.add(Cloud.obj);
-
-      this.obj = this.earth;
+      this.earthMesh.add(Cloud.cloudMesh);
     };
 
     this.animate = function(delta) {
       if (params.animate.enabled) {
-        this.earth.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
+        this.earthMesh.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
       }
     };
 
     this.gui = {
-      colors: {},
+      params: {
+        colors: {}
+      },
 
       reset: function() {
         var _default = paramsDefault();
 
-        self.earth.visible = _default.visible;
+        self.earthMesh.visible = _default.visible;
 
         self.material.wireframe = _default.material.wireframe;
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
 
         self.material.specular.setHex(_default.material.specular);
-        this.colors.specular = '#' + self.material.specular.getHexString();
+        this.params.colors.specular = '#' + self.material.specular.getHexString();
 
         params.animate.enabled = _default.animate.enabled;
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
@@ -455,13 +452,13 @@ var Earth = (function(Cloud) {
         this.reset();
 
         var gEarth = gui.addFolder('EARTH');
-        gEarth.add(self.earth, 'visible').listen();
+        gEarth.add(self.earthMesh, 'visible').listen();
 
         var gMaterial = gEarth.addFolder('Material');
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
-        gMaterial.addColor(this.colors, 'specular').listen()
+        gMaterial.addColor(this.params.colors, 'specular').listen()
           .onChange(function(color) {
             self.material.specular.setHex(color.replace('#', '0x'));
           });
@@ -491,7 +488,7 @@ var Moon = (function(Earth) {
 
     var paramsDefault = function() {
       return {
-        moon: {
+        moonMesh: {
           visible: true,
           position: {
             x: 0,
@@ -535,24 +532,22 @@ var Moon = (function(Earth) {
         shininess: params.material.shininess
       });
 
-      this.moon = new THREE.Mesh(this.geometry, this.material);
+      this.moonMesh = new THREE.Mesh(this.geometry, this.material);
 
-      this.moon.position.set(
-        params.moon.position.x,
-        params.moon.position.y,
-        params.moon.position.z
+      this.moonMesh.position.set(
+        params.moonMesh.position.x,
+        params.moonMesh.position.y,
+        params.moonMesh.position.z
       );
 
-      this.moon.visible = params.moon.visible;
+      this.moonMesh.visible = params.moonMesh.visible;
       this.pivot = this.createPivot();
-
-      this.obj = this.pivot;
     };
 
     this.createPivot = function() {
       var pivot = new THREE.Object3D();
-      pivot.position = Earth.earth.position;
-      pivot.add(this.moon);
+      pivot.position = Earth.earthMesh.position;
+      pivot.add(this.moonMesh);
 
       return pivot;
     };
@@ -564,20 +559,22 @@ var Moon = (function(Earth) {
     };
 
     this.gui = {
-      colors: {},
+      params: {
+        colors: {}
+      },
 
       reset: function() {
         var _default = paramsDefault();
 
-        self.moon.visible = _default.moon.visible;
+        self.moonMesh.visible = _default.moonMesh.visible;
 
         self.material.wireframe = _default.material.wireframe;
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
 
-        self.moon.position.x = _default.moon.position.x;
-        self.moon.position.y = _default.moon.position.y;
-        self.moon.position.z = _default.moon.position.z;
+        self.moonMesh.position.x = _default.moonMesh.position.x;
+        self.moonMesh.position.y = _default.moonMesh.position.y;
+        self.moonMesh.position.z = _default.moonMesh.position.z;
 
         params.animate.enabled = _default.animate.enabled;
         params.animate.pivotRotationsPerSecond = _default.animate.pivotRotationsPerSecond;
@@ -587,12 +584,12 @@ var Moon = (function(Earth) {
         this.reset();
 
         var gMoon = gui.addFolder('MOON');
-        gMoon.add(self.moon, 'visible').listen();
+        gMoon.add(self.moonMesh, 'visible').listen();
 
         var gPosition = gMoon.addFolder('Position');
-        gPosition.add(self.moon.position, 'x', -100, 100).listen();
-        gPosition.add(self.moon.position, 'y', -100, 100).listen();
-        gPosition.add(self.moon.position, 'z', -100, 100).listen();
+        gPosition.add(self.moonMesh.position, 'x', -100, 100).listen();
+        gPosition.add(self.moonMesh.position, 'y', -100, 100).listen();
+        gPosition.add(self.moonMesh.position, 'z', -100, 100).listen();
 
         var gMaterial = gMoon.addFolder('Material');
         gMaterial.add(self.material, 'wireframe').listen();
@@ -697,8 +694,6 @@ var Sun = (function() {
       this.sunLight.visible = params.sunLight.visible;
 
       this.addLensFlareSun();
-
-      this.obj = this.sunLight;
     };
 
     this.addLensFlareSun = function() {
@@ -743,7 +738,9 @@ var Sun = (function() {
     };
 
     this.gui = {
-      colors: {},
+      params: {
+        colors: {}
+      },
 
       reset: function() {
         var _default = paramsDefault();
@@ -752,7 +749,7 @@ var Sun = (function() {
         self.sunLight.intensity = _default.sunLight.intensity;
 
         self.sunLight.color.setHex(_default.sunLight.color);
-        this.colors.color = '#' + self.sunLight.color.getHexString();
+        this.params.colors.color = '#' + self.sunLight.color.getHexString();
 
         self.sunLight.position.x = _default.sunLight.position.x;
         self.sunLight.position.y = _default.sunLight.position.y;
@@ -773,7 +770,7 @@ var Sun = (function() {
 
         var gLight = gSun.addFolder('Light');
         gLight.add(self.sunLight, 'intensity', 0, 10).listen();
-        gLight.addColor(this.colors, 'color').listen()
+        gLight.addColor(this.params.colors, 'color').listen()
           .onChange(function(color) {
             self.sunLight.color.setHex(color.replace('#', '0x'));
           });
@@ -823,26 +820,26 @@ var Scene = (function() {
 
     this.init = function() {
       this.scene = new THREE.Scene();
-      this.scene.add(Earth.obj);
-      this.scene.add(Moon.obj);
+      this.scene.add(Earth.earthMesh);
+      this.scene.add(Moon.pivot);
       this.scene.add(Sun.sunLight);
 
-      this.scene.background = Skymap.obj;
+      this.scene.background = Skymap.cubeTextureLoader;
 
       this.enableOrbitControls();
-
-      this.obj = this.scene;
     };
 
     this.enableOrbitControls = function() {
-      this.orbitControls = new THREE.OrbitControls(Camera.obj, Renderer.obj.domElement);
+      this.orbitControls = new THREE.OrbitControls(Camera.perspectiveCamera, Renderer.webGLRenderer.domElement);
       this.orbitControls.autoRotate = params.orbitControls.autoRotate;
       this.orbitControls.autoRotateSpeed = params.orbitControls.autoRotateSpeed;
       this.orbitControls.enableDamping = true;
     };
 
     this.gui = {
-      colors: {},
+      params: {
+        colors: {}
+      },
 
       reset: function() {
         var _default = paramsDefault();
@@ -905,13 +902,11 @@ var SceneShadow = (function(Scene) {
 
     this.init = function() {
       this.setShadowConfiguration();
-
-      this.obj = this.scene;
     };
 
     this.setShadowConfiguration = function() {
       this.cameraHelper = new THREE.CameraHelper(Sun.sunLight.shadow.camera);
-      Scene.obj.add(this.cameraHelper);
+      Scene.scene.add(this.cameraHelper);
       this.cameraHelper.visible = params.cameraHelper.visible;
 
       Sun.sunLight.castShadow = params.shadow.castShadow;
@@ -926,17 +921,17 @@ var SceneShadow = (function(Scene) {
       Sun.sunLight.shadow.camera.top = params.shadow.camera.top;
       Sun.sunLight.shadow.camera.bottom = params.shadow.camera.bottom;
 
-      Earth.obj.castShadow = true;
-      Earth.obj.receiveShadow = true;
+      Earth.earthMesh.castShadow = true;
+      Earth.earthMesh.receiveShadow = true;
 
-      Cloud.obj.receiveShadow = true;
+      Cloud.cloudMesh.receiveShadow = true;
 
-      Moon.moon.castShadow = true;
-      Moon.moon.receiveShadow = true;
+      Moon.moonMesh.castShadow = true;
+      Moon.moonMesh.receiveShadow = true;
 
-      Renderer.obj.shadowMap.enabled = true;
-      Renderer.obj.shadowMap.type = THREE.PCFSoftShadowMap;
-      Renderer.obj.shadowMapSoft = true;
+      Renderer.webGLRenderer.shadowMap.enabled = true;
+      Renderer.webGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      Renderer.webGLRenderer.shadowMapSoft = true;
     };
 
     this.updateShadow = function() {
@@ -945,7 +940,9 @@ var SceneShadow = (function(Scene) {
     };
 
     this.gui = {
-      colors: {},
+      params: {
+        colors: {}
+      },
 
       reset: function() {
         var _default = paramsDefault();
@@ -1043,7 +1040,6 @@ var View = (function() {
 
     this.addGui = function() {
       var gui = new dat.GUI();
-      gui.closed = true;
 
       Scene.gui.add(gui);
       Camera.gui.add(gui);
@@ -1081,7 +1077,7 @@ var View = (function() {
       Moon.animate(delta);
 
       Scene.orbitControls.update();
-      Renderer.obj.render(Scene.obj, Camera.obj);
+      Renderer.webGLRenderer.render(Scene.scene, Camera.perspectiveCamera);
     };
 
     this.init();
