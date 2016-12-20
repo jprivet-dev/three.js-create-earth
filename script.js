@@ -48,6 +48,7 @@
  */
 var
   ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
+  IMAGE_DEFINITION = 'sd', // sd || hd
   COLOR_WHITE = 0xffffff,
   COLOR_BLACK = 0x000000;
 
@@ -70,7 +71,7 @@ var Renderer = (function() {
     var paramsDefault = function() {
       return {
         webGLRenderer: {
-          antialias: true,
+          antialias: false,
           alpha: true,
           clearColor: COLOR_BLACK
         }
@@ -158,7 +159,7 @@ var Camera = (function() {
       params: {
         colors: {}
       },
-      
+
       reset: function() {
         var _default = paramsDefault();
 
@@ -210,10 +211,14 @@ var Skymap = (function() {
 
     var paramsDefault = function() {
       return {
+        imgDef: IMAGE_DEFINITION,
         cubeTextureLoader: {
           positionTag: '{pos}',
           positions: ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
-          filename: 'skymap_{pos}_1024x1024.jpg'
+          filename: {
+            sd: 'skymap_{pos}_512x512.jpg',
+            hd: 'skymap_{pos}_1024x1024.jpg'
+          }
         }
       };
     };
@@ -239,7 +244,7 @@ var Skymap = (function() {
     };
 
     this.getFilename = function(position) {
-      return params.cubeTextureLoader.filename.replace(
+      return params.cubeTextureLoader.filename[params.imgDef].replace(
         params.cubeTextureLoader.positionTag,
         position
       );
@@ -260,6 +265,7 @@ var Cloud = (function() {
 
     var paramsDefault = function() {
       return {
+        imgDef: IMAGE_DEFINITION,
         visible: true,
         material: {
           wireframe: false,
@@ -267,8 +273,14 @@ var Cloud = (function() {
           color: COLOR_WHITE,
           bumpScale: 0.13,
           opacity: 0.9,
-          alphaMap: ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
-          bumpMap: ASSETS_PATH + 'earth_clouds_2048x1024.jpg'
+          alphaMap: {
+            sd: ASSETS_PATH + 'earth_clouds_1024x512.jpg',
+            hd: ASSETS_PATH + 'earth_clouds_2048x1024.jpg'
+          },
+          bumpMap: {
+            sd: ASSETS_PATH + 'earth_clouds_1024x512.jpg',
+            hd: ASSETS_PATH + 'earth_clouds_2048x1024.jpg'
+          }
         },
         geometry: {
           radius: 50.3,
@@ -290,8 +302,8 @@ var Cloud = (function() {
         color: params.material.color,
         opacity: params.material.opacity,
         transparent: params.material.transparent,
-        alphaMap: new THREE.TextureLoader().load(params.material.alphaMap),
-        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
+        alphaMap: new THREE.TextureLoader().load(params.material.alphaMap[params.imgDef]),
+        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]),
         bumpScale: params.material.bumpScale
       });
 
@@ -315,7 +327,7 @@ var Cloud = (function() {
       params: {
         colors: {}
       },
-      
+
       reset: function() {
         var _default = paramsDefault();
 
@@ -374,13 +386,23 @@ var Earth = (function(Cloud) {
 
     var paramsDefault = function() {
       return {
+        imgDef: IMAGE_DEFINITION,
         visible: true,
         material: {
           wireframe: false,
-          map: ASSETS_PATH + 'earth_map_2048x1024.jpg',
-          bumpMap: ASSETS_PATH + 'earth_bump_2048x1024.jpg',
+          map: {
+            sd: ASSETS_PATH + 'earth_map_1024x512.jpg',
+            hd: ASSETS_PATH + 'earth_map_2048x1024.jpg'
+          },
+          bumpMap: {
+            sd: ASSETS_PATH + 'earth_bump_1024x512.jpg',
+            hd: ASSETS_PATH + 'earth_bump_2048x1024.jpg'
+          },
           bumpScale: 0.45,
-          specularMap: ASSETS_PATH + 'earth_specular_2048x1024.jpg',
+          specularMap: {
+            sd: ASSETS_PATH + 'earth_specular_1024x512.jpg',
+            hd: ASSETS_PATH + 'earth_specular_2048x1024.jpg'
+          },
           specular: 0x2d4ea0,
           shininess: 6
         },
@@ -407,9 +429,9 @@ var Earth = (function(Cloud) {
 
       this.material = new THREE.MeshPhongMaterial({
         wireframe: params.material.wireframe,
-        map: new THREE.TextureLoader().load(params.material.map),
-        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
-        specularMap: new THREE.TextureLoader().load(params.material.specularMap),
+        map: new THREE.TextureLoader().load(params.material.map[params.imgDef]),
+        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]),
+        specularMap: new THREE.TextureLoader().load(params.material.specularMap[params.imgDef]),
         bumpScale: params.material.bumpScale,
         specular: params.material.specular,
         shininess: params.material.shininess
@@ -488,6 +510,7 @@ var Moon = (function(Earth) {
 
     var paramsDefault = function() {
       return {
+        imgDef: IMAGE_DEFINITION,
         moonMesh: {
           visible: true,
           position: {
@@ -498,8 +521,14 @@ var Moon = (function(Earth) {
         },
         material: {
           wireframe: false,
-          map: ASSETS_PATH + 'moon_map_1024x512.jpg',
-          bumpMap: ASSETS_PATH + 'moon_bump_1024x512.jpg',
+          map: {
+            sd: ASSETS_PATH + 'moon_map_512x256.jpg',
+            hd: ASSETS_PATH + 'moon_map_1024x512.jpg'
+          },
+          bumpMap: {
+            sd: ASSETS_PATH + 'moon_bump_512x256.jpg',
+            hd: ASSETS_PATH + 'moon_bump_1024x512.jpg'
+          },
           bumpScale: 0.1,
           shininess: 0
         },
@@ -526,8 +555,8 @@ var Moon = (function(Earth) {
 
       this.material = new THREE.MeshPhongMaterial({
         wireframe: params.material.wireframe,
-        map: new THREE.TextureLoader().load(params.material.map),
-        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap),
+        map: new THREE.TextureLoader().load(params.material.map[params.imgDef]),
+        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]),
         bumpScale: params.material.bumpScale,
         shininess: params.material.shininess
       });
@@ -621,6 +650,7 @@ var Sun = (function() {
 
     var paramsDefault = function() {
       return {
+        imgDef: IMAGE_DEFINITION,
         sunLight: {
           visible: true,
           color: COLOR_WHITE,
@@ -636,6 +666,14 @@ var Sun = (function() {
             sun: {
               sd: ASSETS_PATH + 'lens_flare_sun_512x512.jpg',
               hd: ASSETS_PATH + 'lens_flare_sun_1024x1024.jpg'
+            },
+            circle: {
+              sd: ASSETS_PATH + 'lens_flare_circle_32x32.jpg',
+              hd: ASSETS_PATH + 'lens_flare_circle_64x64.jpg'
+            },
+            hexagon: {
+              sd: ASSETS_PATH + 'lens_flare_hexagon_128x128.jpg',
+              hd: ASSETS_PATH + 'lens_flare_hexagon_256x256.jpg'
             }
           },
           lensFlares: [{
@@ -713,7 +751,7 @@ var Sun = (function() {
         params.sunLensFlare.lensFlares[0].size,
         params.sunLensFlare.lensFlares[0].distance,
         THREE.AdditiveBlending
-      )
+      );
     };
 
     this.addLensFlareSunCircleAndHexagon = function(sunLensFlare) {
@@ -732,9 +770,9 @@ var Sun = (function() {
     };
 
     this.loadLensFlareTextures = function() {
-      this.textureFlareSun = this.textureLoader.load(params.sunLensFlare.textures.sun.hd);
-      this.textureFlareCircle = this.textureLoader.load(ASSETS_PATH + 'lens_flare_circle_64x64.jpg');
-      this.textureFlareHexagon = this.textureLoader.load(ASSETS_PATH + 'lens_flare_hexagon_256x256.jpg');
+      this.textureFlareSun = this.textureLoader.load(params.sunLensFlare.textures.sun[params.imgDef]);
+      this.textureFlareCircle = this.textureLoader.load(params.sunLensFlare.textures.circle[params.imgDef]);
+      this.textureFlareHexagon = this.textureLoader.load(params.sunLensFlare.textures.hexagon[params.imgDef]);
     };
 
     this.gui = {
