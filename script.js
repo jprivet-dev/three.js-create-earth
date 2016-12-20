@@ -634,49 +634,51 @@ var Sun = (function() {
             z: -1000,
           }
         },
-        lensFlareTextures: {
-          sun: {
-            sd: ASSETS_PATH + 'lens_flare_sun_512x512.jpg',
-            hd: ASSETS_PATH + 'lens_flare_sun_1024x1024.jpg'
-          }
-        },
-        lensFlares: [{
-          size: 1400,
-          opacity: 1,
-          distance: 0
-        }, {
-          size: 20,
-          opacity: 0.4,
-          distance: 0.63
-        }, {
-          size: 40,
-          opacity: 0.3,
-          distance: 0.64
-        }, {
-          size: 70,
-          opacity: 0.8,
-          distance: 0.7
-        }, {
-          size: 110,
-          opacity: 0.7,
-          distance: 0.8
-        }, {
-          size: 60,
-          opacity: 0.4,
-          distance: 0.85
-        }, {
-          size: 30,
-          opacity: 0.4,
-          distance: 0.86
-        }, {
-          size: 120,
-          opacity: 0.3,
-          distance: 0.9
-        }, {
-          size: 260,
-          opacity: 0.4,
-          distance: 1
-        }]
+        sunLensFlare: {
+          textures: {
+            sun: {
+              sd: ASSETS_PATH + 'lens_flare_sun_512x512.jpg',
+              hd: ASSETS_PATH + 'lens_flare_sun_1024x1024.jpg'
+            }
+          },
+          lensFlares: [{
+            size: 1400,
+            opacity: 1,
+            distance: 0
+          }, {
+            size: 20,
+            opacity: 0.4,
+            distance: 0.63
+          }, {
+            size: 40,
+            opacity: 0.3,
+            distance: 0.64
+          }, {
+            size: 70,
+            opacity: 0.8,
+            distance: 0.7
+          }, {
+            size: 110,
+            opacity: 0.7,
+            distance: 0.8
+          }, {
+            size: 60,
+            opacity: 0.4,
+            distance: 0.85
+          }, {
+            size: 30,
+            opacity: 0.4,
+            distance: 0.86
+          }, {
+            size: 120,
+            opacity: 0.3,
+            distance: 0.9
+          }, {
+            size: 260,
+            opacity: 0.4,
+            distance: 1
+          }]
+        }
       };
     };
 
@@ -694,48 +696,48 @@ var Sun = (function() {
 
       this.sun.visible = params.sun.visible;
 
-      this.addLensFlares();
+      this.addLensFlareSun();
 
       this.obj = this.sun;
     };
 
-    this.addLensFlares = function() {
+    this.addLensFlareSun = function() {
       this.loadLensFlareTextures();
-      
-      var lensFlare = this.createLensFlareSun();
-      lensFlares = this.addLensFlaresCircleAndHexagon(lensFlare);
 
-      this.sun.add(lensFlare);
-      
-      this.lensFlare = lensFlare;
+      var sunLensFlare = this.createLensFlareSun();
+      sunLensFlare = this.addLensFlareSunCircleAndHexagon(sunLensFlare);
+
+      this.sun.add(sunLensFlare);
+
+      this.sunLensFlare = sunLensFlare;
     };
 
     this.createLensFlareSun = function() {
       return new THREE.LensFlare(
         this.textureFlareSun,
-        params.lensFlares[0].size,
-        params.lensFlares[0].distance,
+        params.sunLensFlare.lensFlares[0].size,
+        params.sunLensFlare.lensFlares[0].distance,
         THREE.AdditiveBlending
       )
     };
-    
-    this.addLensFlaresCircleAndHexagon = function(lensFlare) {
-      for (var i = 1; i < params.lensFlares.length; i++) {
-        var texture = params.lensFlares[i].size < 70 ? this.textureFlareCircle : this.textureFlareHexagon;
 
-        lensFlare.add(
+    this.addLensFlareSunCircleAndHexagon = function(sunLensFlare) {
+      for (var i = 1; i < params.sunLensFlare.lensFlares.length; i++) {
+        var texture = params.sunLensFlare.lensFlares[i].size < 70 ? this.textureFlareCircle : this.textureFlareHexagon;
+
+        sunLensFlare.add(
           texture,
-          params.lensFlares[i].size,
-          params.lensFlares[i].distance,
+          params.sunLensFlare.lensFlares[i].size,
+          params.sunLensFlare.lensFlares[i].distance,
           THREE.AdditiveBlending
         );
       }
-      
-      return lensFlare;
+
+      return sunLensFlare;
     };
 
     this.loadLensFlareTextures = function() {
-      this.textureFlareSun = this.textureLoader.load(params.lensFlareTextures.sun.hd);
+      this.textureFlareSun = this.textureLoader.load(params.sunLensFlare.textures.sun.hd);
       this.textureFlareCircle = this.textureLoader.load(ASSETS_PATH + 'lens_flare_circle_64x64.jpg');
       this.textureFlareHexagon = this.textureLoader.load(ASSETS_PATH + 'lens_flare_hexagon_256x256.jpg');
     };
@@ -756,10 +758,10 @@ var Sun = (function() {
         self.sun.position.y = _default.sun.position.y;
         self.sun.position.z = _default.sun.position.z;
 
-        for (var i = 0; i < params.lensFlares.length; i++) {
-          self.lensFlare.lensFlares[i].size = _default.lensFlares[i].size;
-          self.lensFlare.lensFlares[i].opacity = _default.lensFlares[i].opacity;
-          self.lensFlare.lensFlares[i].distance = _default.lensFlares[i].distance;
+        for (var i = 0; i < params.sunLensFlare.lensFlares.length; i++) {
+          self.sunLensFlare.lensFlares[i].size = _default.sunLensFlare.lensFlares[i].size;
+          self.sunLensFlare.lensFlares[i].opacity = _default.sunLensFlare.lensFlares[i].opacity;
+          self.sunLensFlare.lensFlares[i].distance = _default.sunLensFlare.lensFlares[i].distance;
         }
       },
 
@@ -783,10 +785,10 @@ var Sun = (function() {
 
         var gLensFlares = gSun.addFolder('LensFlares');
 
-        for (var i = 0; i < self.lensFlare.lensFlares.length; i++) {
-          gLensFlares.add(self.lensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
-          gLensFlares.add(self.lensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
-          gLensFlares.add(self.lensFlare.lensFlares[i], 'distance', -1, 1).name(i + '. distance').listen();
+        for (var i = 0; i < self.sunLensFlare.lensFlares.length; i++) {
+          gLensFlares.add(self.sunLensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
+          gLensFlares.add(self.sunLensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
+          gLensFlares.add(self.sunLensFlare.lensFlares[i], 'distance', -1, 1).name(i + '. distance').listen();
         }
 
         gSun.add(this, 'reset').name('RESET SUN');
