@@ -1,34 +1,49 @@
 /**
- * Resources Three.js :
+ * EXAMPLES
+ *
+ * https://stemkoski.github.io/Three.js/
+ * https://threejs.org/examples/
+ *
+ * EARTH
+ * 
  * http://learningthreejs.com/blog/2013/09/16/how-to-make-the-earth-in-webgl/
  * http://blog.mastermaps.com/2013/09/creating-webgl-earth-with-threejs.html
  * http://thematicmapping.org/playground/webgl/earth/
- * https://threejs.org/examples/
- * https://threejs.org/examples/#css3d_panorama
- * https://threejs.org/examples/webgl_materials_bumpmap.html
+ *
+ * SKYBOX / STARMAP
+ *
  * https://threejs.org/examples/webgl_materials_cars.html
- * https://stemkoski.github.io/Three.js/
+ * https://threejs.org/examples/#css3d_panorama
+ * 
+ * LIGHT
+ *
  * https://threejs.org/examples/webgl_lensflares.html
- * https://github.com/mrdoob/three.js/issues/1830
  * https://threejs.org/docs/api/lights/SpotLight.html
  * 
- * Shadow :
+ * SHADOW
+ *
  * https://threejs.org/examples/webgl_shadowmap.html
  * http://jsfiddle.net/4Txgp/13/
  *
- * Specials :
+ * CONTROLS
+ *
  * https://github.com/mrdoob/three.js/blob/master/examples/js/controls/OrbitControls.js
  * https://threejs.org/examples/misc_controls_orbit.html
  * http://workshop.chromeexperiments.com/examples/gui
  *
- * Resources textures :
+ * TEXTURES
+ *
+ * https://threejs.org/examples/webgl_materials_bumpmap.html
+ * https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
  * https://nasa3d.arc.nasa.gov/
  * http://planetpixelemporium.com/earth.html
  * http://earthobservatory.nasa.gov/blogs/elegantfigures/2011/10/06/crafting-the-blue-marble/
  * http://visibleearth.nasa.gov/view.php?id=79765
  * http://visibleearth.nasa.gov/view.php?id=57747
  *
- * Animation :
+ * ANIMATION
+ *
+ * https://github.com/mrdoob/three.js/issues/1830
  * https://threejs.org/examples/webgl_animation_skinning_blending.html
  */
 var
@@ -253,7 +268,7 @@ var Cloud = (function() {
           wireframe: false,
           transparent: true,
           color: COLOR_WHITE,
-          bumpScale: 0.1,
+          bumpScale: 0.13,
           opacity: 0.9,
           alphaMap: ASSETS_PATH + 'earth_clouds_2048x1024.jpg',
           bumpMap: ASSETS_PATH + 'earth_clouds_2048x1024.jpg'
@@ -704,10 +719,6 @@ var Sun = (function() {
       this.sun.add(this.lensFlare);
     };
 
-    this.updateLensFlare = function() {
-
-    };
-
     this.gui = {
       colors: {},
 
@@ -1009,6 +1020,7 @@ var View = (function() {
 
     this.addGui = function() {
       var gui = new dat.GUI();
+      gui.closed = true;
 
       Scene.gui.add(gui);
       Camera.gui.add(gui);
