@@ -624,7 +624,7 @@ var Sun = (function() {
 
     var paramsDefault = function() {
       return {
-        sun: {
+        sunLight: {
           visible: true,
           color: COLOR_WHITE,
           intensity: 1.3,
@@ -686,19 +686,19 @@ var Sun = (function() {
 
     this.init = function() {
       this.textureLoader = new THREE.TextureLoader();
-      this.sun = new THREE.DirectionalLight(params.sun.color, params.sun.intensity);
+      this.sunLight = new THREE.DirectionalLight(params.sunLight.color, params.sunLight.intensity);
 
-      this.sun.position.set(
-        params.sun.position.x,
-        params.sun.position.y,
-        params.sun.position.z
+      this.sunLight.position.set(
+        params.sunLight.position.x,
+        params.sunLight.position.y,
+        params.sunLight.position.z
       );
 
-      this.sun.visible = params.sun.visible;
+      this.sunLight.visible = params.sunLight.visible;
 
       this.addLensFlareSun();
 
-      this.obj = this.sun;
+      this.obj = this.sunLight;
     };
 
     this.addLensFlareSun = function() {
@@ -707,7 +707,7 @@ var Sun = (function() {
       var sunLensFlare = this.createLensFlareSun();
       sunLensFlare = this.addLensFlareSunCircleAndHexagon(sunLensFlare);
 
-      this.sun.add(sunLensFlare);
+      this.sunLight.add(sunLensFlare);
 
       this.sunLensFlare = sunLensFlare;
     };
@@ -748,15 +748,15 @@ var Sun = (function() {
       reset: function() {
         var _default = paramsDefault();
 
-        self.sun.visible = _default.sun.visible;
-        self.sun.intensity = _default.sun.intensity;
+        self.sunLight.visible = _default.sunLight.visible;
+        self.sunLight.intensity = _default.sunLight.intensity;
 
-        self.sun.color.setHex(_default.sun.color);
-        this.colors.color = '#' + self.sun.color.getHexString();
+        self.sunLight.color.setHex(_default.sunLight.color);
+        this.colors.color = '#' + self.sunLight.color.getHexString();
 
-        self.sun.position.x = _default.sun.position.x;
-        self.sun.position.y = _default.sun.position.y;
-        self.sun.position.z = _default.sun.position.z;
+        self.sunLight.position.x = _default.sunLight.position.x;
+        self.sunLight.position.y = _default.sunLight.position.y;
+        self.sunLight.position.z = _default.sunLight.position.z;
 
         for (var i = 0; i < params.sunLensFlare.lensFlares.length; i++) {
           self.sunLensFlare.lensFlares[i].size = _default.sunLensFlare.lensFlares[i].size;
@@ -769,19 +769,19 @@ var Sun = (function() {
         this.reset();
 
         var gSun = gui.addFolder('SUN');
-        gSun.add(self.sun, 'visible').listen();
+        gSun.add(self.sunLight, 'visible').listen();
 
         var gLight = gSun.addFolder('Light');
-        gLight.add(self.sun, 'intensity', 0, 10).listen();
+        gLight.add(self.sunLight, 'intensity', 0, 10).listen();
         gLight.addColor(this.colors, 'color').listen()
           .onChange(function(color) {
-            self.sun.color.setHex(color.replace('#', '0x'));
+            self.sunLight.color.setHex(color.replace('#', '0x'));
           });
 
         var gPosition = gSun.addFolder('Position');
-        gPosition.add(self.sun.position, 'x', -2000, 2000).listen();
-        gPosition.add(self.sun.position, 'y', -2000, 2000).listen();
-        gPosition.add(self.sun.position, 'z', -2000, 2000).listen();
+        gPosition.add(self.sunLight.position, 'x', -2000, 2000).listen();
+        gPosition.add(self.sunLight.position, 'y', -2000, 2000).listen();
+        gPosition.add(self.sunLight.position, 'z', -2000, 2000).listen();
 
         var gLensFlares = gSun.addFolder('LensFlares');
 
@@ -825,7 +825,7 @@ var Scene = (function() {
       this.scene = new THREE.Scene();
       this.scene.add(Earth.obj);
       this.scene.add(Moon.obj);
-      this.scene.add(Sun.obj);
+      this.scene.add(Sun.sunLight);
 
       this.scene.background = Skymap.obj;
 
@@ -910,21 +910,21 @@ var SceneShadow = (function(Scene) {
     };
 
     this.setShadowConfiguration = function() {
-      this.cameraHelper = new THREE.CameraHelper(Sun.obj.shadow.camera);
+      this.cameraHelper = new THREE.CameraHelper(Sun.sunLight.shadow.camera);
       Scene.obj.add(this.cameraHelper);
       this.cameraHelper.visible = params.cameraHelper.visible;
 
-      Sun.obj.castShadow = params.shadow.castShadow;
-      Sun.obj.shadow.camera.near = params.shadow.camera.near;
-      Sun.obj.shadow.camera.far = params.shadow.camera.far;
-      Sun.obj.shadow.mapSize.width = params.shadow.mapSize.width;
-      Sun.obj.shadow.mapSize.height = params.shadow.mapSize.height;
-      Sun.obj.shadow.bias = params.shadow.bias;
+      Sun.sunLight.castShadow = params.shadow.castShadow;
+      Sun.sunLight.shadow.camera.near = params.shadow.camera.near;
+      Sun.sunLight.shadow.camera.far = params.shadow.camera.far;
+      Sun.sunLight.shadow.mapSize.width = params.shadow.mapSize.width;
+      Sun.sunLight.shadow.mapSize.height = params.shadow.mapSize.height;
+      Sun.sunLight.shadow.bias = params.shadow.bias;
 
-      Sun.obj.shadow.camera.right = params.shadow.camera.right;
-      Sun.obj.shadow.camera.left = params.shadow.camera.left;
-      Sun.obj.shadow.camera.top = params.shadow.camera.top;
-      Sun.obj.shadow.camera.bottom = params.shadow.camera.bottom;
+      Sun.sunLight.shadow.camera.right = params.shadow.camera.right;
+      Sun.sunLight.shadow.camera.left = params.shadow.camera.left;
+      Sun.sunLight.shadow.camera.top = params.shadow.camera.top;
+      Sun.sunLight.shadow.camera.bottom = params.shadow.camera.bottom;
 
       Earth.obj.castShadow = true;
       Earth.obj.receiveShadow = true;
@@ -940,7 +940,7 @@ var SceneShadow = (function(Scene) {
     };
 
     this.updateShadow = function() {
-      Sun.obj.shadow.camera.updateProjectionMatrix();
+      Sun.sunLight.shadow.camera.updateProjectionMatrix();
       this.cameraHelper.update();
     };
 
@@ -952,17 +952,17 @@ var SceneShadow = (function(Scene) {
 
         //self.cameraHelper.visible = _default.cameraHelper.visible;
 
-        Sun.obj.castShadow = _default.shadow.castShadow;
-        Sun.obj.shadow.camera.near = _default.shadow.camera.near;
-        Sun.obj.shadow.camera.far = _default.shadow.camera.far;
-        Sun.obj.shadow.mapSize.width = _default.shadow.mapSize.width;
-        Sun.obj.shadow.mapSize.height = _default.shadow.mapSize.height;
-        Sun.obj.shadow.bias = _default.shadow.bias;
+        Sun.sunLight.castShadow = _default.shadow.castShadow;
+        Sun.sunLight.shadow.camera.near = _default.shadow.camera.near;
+        Sun.sunLight.shadow.camera.far = _default.shadow.camera.far;
+        Sun.sunLight.shadow.mapSize.width = _default.shadow.mapSize.width;
+        Sun.sunLight.shadow.mapSize.height = _default.shadow.mapSize.height;
+        Sun.sunLight.shadow.bias = _default.shadow.bias;
 
-        Sun.obj.shadow.camera.right = _default.shadow.camera.right;
-        Sun.obj.shadow.camera.left = _default.shadow.camera.left;
-        Sun.obj.shadow.camera.top = _default.shadow.camera.top;
-        Sun.obj.shadow.camera.bottom = _default.shadow.camera.bottom;
+        Sun.sunLight.shadow.camera.right = _default.shadow.camera.right;
+        Sun.sunLight.shadow.camera.left = _default.shadow.camera.left;
+        Sun.sunLight.shadow.camera.top = _default.shadow.camera.top;
+        Sun.sunLight.shadow.camera.bottom = _default.shadow.camera.bottom;
 
         self.updateShadow();
       },
@@ -974,38 +974,38 @@ var SceneShadow = (function(Scene) {
 
         gShadow.add(self.cameraHelper, 'visible').name('cameraHelper').listen();
 
-        gShadow.add(Sun.obj, 'castShadow').listen();
+        gShadow.add(Sun.sunLight, 'castShadow').listen();
 
-        gShadow.add(Sun.obj.shadow.camera, 'near').step(10).listen()
+        gShadow.add(Sun.sunLight.shadow.camera, 'near').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
-        gShadow.add(Sun.obj.shadow.camera, 'far').step(10).listen()
-          .onChange(function() {
-            self.updateShadow();
-          });
-
-        gShadow.add(Sun.obj.shadow.mapSize, 'width', 0, 2048).listen();
-        gShadow.add(Sun.obj.shadow.mapSize, 'height', 0, 2048).listen();
-
-        gShadow.add(Sun.obj.shadow, 'bias', 0, 0.4).step(0.001).listen()
+        gShadow.add(Sun.sunLight.shadow.camera, 'far').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
 
-        gShadow.add(Sun.obj.shadow.camera, 'right').step(10).listen()
+        gShadow.add(Sun.sunLight.shadow.mapSize, 'width', 0, 2048).listen();
+        gShadow.add(Sun.sunLight.shadow.mapSize, 'height', 0, 2048).listen();
+
+        gShadow.add(Sun.sunLight.shadow, 'bias', 0, 0.4).step(0.001).listen()
           .onChange(function() {
             self.updateShadow();
           });
-        gShadow.add(Sun.obj.shadow.camera, 'left').step(10).listen()
+
+        gShadow.add(Sun.sunLight.shadow.camera, 'right').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
-        gShadow.add(Sun.obj.shadow.camera, 'top').step(10).listen()
+        gShadow.add(Sun.sunLight.shadow.camera, 'left').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
-        gShadow.add(Sun.obj.shadow.camera, 'bottom').step(10).listen()
+        gShadow.add(Sun.sunLight.shadow.camera, 'top').step(10).listen()
+          .onChange(function() {
+            self.updateShadow();
+          });
+        gShadow.add(Sun.sunLight.shadow.camera, 'bottom').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
