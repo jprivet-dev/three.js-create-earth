@@ -634,6 +634,12 @@ var Sun = (function() {
             z: -1000,
           }
         },
+        lensFlareTextures: {
+          sun: {
+            sd: ASSETS_PATH + 'lens_flare_sun_512x512.jpg',
+            hd: ASSETS_PATH + 'lens_flare_sun_1024x1024.jpg'
+          }
+        },
         lensFlares: [{
           size: 1400,
           opacity: 1,
@@ -677,6 +683,7 @@ var Sun = (function() {
     var params = paramsDefault();
 
     this.init = function() {
+      this.textureLoader = new THREE.TextureLoader();
       this.sun = new THREE.DirectionalLight(params.sun.color, params.sun.intensity);
 
       this.sun.position.set(
@@ -687,36 +694,50 @@ var Sun = (function() {
 
       this.sun.visible = params.sun.visible;
 
-      this.createLensFlare();
+      this.addLensFlares();
 
       this.obj = this.sun;
     };
 
-    this.createLensFlare = function() {
-      var textureLoader = new THREE.TextureLoader();
-      var textureFlare0 = textureLoader.load(ASSETS_PATH + 'lens_flare_sun_1024x1024.jpg');
-      var textureFlare10 = textureLoader.load(ASSETS_PATH + 'lens_flare_circle_64x64.jpg');
-      var textureFlare20 = textureLoader.load(ASSETS_PATH + 'lens_flare_hexagon_256x256.jpg');
+    this.addLensFlares = function() {
+      this.loadLensFlareTextures();
+      
+      var lensFlare = this.createLensFlareSun();
+      lensFlares = this.addLensFlaresCircleAndHexagon(lensFlare);
 
-      this.lensFlare = new THREE.LensFlare(
-        textureFlare0,
+      this.sun.add(lensFlare);
+      
+      this.lensFlare = lensFlare;
+    };
+
+    this.createLensFlareSun = function() {
+      return new THREE.LensFlare(
+        this.textureFlareSun,
         params.lensFlares[0].size,
         params.lensFlares[0].distance,
         THREE.AdditiveBlending
-      );
-
+      )
+    };
+    
+    this.addLensFlaresCircleAndHexagon = function(lensFlare) {
       for (var i = 1; i < params.lensFlares.length; i++) {
-        var texture = params.lensFlares[i].size < 70 ? textureFlare10 : textureFlare20;
+        var texture = params.lensFlares[i].size < 70 ? this.textureFlareCircle : this.textureFlareHexagon;
 
-        this.lensFlare.add(
+        lensFlare.add(
           texture,
           params.lensFlares[i].size,
           params.lensFlares[i].distance,
           THREE.AdditiveBlending
         );
       }
+      
+      return lensFlare;
+    };
 
-      this.sun.add(this.lensFlare);
+    this.loadLensFlareTextures = function() {
+      this.textureFlareSun = this.textureLoader.load(params.lensFlareTextures.sun.hd);
+      this.textureFlareCircle = this.textureLoader.load(ASSETS_PATH + 'lens_flare_circle_64x64.jpg');
+      this.textureFlareHexagon = this.textureLoader.load(ASSETS_PATH + 'lens_flare_hexagon_256x256.jpg');
     };
 
     this.gui = {
