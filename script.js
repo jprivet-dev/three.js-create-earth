@@ -48,7 +48,9 @@
  */
 var
   ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
-  IMAGE_DEFINITION = 'sd', // sd || hd
+  IMAGE_SD = 'sd',
+  IMAGE_HD = 'hd',
+  IMAGE_DEFINITION = IMAGE_SD,
   COLOR_WHITE = 0xffffff,
   COLOR_BLACK = 0x000000;
 
@@ -225,8 +227,10 @@ var Skymap = (function() {
 
     var params = paramsDefault();
 
-    this.init = function() {
-      this.cubeTextureLoader = new THREE.CubeTextureLoader()
+    this.init = function() {};
+
+    this.getCubeTextureLoader = function() {
+      return new THREE.CubeTextureLoader()
         .setPath(ASSETS_PATH)
         .load(this.getFilenames());
     };
@@ -250,6 +254,40 @@ var Skymap = (function() {
       );
     };
 
+    this.setImgDef = function(imgDef) {
+      params.imgDef = imgDef;
+    };
+
+    this.getImgDef = function() {
+      return params.imgDef;
+    };
+    
+    this.gui = {
+      params: {
+      },
+
+      reset: function() {
+        var _default = paramsDefault();
+        
+        params.imgDef = _default.imgDef;
+        Scene.scene.background = self.getCubeTextureLoader();
+      },
+
+      add: function(gui) {
+        this.reset();
+
+        var gSkymap = gui.addFolder('SKYMAP');
+        gSkymap.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+          .onChange(function(imgDef) {
+            Scene.scene.background = self.getCubeTextureLoader();
+          });
+
+        gSkymap.add(this, 'reset').name('RESET SKYMAP');
+
+        return gSkymap;
+      }
+    };
+    
     this.init();
   };
 
@@ -862,7 +900,7 @@ var Scene = (function() {
       this.scene.add(Moon.pivot);
       this.scene.add(Sun.sunLight);
 
-      this.scene.background = Skymap.cubeTextureLoader;
+      this.scene.background = Skymap.getCubeTextureLoader();
 
       this.enableOrbitControls();
     };
@@ -1081,6 +1119,7 @@ var View = (function() {
 
       Scene.gui.add(gui);
       Camera.gui.add(gui);
+      Skymap.gui.add(gui);
       Sun.gui.add(gui);
       gEarth = Earth.gui.add(gui);
       Cloud.gui.add(gEarth);
@@ -1093,6 +1132,7 @@ var View = (function() {
     this.resetAll = function() {
       Scene.gui.reset();
       Camera.gui.reset();
+      Skymap.gui.reset();
       Sun.gui.reset();
       Earth.gui.reset();
       Cloud.gui.reset();
