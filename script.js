@@ -261,14 +261,13 @@ var Skymap = (function() {
     this.getImgDef = function() {
       return params.imgDef;
     };
-    
+
     this.gui = {
-      params: {
-      },
+      params: {},
 
       reset: function() {
         var _default = paramsDefault();
-        
+
         params.imgDef = _default.imgDef;
         Scene.scene.background = self.getCubeTextureLoader();
       },
@@ -287,7 +286,7 @@ var Skymap = (function() {
         return gSkymap;
       }
     };
-    
+
     this.init();
   };
 
@@ -390,6 +389,10 @@ var Cloud = (function() {
         gCloud.add(self.cloudMesh, 'visible').listen();
 
         var gMaterial = gCloud.addFolder('Material');
+        gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+          .onChange(function(imgDef) {
+          // TODO
+        });
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'transparent').listen();
         gMaterial.add(self.material, 'opacity', 0, 1).listen();
@@ -515,6 +518,10 @@ var Earth = (function(Cloud) {
         gEarth.add(self.earthMesh, 'visible').listen();
 
         var gMaterial = gEarth.addFolder('Material');
+        gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+          .onChange(function(imgDef) {
+          // TODO
+        });
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
@@ -659,6 +666,10 @@ var Moon = (function(Earth) {
         gPosition.add(self.moonMesh.position, 'z', -100, 100).listen();
 
         var gMaterial = gMoon.addFolder('Material');
+        gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+          .onChange(function(imgDef) {
+          // TODO
+        });
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
@@ -856,8 +867,21 @@ var Sun = (function() {
         gPosition.add(self.sunLight.position, 'y', -2000, 2000).listen();
         gPosition.add(self.sunLight.position, 'z', -2000, 2000).listen();
 
-        var gLensFlares = gSun.addFolder('LensFlares');
+        var gLensFlaresTextures = gSun.addFolder('LensFlaresTextures');
+        gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+          .onChange(function(imgDef) {
+          // TODO
+        });
+        gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+          .onChange(function(imgDef) {
+          // TODO
+        });
+        gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+          .onChange(function(imgDef) {
+          // TODO
+        });
 
+        var gLensFlares = gSun.addFolder('LensFlares');
         for (var i = 0; i < self.sunLensFlare.lensFlares.length; i++) {
           gLensFlares.add(self.sunLensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
           gLensFlares.add(self.sunLensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
