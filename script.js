@@ -339,10 +339,10 @@ var Cloud = (function() {
         color: params.material.color,
         opacity: params.material.opacity,
         transparent: params.material.transparent,
-        alphaMap: new THREE.TextureLoader().load(params.material.alphaMap[params.imgDef]),
-        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]),
         bumpScale: params.material.bumpScale
       });
+      
+      this.materialSetTextures();
 
       this.geometry = new THREE.SphereGeometry(
         params.geometry.radius,
@@ -359,7 +359,13 @@ var Cloud = (function() {
         this.cloudMesh.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
       }
     };
-
+    
+    this.materialSetTextures = function(imgDef) {
+      params.imgDef = imgDef || params.imgDef;
+      this.material.alphaMap = new THREE.TextureLoader().load(params.material.alphaMap[params.imgDef]);
+      this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);   
+    };
+    
     this.gui = {
       params: {
         colors: {}
@@ -380,6 +386,8 @@ var Cloud = (function() {
 
         params.animate.enabled = _default.animate.enabled;
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
+        
+        self.materialSetTextures(_default.imgDef);
       },
 
       add: function(gui) {
@@ -389,10 +397,12 @@ var Cloud = (function() {
         gCloud.add(self.cloudMesh, 'visible').listen();
 
         var gMaterial = gCloud.addFolder('Material');
+
         gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-          // TODO
-        });
+            self.materialSetTextures(imgDef);
+          });
+
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'transparent').listen();
         gMaterial.add(self.material, 'opacity', 0, 1).listen();
@@ -470,13 +480,12 @@ var Earth = (function(Cloud) {
 
       this.material = new THREE.MeshPhongMaterial({
         wireframe: params.material.wireframe,
-        map: new THREE.TextureLoader().load(params.material.map[params.imgDef]),
-        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]),
-        specularMap: new THREE.TextureLoader().load(params.material.specularMap[params.imgDef]),
         bumpScale: params.material.bumpScale,
         specular: params.material.specular,
         shininess: params.material.shininess
       });
+      
+      this.materialSetTextures();
 
       this.earthMesh = new THREE.Mesh(this.geometry, this.material);
       this.earthMesh.visible = params.visible;
@@ -488,6 +497,13 @@ var Earth = (function(Cloud) {
       if (params.animate.enabled) {
         this.earthMesh.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
       }
+    };
+    
+    this.materialSetTextures = function(imgDef) {
+      params.imgDef = imgDef || params.imgDef;
+      this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
+      this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
+      this.material.specularMap = new THREE.TextureLoader().load(params.material.specularMap[params.imgDef]);      
     };
 
     this.gui = {
@@ -506,9 +522,11 @@ var Earth = (function(Cloud) {
 
         self.material.specular.setHex(_default.material.specular);
         this.params.colors.specular = '#' + self.material.specular.getHexString();
-
+        
         params.animate.enabled = _default.animate.enabled;
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
+
+        self.materialSetTextures(_default.imgDef);
       },
 
       add: function(gui) {
@@ -518,10 +536,12 @@ var Earth = (function(Cloud) {
         gEarth.add(self.earthMesh, 'visible').listen();
 
         var gMaterial = gEarth.addFolder('Material');
+
         gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-          // TODO
-        });
+            self.materialSetTextures(imgDef);
+          });
+
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
@@ -600,11 +620,11 @@ var Moon = (function(Earth) {
 
       this.material = new THREE.MeshPhongMaterial({
         wireframe: params.material.wireframe,
-        map: new THREE.TextureLoader().load(params.material.map[params.imgDef]),
-        bumpMap: new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]),
         bumpScale: params.material.bumpScale,
         shininess: params.material.shininess
       });
+      
+      this.materialSetTextures();
 
       this.moonMesh = new THREE.Mesh(this.geometry, this.material);
 
@@ -631,7 +651,13 @@ var Moon = (function(Earth) {
         this.pivot.rotation.y += delta * 2 * Math.PI * params.animate.pivotRotationsPerSecond;
       }
     };
-
+    
+    this.materialSetTextures = function(imgDef) {
+      params.imgDef = imgDef || params.imgDef;
+      this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
+      this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
+    };
+    
     this.gui = {
       params: {
         colors: {}
@@ -652,6 +678,8 @@ var Moon = (function(Earth) {
 
         params.animate.enabled = _default.animate.enabled;
         params.animate.pivotRotationsPerSecond = _default.animate.pivotRotationsPerSecond;
+        
+        self.materialSetTextures(_default.imgDef);
       },
 
       add: function(gui) {
@@ -668,8 +696,8 @@ var Moon = (function(Earth) {
         var gMaterial = gMoon.addFolder('Material');
         gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-          // TODO
-        });
+            self.materialSetTextures(imgDef);
+          });
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
         gMaterial.add(self.material, 'shininess', 0, 10).listen();
@@ -870,16 +898,16 @@ var Sun = (function() {
         var gLensFlaresTextures = gSun.addFolder('LensFlaresTextures');
         gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-          // TODO
-        });
+            // TODO
+          });
         gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-          // TODO
-        });
+            // TODO
+          });
         gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-          // TODO
-        });
+            // TODO
+          });
 
         var gLensFlares = gSun.addFolder('LensFlares');
         for (var i = 0; i < self.sunLensFlare.lensFlares.length; i++) {
