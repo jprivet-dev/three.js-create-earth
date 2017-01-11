@@ -228,6 +228,11 @@ var Skymap = (function() {
     var params = paramsDefault();
 
     this.init = function() {};
+    
+    this.setSceneBgCubeTexture = function(_scene, imgDef) {
+        params.imgDef = imgDef || params.imgDef;
+        _scene.background = this.getCubeTextureLoader();
+    };
 
     this.getCubeTextureLoader = function() {
       return new THREE.CubeTextureLoader()
@@ -259,18 +264,15 @@ var Skymap = (function() {
 
       reset: function() {
         var _default = paramsDefault();
-
-        params.imgDef = _default.imgDef;
-        Scene.scene.background = self.getCubeTextureLoader();
+        self.setSceneBgCubeTexture(Scene.scene, _default.imgDef);
       },
 
       add: function(gui) {
-        this.reset();
-
         var gSkymap = gui.addFolder('SKYMAP');
+        
         gSkymap.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-            Scene.scene.background = self.getCubeTextureLoader();
+            self.setSceneBgCubeTexture(Scene.scene, imgDef);
           });
 
         gSkymap.add(this, 'reset').name('RESET SKYMAP');
@@ -944,7 +946,7 @@ var Scene = (function() {
       this.scene.add(Moon.pivot);
       this.scene.add(Sun.sunLight);
 
-      this.scene.background = Skymap.getCubeTextureLoader();
+      Skymap.setSceneBgCubeTexture(this.scene);
 
       this.enableOrbitControls();
     };
@@ -1186,8 +1188,8 @@ var View = (function() {
     };
 
     this.imgDefHdAll = function() {
-      //Skymap.gui.reset();
       //Sun.gui.reset();
+      Skymap.setSceneBgCubeTexture(Scene.scene, IMAGE_HD);
       Earth.setMaterialTextures(IMAGE_HD);
       Cloud.setMaterialTextures(IMAGE_HD);
       Moon.setMaterialTextures(IMAGE_HD);
