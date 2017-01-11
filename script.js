@@ -45,6 +45,11 @@
  *
  * https://github.com/mrdoob/three.js/issues/1830
  * https://threejs.org/examples/webgl_animation_skinning_blending.html
+ *
+ * CLICK ON OBJECT
+ *
+ * https://stemkoski.github.io/Three.js/Mouse-Click.html
+ * https://threejs.org/examples/canvas_interactive_cubes.html
  */
 var
   ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
@@ -1021,7 +1026,7 @@ var SceneShadow = (function(Scene) {
       this.cameraHelper = new THREE.CameraHelper(Sun.sunLight.shadow.camera);
       Scene.scene.add(this.cameraHelper);
       this.cameraHelper.visible = params.cameraHelper.visible;
-
+      
       Sun.sunLight.castShadow = params.shadow.castShadow;
       Sun.sunLight.shadow.camera.near = params.shadow.camera.near;
       Sun.sunLight.shadow.camera.far = params.shadow.camera.far;
@@ -1045,6 +1050,8 @@ var SceneShadow = (function(Scene) {
       Renderer.webGLRenderer.shadowMap.enabled = true;
       Renderer.webGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
       Renderer.webGLRenderer.shadowMapSoft = true;
+      
+      this.updateShadow();
     };
 
     this.updateShadow = function() {
