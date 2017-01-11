@@ -163,18 +163,16 @@ var Camera = (function() {
       },
 
       reset: function() {
-        var _default = paramsDefault();
+        var params = paramsDefault();
 
-        self.perspectiveCamera.fov = _default.perspectiveCamera.fov;
-        self.perspectiveCamera.near = _default.perspectiveCamera.near;
-        self.perspectiveCamera.far = _default.perspectiveCamera.far;
+        self.perspectiveCamera.fov = params.perspectiveCamera.fov;
+        self.perspectiveCamera.near = params.perspectiveCamera.near;
+        self.perspectiveCamera.far = params.perspectiveCamera.far;
 
         self.updateAspect();
       },
 
       add: function(gui) {
-        this.reset();
-
         var gCamera = gui.addFolder('CAMERA');
 
         gCamera.add(self.perspectiveCamera, 'fov', 0, 150).listen()
