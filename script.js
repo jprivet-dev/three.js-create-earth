@@ -254,14 +254,6 @@ var Skymap = (function() {
       );
     };
 
-    this.setImgDef = function(imgDef) {
-      params.imgDef = imgDef;
-    };
-
-    this.getImgDef = function() {
-      return params.imgDef;
-    };
-
     this.gui = {
       params: {},
 
@@ -342,7 +334,7 @@ var Cloud = (function() {
         bumpScale: params.material.bumpScale
       });
       
-      this.materialSetTextures();
+      this.setMaterialTextures();
 
       this.geometry = new THREE.SphereGeometry(
         params.geometry.radius,
@@ -360,7 +352,7 @@ var Cloud = (function() {
       }
     };
     
-    this.materialSetTextures = function(imgDef) {
+    this.setMaterialTextures = function(imgDef) {
       params.imgDef = imgDef || params.imgDef;
       this.material.alphaMap = new THREE.TextureLoader().load(params.material.alphaMap[params.imgDef]);
       this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);   
@@ -387,7 +379,7 @@ var Cloud = (function() {
         params.animate.enabled = _default.animate.enabled;
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
         
-        self.materialSetTextures(_default.imgDef);
+        self.setMaterialTextures(_default.imgDef);
       },
 
       add: function(gui) {
@@ -400,7 +392,7 @@ var Cloud = (function() {
 
         gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-            self.materialSetTextures(imgDef);
+            self.setMaterialTextures(imgDef);
           });
 
         gMaterial.add(self.material, 'wireframe').listen();
@@ -485,7 +477,7 @@ var Earth = (function(Cloud) {
         shininess: params.material.shininess
       });
       
-      this.materialSetTextures();
+      this.setMaterialTextures();
 
       this.earthMesh = new THREE.Mesh(this.geometry, this.material);
       this.earthMesh.visible = params.visible;
@@ -499,7 +491,7 @@ var Earth = (function(Cloud) {
       }
     };
     
-    this.materialSetTextures = function(imgDef) {
+    this.setMaterialTextures = function(imgDef) {
       params.imgDef = imgDef || params.imgDef;
       this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
       this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
@@ -526,7 +518,7 @@ var Earth = (function(Cloud) {
         params.animate.enabled = _default.animate.enabled;
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
 
-        self.materialSetTextures(_default.imgDef);
+        self.setMaterialTextures(_default.imgDef);
       },
 
       add: function(gui) {
@@ -539,7 +531,7 @@ var Earth = (function(Cloud) {
 
         gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-            self.materialSetTextures(imgDef);
+            self.setMaterialTextures(imgDef);
           });
 
         gMaterial.add(self.material, 'wireframe').listen();
@@ -624,7 +616,7 @@ var Moon = (function(Earth) {
         shininess: params.material.shininess
       });
       
-      this.materialSetTextures();
+      this.setMaterialTextures();
 
       this.moonMesh = new THREE.Mesh(this.geometry, this.material);
 
@@ -652,7 +644,7 @@ var Moon = (function(Earth) {
       }
     };
     
-    this.materialSetTextures = function(imgDef) {
+    this.setMaterialTextures = function(imgDef) {
       params.imgDef = imgDef || params.imgDef;
       this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
       this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
@@ -679,7 +671,7 @@ var Moon = (function(Earth) {
         params.animate.enabled = _default.animate.enabled;
         params.animate.pivotRotationsPerSecond = _default.animate.pivotRotationsPerSecond;
         
-        self.materialSetTextures(_default.imgDef);
+        self.setMaterialTextures(_default.imgDef);
       },
 
       add: function(gui) {
@@ -696,7 +688,7 @@ var Moon = (function(Earth) {
         var gMaterial = gMoon.addFolder('Material');
         gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-            self.materialSetTextures(imgDef);
+            self.setMaterialTextures(imgDef);
           });
         gMaterial.add(self.material, 'wireframe').listen();
         gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
@@ -1179,6 +1171,7 @@ var View = (function() {
       SceneShadow.gui.add(gui);
 
       gui.add(this, 'resetAll').name('RESET ALL');
+      gui.add(this, 'imgDefHdAll').name('IMG HD ALL');
     };
 
     this.resetAll = function() {
@@ -1190,6 +1183,14 @@ var View = (function() {
       Cloud.gui.reset();
       Moon.gui.reset();
       SceneShadow.gui.reset();
+    };
+
+    this.imgDefHdAll = function() {
+      //Skymap.gui.reset();
+      //Sun.gui.reset();
+      Earth.setMaterialTextures(IMAGE_HD);
+      Cloud.setMaterialTextures(IMAGE_HD);
+      Moon.setMaterialTextures(IMAGE_HD);
     };
 
     this.updateAll = function() {
