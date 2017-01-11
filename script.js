@@ -261,8 +261,8 @@ var Skymap = (function() {
       params: {},
 
       reset: function() {
-        var _default = paramsDefault();
-        self.setSceneBgCubeTexture(Scene.scene, _default.imgDef);
+        var params = paramsDefault();
+        self.setSceneBgCubeTexture(Scene.scene, params.imgDef);
       },
 
       add: function(gui) {
