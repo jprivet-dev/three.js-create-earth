@@ -163,11 +163,11 @@ var Camera = (function() {
       },
 
       reset: function() {
-        var params = paramsDefault();
+        var _default = paramsDefault();
 
-        self.perspectiveCamera.fov = params.perspectiveCamera.fov;
-        self.perspectiveCamera.near = params.perspectiveCamera.near;
-        self.perspectiveCamera.far = params.perspectiveCamera.far;
+        self.perspectiveCamera.fov = _default.perspectiveCamera.fov;
+        self.perspectiveCamera.near = _default.perspectiveCamera.near;
+        self.perspectiveCamera.far = _default.perspectiveCamera.far;
 
         self.updateAspect();
       },
@@ -226,10 +226,10 @@ var Skymap = (function() {
     var params = paramsDefault();
 
     this.init = function() {};
-    
+
     this.setSceneBgCubeTexture = function(_scene, imgDef) {
-        params.imgDef = imgDef || params.imgDef;
-        _scene.background = this.getCubeTextureLoader();
+      params.imgDef = imgDef || params.imgDef;
+      _scene.background = this.getCubeTextureLoader();
     };
 
     this.getCubeTextureLoader = function() {
@@ -261,13 +261,13 @@ var Skymap = (function() {
       params: {},
 
       reset: function() {
-        var params = paramsDefault();
-        self.setSceneBgCubeTexture(Scene.scene, params.imgDef);
+        var _default = paramsDefault();
+        self.setSceneBgCubeTexture(Scene.scene, _default.imgDef);
       },
 
       add: function(gui) {
         var gSkymap = gui.addFolder('SKYMAP');
-        
+
         gSkymap.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
             self.setSceneBgCubeTexture(Scene.scene, imgDef);
@@ -333,7 +333,7 @@ var Cloud = (function() {
         transparent: params.material.transparent,
         bumpScale: params.material.bumpScale
       });
-      
+
       this.setMaterialTextures();
 
       this.geometry = new THREE.SphereGeometry(
@@ -351,13 +351,13 @@ var Cloud = (function() {
         this.cloudMesh.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
       }
     };
-    
+
     this.setMaterialTextures = function(imgDef) {
       params.imgDef = imgDef || params.imgDef;
       this.material.alphaMap = new THREE.TextureLoader().load(params.material.alphaMap[params.imgDef]);
-      this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);   
+      this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
     };
-    
+
     this.gui = {
       params: {
         colors: {}
@@ -372,18 +372,22 @@ var Cloud = (function() {
         self.material.transparent = _default.material.transparent;
         self.material.opacity = _default.material.opacity;
         self.material.bumpScale = _default.material.bumpScale;
-
         self.material.color.setHex(_default.material.color);
-        this.params.colors.color = '#' + self.material.color.getHexString();
 
         params.animate.enabled = _default.animate.enabled;
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
-        
+
         self.setMaterialTextures(_default.imgDef);
+        
+        this.resetColorsHexString();
+      },
+      
+      resetColorsHexString: function() {
+        this.params.colors.color = '#' + self.material.color.getHexString();        
       },
 
       add: function(gui) {
-        this.reset();
+        this.resetColorsHexString();
 
         var gCloud = gui.addFolder('CLOUD');
         gCloud.add(self.cloudMesh, 'visible').listen();
@@ -476,7 +480,7 @@ var Earth = (function(Cloud) {
         specular: params.material.specular,
         shininess: params.material.shininess
       });
-      
+
       this.setMaterialTextures();
 
       this.earthMesh = new THREE.Mesh(this.geometry, this.material);
@@ -490,12 +494,12 @@ var Earth = (function(Cloud) {
         this.earthMesh.rotation.y += delta * 2 * Math.PI * params.animate.rotationsYPerSecond;
       }
     };
-    
+
     this.setMaterialTextures = function(imgDef) {
       params.imgDef = imgDef || params.imgDef;
       this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
       this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
-      this.material.specularMap = new THREE.TextureLoader().load(params.material.specularMap[params.imgDef]);      
+      this.material.specularMap = new THREE.TextureLoader().load(params.material.specularMap[params.imgDef]);
     };
 
     this.gui = {
@@ -511,18 +515,22 @@ var Earth = (function(Cloud) {
         self.material.wireframe = _default.material.wireframe;
         self.material.bumpScale = _default.material.bumpScale;
         self.material.shininess = _default.material.shininess;
-
         self.material.specular.setHex(_default.material.specular);
-        this.params.colors.specular = '#' + self.material.specular.getHexString();
-        
+
         params.animate.enabled = _default.animate.enabled;
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
 
         self.setMaterialTextures(_default.imgDef);
+        
+        this.resetColorsHexString();
       },
-
+      
+      resetColorsHexString: function() {
+        this.params.colors.specular = '#' + self.material.specular.getHexString();
+      },
+      
       add: function(gui) {
-        this.reset();
+        this.resetColorsHexString();
 
         var gEarth = gui.addFolder('EARTH');
         gEarth.add(self.earthMesh, 'visible').listen();
@@ -615,7 +623,7 @@ var Moon = (function(Earth) {
         bumpScale: params.material.bumpScale,
         shininess: params.material.shininess
       });
-      
+
       this.setMaterialTextures();
 
       this.moonMesh = new THREE.Mesh(this.geometry, this.material);
@@ -643,13 +651,13 @@ var Moon = (function(Earth) {
         this.pivot.rotation.y += delta * 2 * Math.PI * params.animate.pivotRotationsPerSecond;
       }
     };
-    
+
     this.setMaterialTextures = function(imgDef) {
       params.imgDef = imgDef || params.imgDef;
       this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
       this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
     };
-    
+
     this.gui = {
       params: {
         colors: {}
@@ -670,13 +678,11 @@ var Moon = (function(Earth) {
 
         params.animate.enabled = _default.animate.enabled;
         params.animate.pivotRotationsPerSecond = _default.animate.pivotRotationsPerSecond;
-        
+
         self.setMaterialTextures(_default.imgDef);
       },
 
       add: function(gui) {
-        this.reset();
-
         var gMoon = gui.addFolder('MOON');
         gMoon.add(self.moonMesh, 'visible').listen();
 
@@ -854,9 +860,7 @@ var Sun = (function() {
 
         self.sunLight.visible = _default.sunLight.visible;
         self.sunLight.intensity = _default.sunLight.intensity;
-
         self.sunLight.color.setHex(_default.sunLight.color);
-        this.params.colors.color = '#' + self.sunLight.color.getHexString();
 
         self.sunLight.position.x = _default.sunLight.position.x;
         self.sunLight.position.y = _default.sunLight.position.y;
@@ -867,10 +871,15 @@ var Sun = (function() {
           self.sunLensFlare.lensFlares[i].opacity = _default.sunLensFlare.lensFlares[i].opacity;
           self.sunLensFlare.lensFlares[i].distance = _default.sunLensFlare.lensFlares[i].distance;
         }
+        this.resetColorsHexString();
       },
-
+      
+      resetColorsHexString: function() {
+        this.params.colors.color = '#' + self.sunLight.color.getHexString();
+      },
+      
       add: function(gui) {
-        this.reset();
+        this.resetColorsHexString();
 
         var gSun = gui.addFolder('SUN');
         gSun.add(self.sunLight, 'visible').listen();
@@ -969,8 +978,6 @@ var Scene = (function() {
       },
 
       add: function(gui) {
-        this.reset();
-
         var gOrbitControls = gui.addFolder('ORBIT CONTROLS');
         gOrbitControls.add(self.orbitControls, 'autoRotate').listen();
         gOrbitControls.add(self.orbitControls, 'autoRotateSpeed', -1, 1).listen();
@@ -1085,8 +1092,6 @@ var SceneShadow = (function(Scene) {
       },
 
       add: function(gui) {
-        this.reset();
-
         var gShadow = gui.addFolder('SHADOW');
 
         gShadow.add(self.cameraHelper, 'visible').name('cameraHelper').listen();
