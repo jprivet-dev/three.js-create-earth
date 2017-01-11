@@ -805,31 +805,25 @@ var Sun = (function() {
       );
 
       this.sunLight.visible = params.sunLight.visible;
-
-      this.addLensFlareSun();
+      this.sunLensFlare = this.getSunLensFlare();
+      
+      this.sunLight.add(this.sunLensFlare);
     };
 
-    this.addLensFlareSun = function() {
+    this.getSunLensFlare = function() {
       this.loadLensFlareTextures();
 
-      var sunLensFlare = this.createLensFlareSun();
-      sunLensFlare = this.addLensFlareSunCircleAndHexagon(sunLensFlare);
-
-      this.sunLight.add(sunLensFlare);
-
-      this.sunLensFlare = sunLensFlare;
-    };
-
-    this.createLensFlareSun = function() {
-      return new THREE.LensFlare(
+      var sunLensFlare = new THREE.LensFlare(
         this.textureFlareSun,
         params.sunLensFlare.lensFlares[0].size,
         params.sunLensFlare.lensFlares[0].distance,
         THREE.AdditiveBlending
       );
+      
+      return this.addLensFlareSunCirclesAndHexagons(sunLensFlare);
     };
 
-    this.addLensFlareSunCircleAndHexagon = function(sunLensFlare) {
+    this.addLensFlareSunCirclesAndHexagons = function(sunLensFlare) {
       for (var i = 1; i < params.sunLensFlare.lensFlares.length; i++) {
         var texture = params.sunLensFlare.lensFlares[i].size < 70 ? this.textureFlareCircle : this.textureFlareHexagon;
 
@@ -871,6 +865,7 @@ var Sun = (function() {
           self.sunLensFlare.lensFlares[i].opacity = _default.sunLensFlare.lensFlares[i].opacity;
           self.sunLensFlare.lensFlares[i].distance = _default.sunLensFlare.lensFlares[i].distance;
         }
+        
         this.resetColorsHexString();
       },
       
@@ -896,21 +891,12 @@ var Sun = (function() {
         gPosition.add(self.sunLight.position, 'y', -2000, 2000).listen();
         gPosition.add(self.sunLight.position, 'z', -2000, 2000).listen();
 
-        var gLensFlaresTextures = gSun.addFolder('LensFlaresTextures');
-        gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
-          .onChange(function(imgDef) {
-            // TODO
-          });
-        gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
-          .onChange(function(imgDef) {
-            // TODO
-          });
-        gLensFlaresTextures.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
-          .onChange(function(imgDef) {
-            // TODO
-          });
-
         var gLensFlares = gSun.addFolder('LensFlares');
+        gLensFlares.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+          .onChange(function(imgDef) {
+            // TODO
+          });
+        
         for (var i = 0; i < self.sunLensFlare.lensFlares.length; i++) {
           gLensFlares.add(self.sunLensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
           gLensFlares.add(self.sunLensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
