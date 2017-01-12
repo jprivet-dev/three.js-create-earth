@@ -383,12 +383,12 @@ var Cloud = (function() {
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
 
         self.setMaterialTextures(_default.imgDef);
-        
+
         this.resetColorsHexString();
       },
-      
+
       resetColorsHexString: function() {
-        this.params.colors.color = '#' + self.material.color.getHexString();        
+        this.params.colors.color = '#' + self.material.color.getHexString();
       },
 
       add: function(gui) {
@@ -526,14 +526,14 @@ var Earth = (function(Cloud) {
         params.animate.rotationsYPerSecond = _default.animate.rotationsYPerSecond;
 
         self.setMaterialTextures(_default.imgDef);
-        
+
         this.resetColorsHexString();
       },
-      
+
       resetColorsHexString: function() {
         this.params.colors.specular = '#' + self.material.specular.getHexString();
       },
-      
+
       add: function(gui) {
         this.resetColorsHexString();
 
@@ -810,9 +810,21 @@ var Sun = (function() {
       );
 
       this.sunLight.visible = params.sunLight.visible;
+      this.createLensFlare();
+    };
+
+    this.createLensFlare = function(imgDef) {
+      this.removeLensFlare();
+
+      params.imgDef = imgDef || params.imgDef;
       this.sunLensFlare = this.getSunLensFlare();
-      
       this.sunLight.add(this.sunLensFlare);
+    };
+
+    this.removeLensFlare = function() {
+      if ('undefined' !== this.sunLensFlare) {
+        this.sunLight.remove(this.sunLensFlare);
+      }
     };
 
     this.getSunLensFlare = function() {
@@ -824,7 +836,7 @@ var Sun = (function() {
         params.sunLensFlare.lensFlares[0].distance,
         THREE.AdditiveBlending
       );
-      
+
       return this.addLensFlareSunCirclesAndHexagons(sunLensFlare);
     };
 
@@ -870,14 +882,14 @@ var Sun = (function() {
           self.sunLensFlare.lensFlares[i].opacity = _default.sunLensFlare.lensFlares[i].opacity;
           self.sunLensFlare.lensFlares[i].distance = _default.sunLensFlare.lensFlares[i].distance;
         }
-        
+
         this.resetColorsHexString();
       },
-      
+
       resetColorsHexString: function() {
         this.params.colors.color = '#' + self.sunLight.color.getHexString();
       },
-      
+
       add: function(gui) {
         this.resetColorsHexString();
 
@@ -899,9 +911,9 @@ var Sun = (function() {
         var gLensFlares = gSun.addFolder('LensFlares');
         gLensFlares.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-            // TODO
+            self.createLensFlare(imgDef);
           });
-        
+
         for (var i = 0; i < self.sunLensFlare.lensFlares.length; i++) {
           gLensFlares.add(self.sunLensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
           gLensFlares.add(self.sunLensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
@@ -1026,7 +1038,7 @@ var SceneShadow = (function(Scene) {
       this.cameraHelper = new THREE.CameraHelper(Sun.sunLight.shadow.camera);
       Scene.scene.add(this.cameraHelper);
       this.cameraHelper.visible = params.cameraHelper.visible;
-      
+
       Sun.sunLight.castShadow = params.shadow.castShadow;
       Sun.sunLight.shadow.camera.near = params.shadow.camera.near;
       Sun.sunLight.shadow.camera.far = params.shadow.camera.far;
@@ -1050,7 +1062,7 @@ var SceneShadow = (function(Scene) {
       Renderer.webGLRenderer.shadowMap.enabled = true;
       Renderer.webGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
       Renderer.webGLRenderer.shadowMapSoft = true;
-      
+
       this.updateShadow();
     };
 
@@ -1144,6 +1156,10 @@ var View = (function() {
   var self = this,
     clock, delta;
 
+  var params = {
+    imgDef: IMAGE_DEFINITION
+  };
+
   var _View = function() {
     this.init = function() {
       clock = new THREE.Clock();
@@ -1169,7 +1185,14 @@ var View = (function() {
       SceneShadow.gui.add(gui);
 
       gui.add(this, 'resetAll').name('RESET ALL');
-      gui.add(this, 'imgDefHdAll').name('IMG HD ALL');
+      gui.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).name('IMG DEF ALL')
+        .onChange(function(imgDef) {
+          Sun.createLensFlare(imgDef);
+          Skymap.setSceneBgCubeTexture(Scene.scene, imgDef);
+          Earth.setMaterialTextures(imgDef);
+          Cloud.setMaterialTextures(imgDef);
+          Moon.setMaterialTextures(imgDef);
+        });
     };
 
     this.resetAll = function() {
@@ -1181,14 +1204,6 @@ var View = (function() {
       Cloud.gui.reset();
       Moon.gui.reset();
       SceneShadow.gui.reset();
-    };
-
-    this.imgDefHdAll = function() {
-      //Sun.gui.reset();
-      Skymap.setSceneBgCubeTexture(Scene.scene, IMAGE_HD);
-      Earth.setMaterialTextures(IMAGE_HD);
-      Cloud.setMaterialTextures(IMAGE_HD);
-      Moon.setMaterialTextures(IMAGE_HD);
     };
 
     this.updateAll = function() {
