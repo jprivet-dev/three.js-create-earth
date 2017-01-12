@@ -228,10 +228,7 @@ var Skymap = (function() {
     this.init = function() {};
     
     this.setParamImgDef = function(imgDef) {
-      if (DEFAULT === imgDef) {
-        imgDef = paramsDefault().imgDef;
-      }
-      params.imgDef = imgDef || params.imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;      
     };
 
     this.setSceneBgCubeTexture = function(_scene, imgDef) {
@@ -360,10 +357,7 @@ var Cloud = (function() {
     };
 
     this.setParamImgDef = function(imgDef) {
-      if (DEFAULT === imgDef) {
-        imgDef = paramsDefault().imgDef;
-      }
-      params.imgDef = imgDef || params.imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;      
     };
     
     this.setMaterialTextures = function(imgDef) {
@@ -510,10 +504,7 @@ var Earth = (function(Cloud) {
     };
 
     this.setParamImgDef = function(imgDef) {
-      if (DEFAULT === imgDef) {
-        imgDef = paramsDefault().imgDef;
-      }
-      params.imgDef = imgDef || params.imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;      
     };
     
     this.setMaterialTextures = function(imgDef) {
@@ -674,10 +665,7 @@ var Moon = (function(Earth) {
     };
     
     this.setParamImgDef = function(imgDef) {
-      if (DEFAULT === imgDef) {
-        imgDef = paramsDefault().imgDef;
-      }
-      params.imgDef = imgDef || params.imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;      
     };
     
     this.setMaterialTextures = function(imgDef) {
@@ -837,10 +825,7 @@ var Sun = (function() {
     };
     
     this.setParamImgDef = function(imgDef) {
-      if (DEFAULT === imgDef) {
-        imgDef = paramsDefault().imgDef;
-      }
-      params.imgDef = imgDef || params.imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;      
     };
 
     this.createLensFlare = function(imgDef) {
@@ -1216,6 +1201,7 @@ var View = (function() {
 
       gui.add(params, 'imgDef', [DEFAULT, IMAGE_SD, IMAGE_HD]).name('IMG DEF ALL').listen()
         .onChange(function(imgDef) {
+          imgDef = DEFAULT === imgDef ? undefined : imgDef;
           Sun.createLensFlare(imgDef);
           Skymap.setSceneBgCubeTexture(Scene.scene, imgDef);
           Earth.setMaterialTextures(imgDef);
