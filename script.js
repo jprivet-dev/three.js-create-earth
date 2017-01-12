@@ -45,17 +45,12 @@
  *
  * https://github.com/mrdoob/three.js/issues/1830
  * https://threejs.org/examples/webgl_animation_skinning_blending.html
- *
- * CLICK ON OBJECT
- *
- * https://stemkoski.github.io/Three.js/Mouse-Click.html
- * https://threejs.org/examples/canvas_interactive_cubes.html
  */
 var
   ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
+  DEFAULT = 'default',
   IMAGE_SD = 'sd',
   IMAGE_HD = 'hd',
-  IMAGE_DEFINITION = IMAGE_SD,
   COLOR_WHITE = 0xffffff,
   COLOR_BLACK = 0x000000;
 
@@ -216,7 +211,7 @@ var Skymap = (function() {
 
     var paramsDefault = function() {
       return {
-        imgDef: IMAGE_DEFINITION,
+        imgDef: IMAGE_HD,
         cubeTextureLoader: {
           positionTag: '{pos}',
           positions: ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
@@ -231,12 +226,19 @@ var Skymap = (function() {
     var params = paramsDefault();
 
     this.init = function() {};
-
-    this.setSceneBgCubeTexture = function(_scene, imgDef) {
-      params.imgDef = imgDef || params.imgDef;
-      _scene.background = this.getCubeTextureLoader();
+    
+    this.setParamImgDef = function(imgDef) {
+      if (DEFAULT === imgDef) {
+        imgDef = paramsDefault().imgDef;
+      }
+      params.imgDef = imgDef || params.imgDef;      
     };
 
+    this.setSceneBgCubeTexture = function(_scene, imgDef) {
+      this.setParamImgDef(imgDef);
+      _scene.background = this.getCubeTextureLoader();
+    };
+    
     this.getCubeTextureLoader = function() {
       return new THREE.CubeTextureLoader()
         .setPath(ASSETS_PATH)
@@ -299,7 +301,7 @@ var Cloud = (function() {
 
     var paramsDefault = function() {
       return {
-        imgDef: IMAGE_DEFINITION,
+        imgDef: IMAGE_SD,
         visible: true,
         material: {
           wireframe: false,
@@ -357,8 +359,15 @@ var Cloud = (function() {
       }
     };
 
+    this.setParamImgDef = function(imgDef) {
+      if (DEFAULT === imgDef) {
+        imgDef = paramsDefault().imgDef;
+      }
+      params.imgDef = imgDef || params.imgDef;      
+    };
+    
     this.setMaterialTextures = function(imgDef) {
-      params.imgDef = imgDef || params.imgDef;
+      this.setParamImgDef(imgDef);
       this.material.alphaMap = new THREE.TextureLoader().load(params.material.alphaMap[params.imgDef]);
       this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
     };
@@ -438,7 +447,7 @@ var Earth = (function(Cloud) {
 
     var paramsDefault = function() {
       return {
-        imgDef: IMAGE_DEFINITION,
+        imgDef: IMAGE_SD,
         visible: true,
         material: {
           wireframe: false,
@@ -500,8 +509,15 @@ var Earth = (function(Cloud) {
       }
     };
 
+    this.setParamImgDef = function(imgDef) {
+      if (DEFAULT === imgDef) {
+        imgDef = paramsDefault().imgDef;
+      }
+      params.imgDef = imgDef || params.imgDef;      
+    };
+    
     this.setMaterialTextures = function(imgDef) {
-      params.imgDef = imgDef || params.imgDef;
+      this.setParamImgDef(imgDef);
       this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
       this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
       this.material.specularMap = new THREE.TextureLoader().load(params.material.specularMap[params.imgDef]);
@@ -580,7 +596,7 @@ var Moon = (function(Earth) {
 
     var paramsDefault = function() {
       return {
-        imgDef: IMAGE_DEFINITION,
+        imgDef: IMAGE_SD,
         moonMesh: {
           visible: true,
           position: {
@@ -656,9 +672,16 @@ var Moon = (function(Earth) {
         this.pivot.rotation.y += delta * 2 * Math.PI * params.animate.pivotRotationsPerSecond;
       }
     };
-
+    
+    this.setParamImgDef = function(imgDef) {
+      if (DEFAULT === imgDef) {
+        imgDef = paramsDefault().imgDef;
+      }
+      params.imgDef = imgDef || params.imgDef;      
+    };
+    
     this.setMaterialTextures = function(imgDef) {
-      params.imgDef = imgDef || params.imgDef;
+      this.setParamImgDef(imgDef);
       this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
       this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
     };
@@ -730,7 +753,7 @@ var Sun = (function() {
 
     var paramsDefault = function() {
       return {
-        imgDef: IMAGE_DEFINITION,
+        imgDef: IMAGE_HD,
         sunLight: {
           visible: true,
           color: COLOR_WHITE,
@@ -812,15 +835,22 @@ var Sun = (function() {
       this.sunLight.visible = params.sunLight.visible;
       this.createLensFlare();
     };
+    
+    this.setParamImgDef = function(imgDef) {
+      if (DEFAULT === imgDef) {
+        imgDef = paramsDefault().imgDef;
+      }
+      params.imgDef = imgDef || params.imgDef;      
+    };
 
     this.createLensFlare = function(imgDef) {
       this.removeLensFlare();
-
-      params.imgDef = imgDef || params.imgDef;
+      
+      this.setParamImgDef(imgDef);
       this.sunLensFlare = this.getSunLensFlare();
       this.sunLight.add(this.sunLensFlare);
     };
-
+    
     this.removeLensFlare = function() {
       if ('undefined' !== this.sunLensFlare) {
         this.sunLight.remove(this.sunLensFlare);
@@ -1157,7 +1187,7 @@ var View = (function() {
     clock, delta;
 
   var params = {
-    imgDef: IMAGE_DEFINITION
+    imgDef: DEFAULT
   };
 
   var _View = function() {
@@ -1184,8 +1214,7 @@ var View = (function() {
       Moon.gui.add(gui);
       SceneShadow.gui.add(gui);
 
-      gui.add(this, 'resetAll').name('RESET ALL');
-      gui.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).name('IMG DEF ALL')
+      gui.add(params, 'imgDef', [DEFAULT, IMAGE_SD, IMAGE_HD]).name('IMG DEF ALL').listen()
         .onChange(function(imgDef) {
           Sun.createLensFlare(imgDef);
           Skymap.setSceneBgCubeTexture(Scene.scene, imgDef);
@@ -1193,9 +1222,13 @@ var View = (function() {
           Cloud.setMaterialTextures(imgDef);
           Moon.setMaterialTextures(imgDef);
         });
+
+      gui.add(this, 'resetAll').name('RESET ALL');
     };
 
     this.resetAll = function() {
+      params.imgDef = DEFAULT;
+
       Scene.gui.reset();
       Camera.gui.reset();
       Skymap.gui.reset();
