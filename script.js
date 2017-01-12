@@ -75,7 +75,8 @@ var Renderer = (function() {
         webGLRenderer: {
           antialias: false,
           alpha: true,
-          clearColor: COLOR_BLACK
+          clearColor: COLOR_BLACK,
+          canvasId: 'canvas'
         }
       };
     };
@@ -91,8 +92,17 @@ var Renderer = (function() {
 
       this.webGLRenderer.setClearColor(params.webGLRenderer.clearColor);
       this.webGLRenderer.setPixelRatio(window.devicePixelRatio);
+      this.webGLRenderer.domElement.id = params.webGLRenderer.canvasId;
 
       this.renderView();
+    };
+
+    this.refresh = function(antialias) {
+      params.webGLRenderer.antialias = antialias;
+      document.body.removeChild(document.getElementById(params.webGLRenderer.canvasId));
+      this.init();
+      
+      Scene.enableOrbitControls();
     };
 
     this.renderView = function() {
@@ -103,6 +113,21 @@ var Renderer = (function() {
 
     this.updateSize = function() {
       this.webGLRenderer.setSize(window.innerWidth, window.innerHeight);
+    };
+
+    this.gui = {
+       reset: function() {
+        params.webGLRenderer.antialias = paramsDefault().webGLRenderer.antialias;
+        self.refresh(params.webGLRenderer.antialias);
+      },
+      
+      add: function(gui) {
+        var gRenderer = gui.addFolder('RENDERER');
+        gRenderer.add(params.webGLRenderer, 'antialias').listen()
+          .onChange(function(antialias) {
+            self.refresh(antialias);
+          });
+      }
     };
 
     this.init();
@@ -226,16 +251,16 @@ var Skymap = (function() {
     var params = paramsDefault();
 
     this.init = function() {};
-    
+
     this.setParamImgDef = function(imgDef) {
-      params.imgDef = imgDef || paramsDefault().imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;
     };
 
     this.setSceneBgCubeTexture = function(_scene, imgDef) {
       this.setParamImgDef(imgDef);
       _scene.background = this.getCubeTextureLoader();
     };
-    
+
     this.getCubeTextureLoader = function() {
       return new THREE.CubeTextureLoader()
         .setPath(ASSETS_PATH)
@@ -357,9 +382,9 @@ var Cloud = (function() {
     };
 
     this.setParamImgDef = function(imgDef) {
-      params.imgDef = imgDef || paramsDefault().imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;
     };
-    
+
     this.setMaterialTextures = function(imgDef) {
       this.setParamImgDef(imgDef);
       this.material.alphaMap = new THREE.TextureLoader().load(params.material.alphaMap[params.imgDef]);
@@ -504,9 +529,9 @@ var Earth = (function(Cloud) {
     };
 
     this.setParamImgDef = function(imgDef) {
-      params.imgDef = imgDef || paramsDefault().imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;
     };
-    
+
     this.setMaterialTextures = function(imgDef) {
       this.setParamImgDef(imgDef);
       this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
@@ -663,11 +688,11 @@ var Moon = (function(Earth) {
         this.pivot.rotation.y += delta * 2 * Math.PI * params.animate.pivotRotationsPerSecond;
       }
     };
-    
+
     this.setParamImgDef = function(imgDef) {
-      params.imgDef = imgDef || paramsDefault().imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;
     };
-    
+
     this.setMaterialTextures = function(imgDef) {
       this.setParamImgDef(imgDef);
       this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
@@ -823,19 +848,19 @@ var Sun = (function() {
       this.sunLight.visible = params.sunLight.visible;
       this.createLensFlare();
     };
-    
+
     this.setParamImgDef = function(imgDef) {
-      params.imgDef = imgDef || paramsDefault().imgDef;      
+      params.imgDef = imgDef || paramsDefault().imgDef;
     };
 
     this.createLensFlare = function(imgDef) {
       this.removeLensFlare();
-      
+
       this.setParamImgDef(imgDef);
       this.sunLensFlare = this.getSunLensFlare();
       this.sunLight.add(this.sunLensFlare);
     };
-    
+
     this.removeLensFlare = function() {
       if ('undefined' !== this.sunLensFlare) {
         this.sunLight.remove(this.sunLensFlare);
@@ -1190,6 +1215,7 @@ var View = (function() {
     this.addGui = function() {
       var gui = new dat.GUI();
 
+      Renderer.gui.add(gui);
       Scene.gui.add(gui);
       Camera.gui.add(gui);
       Skymap.gui.add(gui);
@@ -1215,6 +1241,7 @@ var View = (function() {
     this.resetAll = function() {
       params.imgDef = DEFAULT;
 
+      Renderer.gui.reset();
       Scene.gui.reset();
       Camera.gui.reset();
       Skymap.gui.reset();
