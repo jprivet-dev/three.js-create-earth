@@ -76,7 +76,7 @@ var Renderer = (function() {
           antialias: false,
           alpha: true,
           clearColor: COLOR_BLACK,
-          canvasId: 'canvas'
+          canvasId: 'canvas-earth'
         }
       };
     };
@@ -99,7 +99,8 @@ var Renderer = (function() {
 
     this.refresh = function(antialias) {
       params.webGLRenderer.antialias = antialias;
-      document.body.removeChild(document.getElementById(params.webGLRenderer.canvasId));
+      var canvasElement = document.getElementById(params.webGLRenderer.canvasId);
+      document.body.removeChild(canvasElement);
       this.init();
       
       Scene.enableOrbitControls();
