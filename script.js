@@ -102,7 +102,7 @@ var Renderer = (function() {
       var canvasElement = document.getElementById(params.webGLRenderer.canvasId);
       document.body.removeChild(canvasElement);
       this.init();
-      
+
       Scene.enableOrbitControls();
     };
 
@@ -117,14 +117,16 @@ var Renderer = (function() {
     };
 
     this.gui = {
-       reset: function() {
+      reset: function() {
         params.webGLRenderer.antialias = paramsDefault().webGLRenderer.antialias;
         self.refresh(params.webGLRenderer.antialias);
       },
-      
+
       add: function(gui) {
-        var gRenderer = gui.addFolder('RENDERER');
-        gRenderer.add(params.webGLRenderer, 'antialias').listen()
+        var folderRenderer = gui.addFolder('RENDERER');
+
+        folderRenderer
+          .add(params.webGLRenderer, 'antialias').listen()
           .onChange(function(antialias) {
             self.refresh(antialias);
           });
@@ -199,26 +201,30 @@ var Camera = (function() {
       },
 
       add: function(gui) {
-        var gCamera = gui.addFolder('CAMERA');
+        var folderCamera = gui.addFolder('CAMERA');
 
-        gCamera.add(self.perspectiveCamera, 'fov', 0, 150).listen()
+        folderCamera
+          .add(self.perspectiveCamera, 'fov', 0, 150).listen()
           .onChange(function() {
             self.updateAspect();
           });
 
-        gCamera.add(self.perspectiveCamera, 'near', 0, 5).listen()
+        folderCamera
+          .add(self.perspectiveCamera, 'near', 0, 5).listen()
           .onChange(function() {
             self.updateAspect();
           });
 
-        gCamera.add(self.perspectiveCamera, 'far', 0, 10000).listen()
+        folderCamera
+          .add(self.perspectiveCamera, 'far', 0, 10000).listen()
           .onChange(function() {
             self.updateAspect();
           });
 
-        gCamera.add(this, 'reset').name('RESET CAMERA');
+        folderCamera
+          .add(this, 'reset').name('RESET CAMERA');
 
-        return gCamera;
+        return folderCamera;
       }
     };
 
@@ -296,16 +302,18 @@ var Skymap = (function() {
       },
 
       add: function(gui) {
-        var gSkymap = gui.addFolder('SKYMAP');
+        var folderSkymap = gui.addFolder('SKYMAP');
 
-        gSkymap.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+        folderSkymap
+          .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
             self.setSceneBgCubeTexture(Scene.scene, imgDef);
           });
 
-        gSkymap.add(this, 'reset').name('RESET SKYMAP');
+        folderSkymap
+          .add(this, 'reset').name('RESET SKYMAP');
 
-        return gSkymap;
+        return folderSkymap;
       }
     };
 
@@ -423,32 +431,49 @@ var Cloud = (function() {
       add: function(gui) {
         this.resetColorsHexString();
 
-        var gCloud = gui.addFolder('CLOUD');
-        gCloud.add(self.cloudMesh, 'visible').listen();
+        var folderCloud = gui.addFolder('CLOUD');
 
-        var gMaterial = gCloud.addFolder('Material');
+        folderCloud
+          .add(self.cloudMesh, 'visible').listen();
 
-        gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+        var folderMaterial = folderCloud.addFolder('Material');
+
+        folderMaterial
+          .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
             self.setMaterialTextures(imgDef);
           });
 
-        gMaterial.add(self.material, 'wireframe').listen();
-        gMaterial.add(self.material, 'transparent').listen();
-        gMaterial.add(self.material, 'opacity', 0, 1).listen();
-        gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
-        gMaterial.addColor(this.params.colors, 'color').listen()
+        folderMaterial
+          .add(self.material, 'wireframe').listen();
+
+        folderMaterial
+          .add(self.material, 'transparent').listen();
+
+        folderMaterial
+          .add(self.material, 'opacity', 0, 1).listen();
+
+        folderMaterial
+          .add(self.material, 'bumpScale', -1.5, 1.5).listen();
+
+        folderMaterial
+          .addColor(this.params.colors, 'color').listen()
           .onChange(function(color) {
             self.material.color.setHex(color.replace('#', '0x'));
           });
 
-        var gAnimate = gCloud.addFolder('Animate');
-        gAnimate.add(params.animate, 'enabled').listen();
-        gAnimate.add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
+        var folderAnimate = folderCloud.addFolder('Animate');
 
-        gCloud.add(this, 'reset').name('RESET CLOUD');
+        folderAnimate
+          .add(params.animate, 'enabled').listen();
 
-        return gCloud;
+        folderMaterial
+          .add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
+
+        folderCloud
+          .add(this, 'reset').name('RESET CLOUD');
+
+        return folderCloud;
       }
     };
 
@@ -570,31 +595,46 @@ var Earth = (function(Cloud) {
       add: function(gui) {
         this.resetColorsHexString();
 
-        var gEarth = gui.addFolder('EARTH');
-        gEarth.add(self.earthMesh, 'visible').listen();
+        var folderEarth = gui.addFolder('EARTH');
 
-        var gMaterial = gEarth.addFolder('Material');
+        folderEarth
+          .add(self.earthMesh, 'visible').listen();
 
-        gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+        var folderMaterial = folderEarth.addFolder('Material');
+
+        folderMaterial
+          .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
             self.setMaterialTextures(imgDef);
           });
 
-        gMaterial.add(self.material, 'wireframe').listen();
-        gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
-        gMaterial.add(self.material, 'shininess', 0, 10).listen();
-        gMaterial.addColor(this.params.colors, 'specular').listen()
+        folderMaterial
+          .add(self.material, 'wireframe').listen();
+
+        folderMaterial
+          .add(self.material, 'bumpScale', -1.5, 1.5).listen();
+
+        folderMaterial
+          .add(self.material, 'shininess', 0, 10).listen();
+
+        folderMaterial
+          .addColor(this.params.colors, 'specular').listen()
           .onChange(function(color) {
             self.material.specular.setHex(color.replace('#', '0x'));
           });
 
-        var gAnimate = gEarth.addFolder('Animate');
-        gAnimate.add(params.animate, 'enabled').listen();
-        gAnimate.add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
+        var folderAnimate = folderEarth.addFolder('Animate');
 
-        gEarth.add(this, 'reset').name('RESET EARTH');
+        folderAnimate
+          .add(params.animate, 'enabled').listen();
 
-        return gEarth;
+        folderAnimate
+          .add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
+
+        folderEarth
+          .add(this, 'reset').name('RESET EARTH');
+
+        return folderEarth;
       }
     };
 
@@ -725,30 +765,51 @@ var Moon = (function(Earth) {
       },
 
       add: function(gui) {
-        var gMoon = gui.addFolder('MOON');
-        gMoon.add(self.moonMesh, 'visible').listen();
+        var folderMoon = gui.addFolder('MOON');
 
-        var gPosition = gMoon.addFolder('Position');
-        gPosition.add(self.moonMesh.position, 'x', -100, 100).listen();
-        gPosition.add(self.moonMesh.position, 'y', -100, 100).listen();
-        gPosition.add(self.moonMesh.position, 'z', -100, 100).listen();
+        folderMoon
+          .add(self.moonMesh, 'visible').listen();
 
-        var gMaterial = gMoon.addFolder('Material');
-        gMaterial.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+        var folderPosition = folderMoon.addFolder('Position');
+
+        folderPosition
+          .add(self.moonMesh.position, 'x', -100, 100).listen();
+
+        folderPosition
+          .add(self.moonMesh.position, 'y', -100, 100).listen();
+
+        folderPosition
+          .add(self.moonMesh.position, 'z', -100, 100).listen();
+
+        var folderMaterial = folderMoon.addFolder('Material');
+
+        folderMaterial
+          .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
             self.setMaterialTextures(imgDef);
           });
-        gMaterial.add(self.material, 'wireframe').listen();
-        gMaterial.add(self.material, 'bumpScale', -1.5, 1.5).listen();
-        gMaterial.add(self.material, 'shininess', 0, 10).listen();
 
-        var gAnimate = gMoon.addFolder('Animate');
-        gAnimate.add(params.animate, 'enabled').listen();
-        gAnimate.add(params.animate, 'pivotRotationsPerSecond', -2, 2).listen();
+        folderMaterial
+          .add(self.material, 'wireframe').listen();
 
-        gMoon.add(this, 'reset').name('RESET MOON');
+        folderMaterial
+          .add(self.material, 'bumpScale', -1.5, 1.5).listen();
 
-        return gMoon;
+        folderMaterial
+          .add(self.material, 'shininess', 0, 10).listen();
+
+        var folderAnimate = folderMoon.addFolder('Animate');
+
+        folderAnimate
+          .add(params.animate, 'enabled').listen();
+
+        folderAnimate
+          .add(params.animate, 'pivotRotationsPerSecond', -2, 2).listen();
+
+        folderMoon
+          .add(this, 'reset').name('RESET MOON');
+
+        return folderMoon;
       }
     };
 
@@ -934,36 +995,56 @@ var Sun = (function() {
       add: function(gui) {
         this.resetColorsHexString();
 
-        var gSun = gui.addFolder('SUN');
-        gSun.add(self.sunLight, 'visible').listen();
+        var folderSun = gui.addFolder('SUN');
 
-        var gLight = gSun.addFolder('Light');
-        gLight.add(self.sunLight, 'intensity', 0, 10).listen();
-        gLight.addColor(this.params.colors, 'color').listen()
+        folderSun
+          .add(self.sunLight, 'visible').listen();
+
+        var folderLight = folderSun.addFolder('Light');
+
+        folderLight
+          .add(self.sunLight, 'intensity', 0, 10).listen();
+
+        folderLight
+          .addColor(this.params.colors, 'color').listen()
           .onChange(function(color) {
             self.sunLight.color.setHex(color.replace('#', '0x'));
           });
 
-        var gPosition = gSun.addFolder('Position');
-        gPosition.add(self.sunLight.position, 'x', -2000, 2000).listen();
-        gPosition.add(self.sunLight.position, 'y', -2000, 2000).listen();
-        gPosition.add(self.sunLight.position, 'z', -2000, 2000).listen();
+        var folderPosition = folderSun.addFolder('Position');
 
-        var gLensFlares = gSun.addFolder('LensFlares');
-        gLensFlares.add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+        folderPosition
+          .add(self.sunLight.position, 'x', -2000, 2000).listen();
+
+        folderPosition
+          .add(self.sunLight.position, 'y', -2000, 2000).listen();
+
+        folderPosition
+          .add(self.sunLight.position, 'z', -2000, 2000).listen();
+
+        var folderLensFlares = folderSun.addFolder('LensFlares');
+
+        folderLensFlares
+          .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
             self.createLensFlare(imgDef);
           });
 
         for (var i = 0; i < self.sunLensFlare.lensFlares.length; i++) {
-          gLensFlares.add(self.sunLensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
-          gLensFlares.add(self.sunLensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
-          gLensFlares.add(self.sunLensFlare.lensFlares[i], 'distance', -1, 1).name(i + '. distance').listen();
+          folderLensFlares
+            .add(self.sunLensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
+
+          folderLensFlares
+            .add(self.sunLensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
+
+          folderLensFlares
+            .add(self.sunLensFlare.lensFlares[i], 'distance', -1, 1).name(i + '. distance').listen();
         }
 
-        gSun.add(this, 'reset').name('RESET SUN');
+        folderSun
+          .add(this, 'reset').name('RESET SUN');
 
-        return gSun;
+        return folderSun;
       }
     };
 
@@ -1022,13 +1103,18 @@ var Scene = (function() {
       },
 
       add: function(gui) {
-        var gOrbitControls = gui.addFolder('ORBIT CONTROLS');
-        gOrbitControls.add(self.orbitControls, 'autoRotate').listen();
-        gOrbitControls.add(self.orbitControls, 'autoRotateSpeed', -1, 1).listen();
+        var folderOrbitControls = gui.addFolder('ORBIT CONTROLS');
 
-        gOrbitControls.add(this, 'reset').name('RESET CONTR.');
+        folderOrbitControls
+          .add(self.orbitControls, 'autoRotate').listen();
 
-        return gOrbitControls;
+        folderOrbitControls
+          .add(self.orbitControls, 'autoRotateSpeed', -1, 1).listen();
+
+        folderOrbitControls
+          .add(this, 'reset').name('RESET CONTR.');
+
+        return folderOrbitControls;
       }
     };
 
@@ -1138,49 +1224,66 @@ var SceneShadow = (function(Scene) {
       },
 
       add: function(gui) {
-        var gShadow = gui.addFolder('SHADOW');
+        var folderShadow = gui.addFolder('SHADOW');
 
-        gShadow.add(self.cameraHelper, 'visible').name('cameraHelper').listen();
+        folderShadow
+          .add(self.cameraHelper, 'visible').name('cameraHelper').listen();
 
-        gShadow.add(Sun.sunLight, 'castShadow').listen();
+        folderShadow
+          .add(Sun.sunLight, 'castShadow').listen();
 
-        gShadow.add(Sun.sunLight.shadow.camera, 'near').step(10).listen()
-          .onChange(function() {
-            self.updateShadow();
-          });
-        gShadow.add(Sun.sunLight.shadow.camera, 'far').step(10).listen()
-          .onChange(function() {
-            self.updateShadow();
-          });
-
-        gShadow.add(Sun.sunLight.shadow.mapSize, 'width', 0, 2048).listen();
-        gShadow.add(Sun.sunLight.shadow.mapSize, 'height', 0, 2048).listen();
-
-        gShadow.add(Sun.sunLight.shadow, 'bias', 0, 0.4).step(0.001).listen()
+        folderShadow
+          .add(Sun.sunLight.shadow.camera, 'near').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
 
-        gShadow.add(Sun.sunLight.shadow.camera, 'right').step(10).listen()
-          .onChange(function() {
-            self.updateShadow();
-          });
-        gShadow.add(Sun.sunLight.shadow.camera, 'left').step(10).listen()
-          .onChange(function() {
-            self.updateShadow();
-          });
-        gShadow.add(Sun.sunLight.shadow.camera, 'top').step(10).listen()
-          .onChange(function() {
-            self.updateShadow();
-          });
-        gShadow.add(Sun.sunLight.shadow.camera, 'bottom').step(10).listen()
+        folderShadow
+          .add(Sun.sunLight.shadow.camera, 'far').step(10).listen()
           .onChange(function() {
             self.updateShadow();
           });
 
-        gShadow.add(this, 'reset').name('RESET SHADOW');
+        folderShadow
+          .add(Sun.sunLight.shadow.mapSize, 'width', 0, 2048).listen();
 
-        return gShadow;
+        folderShadow
+          .add(Sun.sunLight.shadow.mapSize, 'height', 0, 2048).listen();
+
+        folderShadow
+          .add(Sun.sunLight.shadow, 'bias', 0, 0.4).step(0.001).listen()
+          .onChange(function() {
+            self.updateShadow();
+          });
+
+        folderShadow
+          .add(Sun.sunLight.shadow.camera, 'right').step(10).listen()
+          .onChange(function() {
+            self.updateShadow();
+          });
+
+        folderShadow
+          .add(Sun.sunLight.shadow.camera, 'left').step(10).listen()
+          .onChange(function() {
+            self.updateShadow();
+          });
+
+        folderShadow
+          .add(Sun.sunLight.shadow.camera, 'top').step(10).listen()
+          .onChange(function() {
+            self.updateShadow();
+          });
+
+        folderShadow
+          .add(Sun.sunLight.shadow.camera, 'bottom').step(10).listen()
+          .onChange(function() {
+            self.updateShadow();
+          });
+
+        folderShadow
+          .add(this, 'reset').name('RESET SHADOW');
+
+        return folderShadow;
       }
     };
 
@@ -1221,14 +1324,15 @@ var View = (function() {
       Camera.gui.add(gui);
       Skymap.gui.add(gui);
       Sun.gui.add(gui);
-      gEarth = Earth.gui.add(gui);
-      Cloud.gui.add(gEarth);
+      folderEarth = Earth.gui.add(gui);
+      Cloud.gui.add(folderEarth);
       Moon.gui.add(gui);
       SceneShadow.gui.add(gui);
 
       gui.add(params, 'imgDef', [DEFAULT, IMAGE_SD, IMAGE_HD]).name('IMG DEF ALL').listen()
         .onChange(function(imgDef) {
           imgDef = DEFAULT === imgDef ? undefined : imgDef;
+
           Sun.createLensFlare(imgDef);
           Skymap.setSceneBgCubeTexture(Scene.scene, imgDef);
           Earth.setMaterialTextures(imgDef);
