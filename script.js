@@ -84,6 +84,8 @@ var Renderer = (function() {
     var params = paramsDefault();
 
     this.init = function() {
+      params.webGLRenderer.previousAntialias = params.webGLRenderer.antialias;
+
       // @see also THREE.CanvasRenderer()
       this.webGLRenderer = new THREE.WebGLRenderer({
         antialias: params.webGLRenderer.antialias,
@@ -98,13 +100,27 @@ var Renderer = (function() {
     };
 
     this.refresh = function(antialias) {
-      params.webGLRenderer.antialias = antialias;
+      params.webGLRenderer.antialias = antialias || paramsDefault().webGLRenderer.antialias;
+
+      if (this.isAntialiasNotChanging()) {
+        return;
+      }
+
+      this.keepCurrentAntialias();
 
       var canvasElement = document.getElementById(params.webGLRenderer.canvasId);
       document.body.removeChild(canvasElement);
       this.init();
 
       Scene.activeOrbitControls();
+    };
+
+    this.keepCurrentAntialias = function() {
+      params.webGLRenderer.previousAntialias = params.webGLRenderer.antialias;
+    };
+
+    this.isAntialiasNotChanging = function() {
+      return params.webGLRenderer.antialias === params.webGLRenderer.previousAntialias;
     };
 
     this.renderView = function() {
@@ -119,8 +135,7 @@ var Renderer = (function() {
 
     this.gui = {
       reset: function() {
-        params.webGLRenderer.antialias = paramsDefault().webGLRenderer.antialias;
-        self.refresh(params.webGLRenderer.antialias);
+        self.refresh();
       },
 
       add: function(gui) {
@@ -305,7 +320,7 @@ var Skymap = (function() {
     this.disableRefreshTexture = function() {
       params.imgDefPrevious = params.imgDef;
     };
-    
+
     this.gui = {
       params: {},
 
@@ -961,6 +976,7 @@ var Sun = (function() {
       );
 
       this.sunLight.visible = params.sunLight.visible;
+      
       this.createLensFlare();
     };
 
@@ -980,9 +996,13 @@ var Sun = (function() {
     };
 
     this.removeLensFlare = function() {
-      if ('undefined' !== this.sunLensFlare) {
+      if (this.doesSunLensFlareAlreadyExist()) {
         this.sunLight.remove(this.sunLensFlare);
       }
+    };
+
+    this.doesSunLensFlareAlreadyExist = function() {
+      return 'undefined' !== typeof this.sunLensFlare;
     };
 
     this.getSunLensFlare = function() {
@@ -1017,8 +1037,8 @@ var Sun = (function() {
       this.textureFlareSun = this.textureLoader.load(params.sunLensFlare.textures.sun[params.imgDef]);
       this.textureFlareCircle = this.textureLoader.load(params.sunLensFlare.textures.circle[params.imgDef]);
       this.textureFlareHexagon = this.textureLoader.load(params.sunLensFlare.textures.hexagon[params.imgDef]);
-    }; 
-    
+    };
+
     this.refreshTexture = function() {
       return params.imgDef !== params.imgDefPrevious;
     };
@@ -1050,6 +1070,8 @@ var Sun = (function() {
         }
 
         this.resetColorsHexString();
+        
+        self.createLensFlare();
       },
 
       resetColorsHexString: function() {
@@ -1152,20 +1174,20 @@ var Scene = (function() {
         Camera.perspectiveCamera,
         Renderer.webGLRenderer.domElement
       );
-      
+
       this.applyParamsOrbitControlsAutoRotate();
       this.applyParamsOrbitControlsAutoRotateSpeed();
 
       this.orbitControls.enableDamping = true;
     };
-    
+
     this.applyParamsOrbitControlsAutoRotate = function() {
       this.orbitControls.autoRotate = params.orbitControls.autoRotate;
-    }
+    };
 
     this.applyParamsOrbitControlsAutoRotateSpeed = function() {
       this.orbitControls.autoRotateSpeed = params.orbitControls.autoRotateSpeed;
-    }
+    };
 
     this.refreshOrbitControls = function() {
       this.activeOrbitControls();
@@ -1179,10 +1201,10 @@ var Scene = (function() {
 
       reset: function() {
         var _default = paramsDefault();
-        
+
         params.orbitControls.autoRotate = _default.orbitControls.autoRotate;
         params.orbitControls.autoRotateSpeed = _default.orbitControls.autoRotateSpeed;
-        
+
         self.applyParamsOrbitControlsAutoRotate();
         self.applyParamsOrbitControlsAutoRotateSpeed();
       },
