@@ -976,7 +976,7 @@ var Sun = (function() {
       );
 
       this.sunLight.visible = params.sunLight.visible;
-      
+
       this.createLensFlare();
     };
 
@@ -992,6 +992,8 @@ var Sun = (function() {
         this.sunLensFlare = this.getSunLensFlare();
         this.sunLight.add(this.sunLensFlare);
         this.disableRefreshTexture();
+        
+        console.log(this.sunLensFlare.lensFlares[0]);
       }
     };
 
@@ -1009,7 +1011,7 @@ var Sun = (function() {
       this.loadLensFlareTextures();
 
       var sunLensFlare = new THREE.LensFlare(
-        this.textureFlareSun,
+        this.getTextureByIndex(0),
         params.sunLensFlare.lensFlares[0].size,
         params.sunLensFlare.lensFlares[0].distance,
         THREE.AdditiveBlending
@@ -1020,17 +1022,22 @@ var Sun = (function() {
 
     this.addLensFlareSunCirclesAndHexagons = function(sunLensFlare) {
       for (var i = 1; i < params.sunLensFlare.lensFlares.length; i++) {
-        var texture = params.sunLensFlare.lensFlares[i].size < 70 ? this.textureFlareCircle : this.textureFlareHexagon;
-
         sunLensFlare.add(
-          texture,
+          this.getTextureByIndex(i),
           params.sunLensFlare.lensFlares[i].size,
           params.sunLensFlare.lensFlares[i].distance,
           THREE.AdditiveBlending
         );
       }
-
+      
       return sunLensFlare;
+    };
+    
+    this.getTextureByIndex = function(index) {
+      if (0 === index) {
+        return this.textureFlareSun;
+      }
+      return params.sunLensFlare.lensFlares[index].size < 70 ? this.textureFlareCircle : this.textureFlareHexagon
     };
 
     this.loadLensFlareTextures = function() {
@@ -1070,7 +1077,7 @@ var Sun = (function() {
         }
 
         this.resetColorsHexString();
-        
+
         self.createLensFlare();
       },
 
