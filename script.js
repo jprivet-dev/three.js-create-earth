@@ -104,7 +104,7 @@ var Renderer = (function() {
       document.body.removeChild(canvasElement);
       this.init();
 
-      Scene.enableOrbitControls();
+      Scene.activeOrbitControls();
     };
 
     this.renderView = function() {
@@ -1144,56 +1144,62 @@ var Scene = (function() {
 
       Skymap.setSceneBgCubeTexture(this.scene);
 
-      this.enableOrbitControls();
+      this.activeOrbitControls();
     };
 
-    this.enableOrbitControls = function() {
+    this.activeOrbitControls = function() {
       this.orbitControls = new THREE.OrbitControls(
         Camera.perspectiveCamera,
         Renderer.webGLRenderer.domElement
       );
-      this.orbitControls.autoRotate = params.orbitControls.autoRotate;
-      this.orbitControls.autoRotateSpeed = params.orbitControls.autoRotateSpeed;
+      
+      this.applyParamsOrbitControlsAutoRotate();
+      this.applyParamsOrbitControlsAutoRotateSpeed();
+
       this.orbitControls.enableDamping = true;
     };
+    
+    this.applyParamsOrbitControlsAutoRotate = function() {
+      this.orbitControls.autoRotate = params.orbitControls.autoRotate;
+    }
+
+    this.applyParamsOrbitControlsAutoRotateSpeed = function() {
+      this.orbitControls.autoRotateSpeed = params.orbitControls.autoRotateSpeed;
+    }
 
     this.refreshOrbitControls = function() {
-      this.enableOrbitControls();
+      this.activeOrbitControls();
       this.gui.reset();
     };
 
     this.gui = {
       params: {
-        colors: {},
-        orbitControls: {
-          autoRotate: params.orbitControls.autoRotate,
-          autoRotateSpeed: params.orbitControls.autoRotateSpeed
-        }
+        colors: {}
       },
 
       reset: function() {
         var _default = paramsDefault();
-
-        self.orbitControls.autoRotate = _default.orbitControls.autoRotate;
-        self.orbitControls.autoRotateSpeed = _default.orbitControls.autoRotateSpeed;
-
-        this.params.orbitControls.autoRotate = _default.orbitControls.autoRotate;
-        this.params.orbitControls.autoRotateSpeed = _default.orbitControls.autoRotateSpeed;
+        
+        params.orbitControls.autoRotate = _default.orbitControls.autoRotate;
+        params.orbitControls.autoRotateSpeed = _default.orbitControls.autoRotateSpeed;
+        
+        self.applyParamsOrbitControlsAutoRotate();
+        self.applyParamsOrbitControlsAutoRotateSpeed();
       },
 
       add: function(gui) {
         var folderOrbitControls = gui.addFolder('ORBIT CONTROLS');
 
         folderOrbitControls
-          .add(this.params.orbitControls, 'autoRotate').listen()
+          .add(params.orbitControls, 'autoRotate').listen()
           .onChange(function(value) {
-            self.orbitControls.autoRotate = value;
+            self.applyParamsOrbitControlsAutoRotate();
           });
 
         folderOrbitControls
-          .add(this.params.orbitControls, 'autoRotateSpeed', -1, 1).listen()
-          .onChange(function(speed) {
-            self.orbitControls.autoRotateSpeed = speed;
+          .add(params.orbitControls, 'autoRotateSpeed', -1, 1).listen()
+          .onChange(function(value) {
+            self.applyParamsOrbitControlsAutoRotateSpeed();
           });
 
         folderOrbitControls
@@ -1404,7 +1410,6 @@ var View = (function() {
     this.addGui = function() {
       var gui = new dat.GUI();
 
-      Renderer.gui.add(gui);
       Scene.gui.add(gui);
       Camera.gui.add(gui);
       Skymap.gui.add(gui);
@@ -1413,6 +1418,7 @@ var View = (function() {
       Cloud.gui.add(folderEarth);
       Moon.gui.add(gui);
       SceneShadow.gui.add(gui);
+      Renderer.gui.add(gui);
 
       gui.add(params, 'imgDef', [DEFAULT, IMAGE_SD, IMAGE_HD]).name('IMG DEF ALL').listen()
         .onChange(function(imgDef) {
