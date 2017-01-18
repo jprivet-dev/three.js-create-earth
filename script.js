@@ -282,7 +282,7 @@ var Skymap = (function() {
 
     this.setSceneBgCubeTexture = function(_scene, imgDef) {
       this.setParamImgDef(imgDef);
-      if (this.refreshTexture()) {
+      if (this.doesRefreshTextureNecessary()) {
         _scene.background = this.getCubeTextureLoader();
         this.disableRefreshTexture();
       }
@@ -313,7 +313,7 @@ var Skymap = (function() {
       );
     };
 
-    this.refreshTexture = function() {
+    this.doesRefreshTextureNecessary = function() {
       return params.imgDef !== params.imgDefPrevious;
     };
 
@@ -426,14 +426,14 @@ var Cloud = (function() {
     this.setMaterialTextures = function(imgDef) {
       this.setParamImgDef(imgDef);
 
-      if (this.refreshTexture()) {
+      if (this.doesRefreshTextureNecessary()) {
         this.material.alphaMap = new THREE.TextureLoader().load(params.material.alphaMap[params.imgDef]);
         this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
         this.disableRefreshTexture();
       }
     };
 
-    this.refreshTexture = function() {
+    this.doesRefreshTextureNecessary = function() {
       return params.imgDef !== params.imgDefPrevious;
     };
 
@@ -603,7 +603,7 @@ var Earth = (function(Cloud) {
     this.setMaterialTextures = function(imgDef) {
       this.setParamImgDef(imgDef);
 
-      if (this.refreshTexture()) {
+      if (this.doesRefreshTextureNecessary()) {
         this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
         this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
         this.material.specularMap = new THREE.TextureLoader().load(params.material.specularMap[params.imgDef]);
@@ -611,7 +611,7 @@ var Earth = (function(Cloud) {
       }
     };
 
-    this.refreshTexture = function() {
+    this.doesRefreshTextureNecessary = function() {
       return params.imgDef !== params.imgDefPrevious;
     };
 
@@ -792,14 +792,14 @@ var Moon = (function(Earth) {
     this.setMaterialTextures = function(imgDef) {
       this.setParamImgDef(imgDef);
 
-      if (this.refreshTexture()) {
+      if (this.doesRefreshTextureNecessary()) {
         this.material.map = new THREE.TextureLoader().load(params.material.map[params.imgDef]);
         this.material.bumpMap = new THREE.TextureLoader().load(params.material.bumpMap[params.imgDef]);
         this.disableRefreshTexture();
       }
     };
 
-    this.refreshTexture = function() {
+    this.doesRefreshTextureNecessary = function() {
       return params.imgDef !== params.imgDefPrevious;
     };
 
@@ -978,33 +978,16 @@ var Sun = (function() {
       this.sunLight.visible = params.sunLight.visible;
 
       this.createLensFlare();
+      this.disableRefreshTexture();
     };
 
     this.setParamImgDef = function(imgDef) {
       params.imgDef = imgDef || paramsDefault().imgDef;
     };
 
-    this.createLensFlare = function(imgDef) {
-      this.setParamImgDef(imgDef);
-
-      if (this.refreshTexture()) {
-        this.removeLensFlare();
-        this.sunLensFlare = this.getSunLensFlare();
-        this.sunLight.add(this.sunLensFlare);
-        this.disableRefreshTexture();
-        
-        console.log(this.sunLensFlare.lensFlares[0]);
-      }
-    };
-
-    this.removeLensFlare = function() {
-      if (this.doesSunLensFlareAlreadyExist()) {
-        this.sunLight.remove(this.sunLensFlare);
-      }
-    };
-
-    this.doesSunLensFlareAlreadyExist = function() {
-      return 'undefined' !== typeof this.sunLensFlare;
+    this.createLensFlare = function() {
+      this.sunLensFlare = this.getSunLensFlare();
+      this.sunLight.add(this.sunLensFlare);
     };
 
     this.getSunLensFlare = function() {
@@ -1046,7 +1029,21 @@ var Sun = (function() {
       this.textureFlareHexagon = this.textureLoader.load(params.sunLensFlare.textures.hexagon[params.imgDef]);
     };
 
-    this.refreshTexture = function() {
+    this.refreshTextures = function(imgDef) {
+      this.setParamImgDef(imgDef);
+      
+      if (this.doesRefreshTextureNecessary()) {
+        this.loadLensFlareTextures();
+        
+        for (var i = 0; i < params.sunLensFlare.lensFlares.length; i++) {
+          this.sunLensFlare.lensFlares[i].texture = this.getTextureByIndex(i);
+        }
+        
+        this.disableRefreshTexture();
+      }
+    };
+    
+    this.doesRefreshTextureNecessary = function() {
       return params.imgDef !== params.imgDefPrevious;
     };
 
@@ -1078,7 +1075,7 @@ var Sun = (function() {
 
         this.resetColorsHexString();
 
-        self.createLensFlare();
+        self.refreshTextures();
       },
 
       resetColorsHexString: function() {
@@ -1120,7 +1117,7 @@ var Sun = (function() {
         folderLensFlares
           .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
           .onChange(function(imgDef) {
-            self.createLensFlare(imgDef);
+            self.refreshTextures(imgDef);
           });
 
         for (var i = 0; i < self.sunLensFlare.lensFlares.length; i++) {
@@ -1453,7 +1450,7 @@ var View = (function() {
         .onChange(function(imgDef) {
           imgDef = DEFAULT === imgDef ? undefined : imgDef;
 
-          Sun.createLensFlare(imgDef);
+          Sun.refreshTextures(imgDef);
           Skymap.setSceneBgCubeTexture(Scene.scene, imgDef);
           Earth.setMaterialTextures(imgDef);
           Cloud.setMaterialTextures(imgDef);
