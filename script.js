@@ -84,7 +84,7 @@ var Renderer = (function() {
     var params = paramsDefault();
 
     this.init = function() {
-      params.webGLRenderer.previousAntialias = params.webGLRenderer.antialias;
+      this.keepCurrentAntialias();
 
       // @see also THREE.CanvasRenderer()
       this.webGLRenderer = new THREE.WebGLRenderer({
@@ -100,7 +100,7 @@ var Renderer = (function() {
     };
 
     this.refresh = function(antialias) {
-      params.webGLRenderer.antialias = antialias || paramsDefault().webGLRenderer.antialias;
+      this.setParamAntialias(antialias);
 
       if (this.isAntialiasNotChanging()) {
         return;
@@ -113,6 +113,11 @@ var Renderer = (function() {
       this.init();
 
       Scene.activeOrbitControls();
+      SceneShadow.activeWebGLRendererShadowMap();
+    };
+
+    this.setParamAntialias = function(antialias) {
+      params.webGLRenderer.antialias = antialias || paramsDefault().webGLRenderer.antialias;
     };
 
     this.keepCurrentAntialias = function() {
@@ -922,6 +927,7 @@ var Sun = (function() {
               hd: ASSETS_PATH + 'lens_flare_hexagon_256x256.jpg'
             }
           },
+          flareCircleSizeMax: 70,
           lensFlares: [{
             size: 1400,
             opacity: 1,
@@ -1012,15 +1018,17 @@ var Sun = (function() {
           THREE.AdditiveBlending
         );
       }
-      
+
       return sunLensFlare;
     };
-    
+
     this.getTextureByIndex = function(index) {
       if (0 === index) {
         return this.textureFlareSun;
       }
-      return params.sunLensFlare.lensFlares[index].size < 70 ? this.textureFlareCircle : this.textureFlareHexagon
+      return params.sunLensFlare.lensFlares[index].size < params.sunLensFlare.flareCircleSizeMax ?
+        this.textureFlareCircle :
+        this.textureFlareHexagon;
     };
 
     this.loadLensFlareTextures = function() {
@@ -1031,18 +1039,18 @@ var Sun = (function() {
 
     this.refreshTextures = function(imgDef) {
       this.setParamImgDef(imgDef);
-      
+
       if (this.doesRefreshTextureNecessary()) {
         this.loadLensFlareTextures();
-        
+
         for (var i = 0; i < params.sunLensFlare.lensFlares.length; i++) {
           this.sunLensFlare.lensFlares[i].texture = this.getTextureByIndex(i);
         }
-        
+
         this.disableRefreshTexture();
       }
     };
-    
+
     this.doesRefreshTextureNecessary = function() {
       return params.imgDef !== params.imgDefPrevious;
     };
@@ -1303,11 +1311,15 @@ var SceneShadow = (function(Scene) {
       Moon.moonMesh.castShadow = true;
       Moon.moonMesh.receiveShadow = true;
 
+      this.activeWebGLRendererShadowMap();
+
+      this.updateShadow();
+    };
+
+    this.activeWebGLRendererShadowMap = function() {
       Renderer.webGLRenderer.shadowMap.enabled = true;
       Renderer.webGLRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
       Renderer.webGLRenderer.shadowMapSoft = true;
-
-      this.updateShadow();
     };
 
     this.updateShadow = function() {
