@@ -13,6 +13,7 @@ canvas {
 }
 
 .help {
+  display: none; /* must be hidden in codepen's image preview */
   position: absolute;
   bottom: 30px;
   left: 30px;
