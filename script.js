@@ -1430,7 +1430,8 @@ var View = (function() {
     clock, delta;
 
   var params = {
-    imgDef: DEFAULT
+    imgDef: DEFAULT,
+    helpClassname: 'help'
   };
 
   var _View = function() {
@@ -1439,6 +1440,7 @@ var View = (function() {
 
       this.updateAll();
       this.addGui();
+      this.help();
 
       animate();
 
@@ -1470,6 +1472,7 @@ var View = (function() {
         });
 
       gui.add(this, 'resetAll').name('RESET ALL');
+      gui.add(this, 'help').name('(?) HELP');
     };
 
     this.resetAll = function() {
@@ -1489,6 +1492,15 @@ var View = (function() {
     this.updateAll = function() {
       Camera.updateAspect();
       Renderer.updateSize();
+    };
+    
+    this.help = function() {
+      var helpElementStyle = document.getElementsByClassName(params.helpClassname)[0].style;
+      helpElementStyle.display = this.helpHideToggle(helpElementStyle.display);
+    };
+    
+    this.helpHideToggle = function(value) {
+      return 'none' === value ?  'block' : 'none';
     };
 
     var animate = function() {

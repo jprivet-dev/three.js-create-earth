@@ -1,8 +1,57 @@
 body {
+  position: relative;
   background: #000;
   overflow: hidden;
 }
 
 canvas {
     display: block;
+}
+
+.right {
+  text-align: right;
+}
+
+.help {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+
+  padding: 20px 30px;
+  
+  color: #e7f0f6;
+  
+  background: #292929;
+  background: rgba(41, 41, 41, 0.6);
+}
+
+.help .title {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 300;
+}
+
+.help p {
+  margin: 10px 0 0 0;
+  color: #97979c;
+  font-size: 14px;
+}
+
+.help a {
+  display: inline-block;
+  margin: 0;
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 14px;
+  background: #337578;
+  text-decoration: none;
+}
+
+.help hr {
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #337578;
+    margin: 1em 0;
+    padding: 0; 
 }
