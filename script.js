@@ -31,6 +31,11 @@
  * https://threejs.org/examples/misc_controls_orbit.html
  * http://workshop.chromeexperiments.com/examples/gui
  *
+ * ANIMATION
+ *
+ * https://github.com/mrdoob/three.js/issues/1830
+ * https://threejs.org/examples/webgl_animation_skinning_blending.html
+ *
  * TEXTURES
  *
  * https://threejs.org/examples/webgl_materials_bumpmap.html
@@ -40,11 +45,41 @@
  * http://earthobservatory.nasa.gov/blogs/elegantfigures/2011/10/06/crafting-the-blue-marble/
  * http://visibleearth.nasa.gov/view.php?id=79765
  * http://visibleearth.nasa.gov/view.php?id=57747
+ * 
+ * Textures used in that codepen :
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_bump_1024x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_bump_2048x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_clouds_1024x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_clouds_2048x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_map_1024x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_map_2048x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_specular_1024x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/earth_specular_2048x1024.jpg
  *
- * ANIMATION
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/lens_flare_circle_32x32.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/lens_flare_circle_64x64.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/lens_flare_hexagon_256x256.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/lens_flare_hexagon_256x256.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/lens_flare_sun_1024x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/lens_flare_sun_512x512.jpg
  *
- * https://github.com/mrdoob/three.js/issues/1830
- * https://threejs.org/examples/webgl_animation_skinning_blending.html
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/moon_bump_1024x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/moon_bump_512x256.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/moon_map_1024x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/moon_map_512x256.jpg
+ *
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_negx_1024x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_negx_512x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_negy_1024x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_negy_512x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_negz_1024x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_negz_512x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_posx_1024x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_posx_512x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_posy_1024x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_posy_512x512.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_posz_1024x1024.jpg
+ * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_posz_512x512.jpg
  */
 var
   ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
