@@ -82,7 +82,7 @@
  * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_posz_512x512.jpg
  */
 var
-  ASSETS_PATH = 'http://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
+  ASSETS_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
   DEFAULT = 'default',
   IMAGE_SD = 'sd',
   IMAGE_HD = 'hd',
@@ -548,7 +548,7 @@ var Cloud = (function() {
         folderAnimate
           .add(params.animate, 'enabled').listen();
 
-        folderMaterial
+        folderAnimate
           .add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
 
         folderCloud
@@ -1528,14 +1528,14 @@ var View = (function() {
       Camera.updateAspect();
       Renderer.updateSize();
     };
-    
+
     this.help = function() {
       var helpElementStyle = document.getElementsByClassName(params.helpClassname)[0].style;
       helpElementStyle.display = this.helpHideToggle(helpElementStyle.display);
     };
-    
+
     this.helpHideToggle = function(value) {
-      return 'none' === value ?  'block' : 'none';
+      return 'none' === value ? 'block' : 'none';
     };
 
     var animate = function() {
