@@ -1,4 +1,7 @@
 /**
+ * Twitter:       @jprivet_dev
+ * GitHub Gist:   https://gist.github.com/jprivet-dev/ed47f7eb4ce89d743e1e50f42530d38f
+ *
  * EXAMPLES
  *
  * https://stemkoski.github.io/Three.js/
