@@ -10,9 +10,11 @@ by http://codepen.io/jprivet_dev[jprivet-dev]
 on http://codepen.io/[CodePen]
 (http://codepen.io/jprivet_dev/pen/QGaNdv/license[License]).
 
+image::docs/img/C3RjBMYWYAM9_mL.jpg[]
+
 |===
-a|image::docs/img/C3RjBMYWYAM9_mL.jpg[] a|image::docs/img/C3RjCZ6XUAUwQMR.jpg[]
-a|image::docs/img/C3RjDbxXUAQO3Je.jpg[] a|image::docs/img/C3RjEkvXUAEw6sh.jpg[]
+a|image::docs/img/C3RjCZ6XUAUwQMR.jpg[] a|image::docs/img/C3RjDbxXUAQO3Je.jpg[]
+a|image::docs/img/C3RjEkvXUAEw6sh.jpg[] |
 |===
 
 == Let's go for a V2
