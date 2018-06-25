@@ -1,0 +1,37 @@
+= 3D - Three.js # Learning : create Earth - V1
+
+Classic example, but very fun for testing and discovering Three.js :
+with controls panel, change more than 70 parameters,
+and play with Sun, Earth and Moon, lens flares, textures,
+bump mapping, animations, lights, shadows, ...
+
+A http://codepen.io/jprivet_dev/pen/QGaNdv[Pen]
+by http://codepen.io/jprivet_dev[jprivet-dev]
+on http://codepen.io/[CodePen]
+(http://codepen.io/jprivet_dev/pen/QGaNdv/license[License]).
+
+image::docs/img/C3RjBMYWYAM9_mL.jpg[]
+
+|===
+a|image::docs/img/C3RjCZ6XUAUwQMR.jpg[] a|image::docs/img/C3RjDbxXUAQO3Je.jpg[]
+a|image::docs/img/C3RjEkvXUAEw6sh.jpg[] |
+|===
+
+== Let's go for a V2
+
+This repository is an import of
+https://gist.github.com/jprivet-dev/ed47f7eb4ce89d743e1e50f42530d38f[Gist 3d-three-js-learning-create-earth],
+to realize a V2.
+
+As the JS script of the V1 becomes much too important (more than 1500 lines),
+a V2 is in progress, with the latest version of Three.js,
+a more adapted design pattern and a few more little ideas.
+
+Deadline: approximately the end of 2018 :P
+
+Work in progress on https://jprivet-dev.github.io/three.js-create-earth/ :)
+
+
+
+
+
