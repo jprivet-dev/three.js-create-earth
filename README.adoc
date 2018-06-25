@@ -1,5 +1,9 @@
 = 3D - Three.js # Learning : create Earth - V1
 
+image:https://api.codacy.com/project/badge/Grade/9209bccb86dc4e01b2a7438fab7d48e3["Codacy code quality", link="https://www.codacy.com/app/jprivet-dev/three.js-create-earth?utm_source=github.com&utm_medium=referral&utm_content=jprivet-dev/three.js-create-earth&utm_campaign=Badge_Grade"]
+
+---
+
 Classic example, but very fun for testing and discovering Three.js :
 with controls panel, change more than 70 parameters,
 and play with Sun, Earth and Moon, lens flares, textures,
@@ -21,11 +25,11 @@ a|image::docs/img/C3RjEkvXUAEw6sh.jpg[] |
 
 This repository is an import of
 https://gist.github.com/jprivet-dev/ed47f7eb4ce89d743e1e50f42530d38f[Gist 3d-three-js-learning-create-earth],
-to realize a V2.
+**to realize a V2**.
 
-As the JS script of the V1 becomes much too important (more than 1500 lines),
-a V2 is in progress, with the latest version of Three.js,
-a more adapted design pattern and a few more little ideas.
+As the JS script of the **V1 becomes much too important** (more than 1500 lines),
+a V2 is in progress, with the **latest version of Three.js**,
+a **more adapted design pattern** and a few more little ideas.
 
 Deadline: approximately the end of 2018 :P
 
