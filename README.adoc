@@ -25,11 +25,11 @@ a|image::docs/img/C3RjEkvXUAEw6sh.jpg[] |
 
 This repository is an import of
 https://gist.github.com/jprivet-dev/ed47f7eb4ce89d743e1e50f42530d38f[Gist 3d-three-js-learning-create-earth],
-to realize a V2.
+**to realize a V2**.
 
-As the JS script of the V1 becomes much too important (more than 1500 lines),
-a V2 is in progress, with the latest version of Three.js,
-a more adapted design pattern and a few more little ideas.
+As the JS script of the **V1 becomes much too important** (more than 1500 lines),
+a V2 is in progress, with the **latest version of Three.js**,
+a **more adapted design pattern** and a few more little ideas.
 
 Deadline: approximately the end of 2018 :P
 
