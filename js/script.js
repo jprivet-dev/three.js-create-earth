@@ -85,10 +85,10 @@
  * https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/skymap_posz_512x512.jpg
  */
 var
-    ASSETS_PATH = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/',
-    DEFAULT = 'default',
-    IMAGE_SD = 'sd',
-    IMAGE_HD = 'hd',
+    ASSETS_PATH = "https://s3-us-west-2.amazonaws.com/s.cdpn.io/122460/",
+    DEFAULT = "default",
+    IMAGE_SD = "sd",
+    IMAGE_HD = "hd",
     COLOR_WHITE = 0xffffff,
     COLOR_BLACK = 0x000000;
 
@@ -114,7 +114,7 @@ var Renderer = (function () {
                     antialias: false,
                     alpha: true,
                     clearColor: COLOR_BLACK,
-                    canvasId: 'canvas-earth'
+                    canvasId: "canvas-earth"
                 }
             };
         };
@@ -182,10 +182,10 @@ var Renderer = (function () {
             },
 
             add: function (gui) {
-                var folderRenderer = gui.addFolder('RENDERER');
+                var folderRenderer = gui.addFolder("RENDERER");
 
                 folderRenderer
-                    .add(params.webGLRenderer, 'antialias').listen()
+                    .add(params.webGLRenderer, "antialias").listen()
                     .onChange(function (antialias) {
                         self.refresh(antialias);
                     });
@@ -260,22 +260,22 @@ var Camera = (function () {
             },
 
             add: function (gui) {
-                var folderCamera = gui.addFolder('CAMERA');
+                var folderCamera = gui.addFolder("CAMERA");
 
                 folderCamera
-                    .add(self.perspectiveCamera, 'fov', 0, 150).listen()
+                    .add(self.perspectiveCamera, "fov", 0, 150).listen()
                     .onChange(function () {
                         self.updateAspect();
                     });
 
                 folderCamera
-                    .add(self.perspectiveCamera, 'near', 0, 5).listen()
+                    .add(self.perspectiveCamera, "near", 0, 5).listen()
                     .onChange(function () {
                         self.updateAspect();
                     });
 
                 folderCamera
-                    .add(self.perspectiveCamera, 'far', 0, 10000).listen()
+                    .add(self.perspectiveCamera, "far", 0, 10000).listen()
                     .onChange(function () {
                         self.updateAspect();
                     });
@@ -1906,7 +1906,7 @@ var Camera = (function () {
 
 
                 folderCamera
-                    .add(this, 'reset').name('RESET CAMERA');
+                    .add(this, "reset").name("RESET CAMERA");
 
                 return folderCamera;
             }
@@ -1930,11 +1930,11 @@ var Skymap = (function () {
                 imgDef: IMAGE_HD,
                 imgDefPrevious: undefined,
                 cubeTextureLoader: {
-                    positionTag: '{pos}',
-                    positions: ['posx', 'negx', 'posy', 'negy', 'posz', 'negz'],
+                    positionTag: "{pos}",
+                    positions: ["posx", "negx", "posy", "negy", "posz", "negz"],
                     filename: {
-                        sd: 'skymap_{pos}_512x512.jpg',
-                        hd: 'skymap_{pos}_1024x1024.jpg'
+                        sd: "skymap_{pos}_512x512.jpg",
+                        hd: "skymap_{pos}_1024x1024.jpg"
                     }
                 }
             };
@@ -1999,16 +1999,16 @@ var Skymap = (function () {
             },
 
             add: function (gui) {
-                var folderSkymap = gui.addFolder('SKYMAP');
+                var folderSkymap = gui.addFolder("SKYMAP");
 
                 folderSkymap
-                    .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+                    .add(params, "imgDef", [IMAGE_SD, IMAGE_HD]).listen()
                     .onChange(function (imgDef) {
                         self.setSceneBgCubeTexture(Scene.scene, imgDef);
                     });
 
                 folderSkymap
-                    .add(this, 'reset').name('RESET SKYMAP');
+                    .add(this, "reset").name("RESET SKYMAP");
 
                 return folderSkymap;
             }
@@ -2039,12 +2039,12 @@ var Cloud = (function () {
                     bumpScale: 0.13,
                     opacity: 0.9,
                     alphaMap: {
-                        sd: ASSETS_PATH + 'earth_clouds_1024x512.jpg',
-                        hd: ASSETS_PATH + 'earth_clouds_2048x1024.jpg'
+                        sd: ASSETS_PATH + "earth_clouds_1024x512.jpg",
+                        hd: ASSETS_PATH + "earth_clouds_2048x1024.jpg"
                     },
                     bumpMap: {
-                        sd: ASSETS_PATH + 'earth_clouds_1024x512.jpg',
-                        hd: ASSETS_PATH + 'earth_clouds_2048x1024.jpg'
+                        sd: ASSETS_PATH + "earth_clouds_1024x512.jpg",
+                        hd: ASSETS_PATH + "earth_clouds_2048x1024.jpg"
                     }
                 },
                 geometry: {
@@ -2135,53 +2135,53 @@ var Cloud = (function () {
             },
 
             resetColorsHexString: function () {
-                this.params.colors.color = '#' + self.material.color.getHexString();
+                this.params.colors.color = "#" + self.material.color.getHexString();
             },
 
             add: function (gui) {
                 this.resetColorsHexString();
 
-                var folderCloud = gui.addFolder('CLOUD');
+                var folderCloud = gui.addFolder("CLOUD");
 
                 folderCloud
-                    .add(self.cloudMesh, 'visible').listen();
+                    .add(self.cloudMesh, "visible").listen();
 
-                var folderMaterial = folderCloud.addFolder('Material');
+                var folderMaterial = folderCloud.addFolder("Material");
 
                 folderMaterial
-                    .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+                    .add(params, "imgDef", [IMAGE_SD, IMAGE_HD]).listen()
                     .onChange(function (imgDef) {
                         self.setMaterialTextures(imgDef);
                     });
 
                 folderMaterial
-                    .add(self.material, 'wireframe').listen();
+                    .add(self.material, "wireframe").listen();
 
                 folderMaterial
-                    .add(self.material, 'transparent').listen();
+                    .add(self.material, "transparent").listen();
 
                 folderMaterial
-                    .add(self.material, 'opacity', 0, 1).listen();
+                    .add(self.material, "opacity", 0, 1).listen();
 
                 folderMaterial
-                    .add(self.material, 'bumpScale', -1.5, 1.5).listen();
+                    .add(self.material, "bumpScale", -1.5, 1.5).listen();
 
                 folderMaterial
-                    .addColor(this.params.colors, 'color').listen()
+                    .addColor(this.params.colors, "color").listen()
                     .onChange(function (color) {
-                        self.material.color.setHex(color.replace('#', '0x'));
+                        self.material.color.setHex(color.replace("#", "0x"));
                     });
 
-                var folderAnimate = folderCloud.addFolder('Animate');
+                var folderAnimate = folderCloud.addFolder("Animate");
 
                 folderAnimate
-                    .add(params.animate, 'enabled').listen();
+                    .add(params.animate, "enabled").listen();
 
                 folderAnimate
-                    .add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
+                    .add(params.animate, "rotationsYPerSecond", -2, 2).listen();
 
                 folderCloud
-                    .add(this, 'reset').name('RESET CLOUD');
+                    .add(this, "reset").name("RESET CLOUD");
 
                 return folderCloud;
             }
@@ -2208,17 +2208,17 @@ var Earth = (function (Cloud) {
                 material: {
                     wireframe: false,
                     map: {
-                        sd: ASSETS_PATH + 'earth_map_1024x512.jpg',
-                        hd: ASSETS_PATH + 'earth_map_2048x1024.jpg'
+                        sd: ASSETS_PATH + "earth_map_1024x512.jpg",
+                        hd: ASSETS_PATH + "earth_map_2048x1024.jpg"
                     },
                     bumpMap: {
-                        sd: ASSETS_PATH + 'earth_bump_1024x512.jpg',
-                        hd: ASSETS_PATH + 'earth_bump_2048x1024.jpg'
+                        sd: ASSETS_PATH + "earth_bump_1024x512.jpg",
+                        hd: ASSETS_PATH + "earth_bump_2048x1024.jpg"
                     },
                     bumpScale: 0.45,
                     specularMap: {
-                        sd: ASSETS_PATH + 'earth_specular_1024x512.jpg',
-                        hd: ASSETS_PATH + 'earth_specular_2048x1024.jpg'
+                        sd: ASSETS_PATH + "earth_specular_1024x512.jpg",
+                        hd: ASSETS_PATH + "earth_specular_2048x1024.jpg"
                     },
                     specular: 0x2d4ea0,
                     shininess: 6
@@ -2312,50 +2312,50 @@ var Earth = (function (Cloud) {
             },
 
             resetColorsHexString: function () {
-                this.params.colors.specular = '#' + self.material.specular.getHexString();
+                this.params.colors.specular = "#" + self.material.specular.getHexString();
             },
 
             add: function (gui) {
                 this.resetColorsHexString();
 
-                var folderEarth = gui.addFolder('EARTH');
+                var folderEarth = gui.addFolder("EARTH");
 
                 folderEarth
-                    .add(self.earthMesh, 'visible').listen();
+                    .add(self.earthMesh, "visible").listen();
 
-                var folderMaterial = folderEarth.addFolder('Material');
+                var folderMaterial = folderEarth.addFolder("Material");
 
                 folderMaterial
-                    .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+                    .add(params, "imgDef", [IMAGE_SD, IMAGE_HD]).listen()
                     .onChange(function (imgDef) {
                         self.setMaterialTextures(imgDef);
                     });
 
                 folderMaterial
-                    .add(self.material, 'wireframe').listen();
+                    .add(self.material, "wireframe").listen();
 
                 folderMaterial
-                    .add(self.material, 'bumpScale', -1.5, 1.5).listen();
+                    .add(self.material, "bumpScale", -1.5, 1.5).listen();
 
                 folderMaterial
-                    .add(self.material, 'shininess', 0, 10).listen();
+                    .add(self.material, "shininess", 0, 10).listen();
 
                 folderMaterial
-                    .addColor(this.params.colors, 'specular').listen()
+                    .addColor(this.params.colors, "specular").listen()
                     .onChange(function (color) {
-                        self.material.specular.setHex(color.replace('#', '0x'));
+                        self.material.specular.setHex(color.replace("#", "0x"));
                     });
 
-                var folderAnimate = folderEarth.addFolder('Animate');
+                var folderAnimate = folderEarth.addFolder("Animate");
 
                 folderAnimate
-                    .add(params.animate, 'enabled').listen();
+                    .add(params.animate, "enabled").listen();
 
                 folderAnimate
-                    .add(params.animate, 'rotationsYPerSecond', -2, 2).listen();
+                    .add(params.animate, "rotationsYPerSecond", -2, 2).listen();
 
                 folderEarth
-                    .add(this, 'reset').name('RESET EARTH');
+                    .add(this, "reset").name("RESET EARTH");
 
                 return folderEarth;
             }
@@ -2389,12 +2389,12 @@ var Moon = (function (Earth) {
                 material: {
                     wireframe: false,
                     map: {
-                        sd: ASSETS_PATH + 'moon_map_512x256.jpg',
-                        hd: ASSETS_PATH + 'moon_map_1024x512.jpg'
+                        sd: ASSETS_PATH + "moon_map_512x256.jpg",
+                        hd: ASSETS_PATH + "moon_map_1024x512.jpg"
                     },
                     bumpMap: {
-                        sd: ASSETS_PATH + 'moon_bump_512x256.jpg',
-                        hd: ASSETS_PATH + 'moon_bump_1024x512.jpg'
+                        sd: ASSETS_PATH + "moon_bump_512x256.jpg",
+                        hd: ASSETS_PATH + "moon_bump_1024x512.jpg"
                     },
                     bumpScale: 0.1,
                     shininess: 0
@@ -2501,49 +2501,49 @@ var Moon = (function (Earth) {
             },
 
             add: function (gui) {
-                var folderMoon = gui.addFolder('MOON');
+                var folderMoon = gui.addFolder("MOON");
 
                 folderMoon
-                    .add(self.moonMesh, 'visible').listen();
+                    .add(self.moonMesh, "visible").listen();
 
-                var folderPosition = folderMoon.addFolder('Position');
-
-                folderPosition
-                    .add(self.moonMesh.position, 'x', -100, 100).listen();
+                var folderPosition = folderMoon.addFolder("Position");
 
                 folderPosition
-                    .add(self.moonMesh.position, 'y', -100, 100).listen();
+                    .add(self.moonMesh.position, "x", -100, 100).listen();
 
                 folderPosition
-                    .add(self.moonMesh.position, 'z', -100, 100).listen();
+                    .add(self.moonMesh.position, "y", -100, 100).listen();
 
-                var folderMaterial = folderMoon.addFolder('Material');
+                folderPosition
+                    .add(self.moonMesh.position, "z", -100, 100).listen();
+
+                var folderMaterial = folderMoon.addFolder("Material");
 
                 folderMaterial
-                    .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+                    .add(params, "imgDef", [IMAGE_SD, IMAGE_HD]).listen()
                     .onChange(function (imgDef) {
                         self.setMaterialTextures(imgDef);
                     });
 
                 folderMaterial
-                    .add(self.material, 'wireframe').listen();
+                    .add(self.material, "wireframe").listen();
 
                 folderMaterial
-                    .add(self.material, 'bumpScale', -1.5, 1.5).listen();
+                    .add(self.material, "bumpScale", -1.5, 1.5).listen();
 
                 folderMaterial
-                    .add(self.material, 'shininess', 0, 10).listen();
+                    .add(self.material, "shininess", 0, 10).listen();
 
-                var folderAnimate = folderMoon.addFolder('Animate');
-
-                folderAnimate
-                    .add(params.animate, 'enabled').listen();
+                var folderAnimate = folderMoon.addFolder("Animate");
 
                 folderAnimate
-                    .add(params.animate, 'pivotRotationsPerSecond', -2, 2).listen();
+                    .add(params.animate, "enabled").listen();
+
+                folderAnimate
+                    .add(params.animate, "pivotRotationsPerSecond", -2, 2).listen();
 
                 folderMoon
-                    .add(this, 'reset').name('RESET MOON');
+                    .add(this, "reset").name("RESET MOON");
 
                 return folderMoon;
             }
@@ -2579,16 +2579,16 @@ var Sun = (function () {
                 sunLensFlare: {
                     textures: {
                         sun: {
-                            sd: ASSETS_PATH + 'lens_flare_sun_512x512.jpg',
-                            hd: ASSETS_PATH + 'lens_flare_sun_1024x1024.jpg'
+                            sd: ASSETS_PATH + "lens_flare_sun_512x512.jpg",
+                            hd: ASSETS_PATH + "lens_flare_sun_1024x1024.jpg"
                         },
                         circle: {
-                            sd: ASSETS_PATH + 'lens_flare_circle_32x32.jpg',
-                            hd: ASSETS_PATH + 'lens_flare_circle_64x64.jpg'
+                            sd: ASSETS_PATH + "lens_flare_circle_32x32.jpg",
+                            hd: ASSETS_PATH + "lens_flare_circle_64x64.jpg"
                         },
                         hexagon: {
-                            sd: ASSETS_PATH + 'lens_flare_hexagon_128x128.jpg',
-                            hd: ASSETS_PATH + 'lens_flare_hexagon_256x256.jpg'
+                            sd: ASSETS_PATH + "lens_flare_hexagon_128x128.jpg",
+                            hd: ASSETS_PATH + "lens_flare_hexagon_256x256.jpg"
                         }
                     },
                     flareCircleSizeMax: 70,
@@ -2751,60 +2751,60 @@ var Sun = (function () {
             },
 
             resetColorsHexString: function () {
-                this.params.colors.color = '#' + self.sunLight.color.getHexString();
+                this.params.colors.color = "#" + self.sunLight.color.getHexString();
             },
 
             add: function (gui) {
                 this.resetColorsHexString();
 
-                var folderSun = gui.addFolder('SUN');
+                var folderSun = gui.addFolder("SUN");
 
                 folderSun
-                    .add(self.sunLight, 'visible').listen();
+                    .add(self.sunLight, "visible").listen();
 
-                var folderLight = folderSun.addFolder('Light');
-
-                folderLight
-                    .add(self.sunLight, 'intensity', 0, 10).listen();
+                var folderLight = folderSun.addFolder("Light");
 
                 folderLight
-                    .addColor(this.params.colors, 'color').listen()
+                    .add(self.sunLight, "intensity", 0, 10).listen();
+
+                folderLight
+                    .addColor(this.params.colors, "color").listen()
                     .onChange(function (color) {
-                        self.sunLight.color.setHex(color.replace('#', '0x'));
+                        self.sunLight.color.setHex(color.replace("#", "0x"));
                     });
 
-                var folderPosition = folderSun.addFolder('Position');
+                var folderPosition = folderSun.addFolder("Position");
 
                 folderPosition
-                    .add(self.sunLight.position, 'x', -2000, 2000).listen();
+                    .add(self.sunLight.position, "x", -2000, 2000).listen();
 
                 folderPosition
-                    .add(self.sunLight.position, 'y', -2000, 2000).listen();
+                    .add(self.sunLight.position, "y", -2000, 2000).listen();
 
                 folderPosition
-                    .add(self.sunLight.position, 'z', -2000, 2000).listen();
+                    .add(self.sunLight.position, "z", -2000, 2000).listen();
 
-                var folderLensFlares = folderSun.addFolder('LensFlares');
+                var folderLensFlares = folderSun.addFolder("LensFlares");
 
                 folderLensFlares
-                    .add(params, 'imgDef', [IMAGE_SD, IMAGE_HD]).listen()
+                    .add(params, "imgDef", [IMAGE_SD, IMAGE_HD]).listen()
                     .onChange(function (imgDef) {
                         self.refreshTextures(imgDef);
                     });
 
                 for (var i = 0; i < self.sunLensFlare.lensFlares.length; i++) {
                     folderLensFlares
-                        .add(self.sunLensFlare.lensFlares[i], 'size', 0, 2000).name(i + '. size').listen();
+                        .add(self.sunLensFlare.lensFlares[i], "size", 0, 2000).name(i + ". size").listen();
 
                     folderLensFlares
-                        .add(self.sunLensFlare.lensFlares[i], 'opacity', 0, 1).name(i + '. opacity').listen();
+                        .add(self.sunLensFlare.lensFlares[i], "opacity", 0, 1).name(i + ". opacity").listen();
 
                     folderLensFlares
-                        .add(self.sunLensFlare.lensFlares[i], 'distance', -1, 1).name(i + '. distance').listen();
+                        .add(self.sunLensFlare.lensFlares[i], "distance", -1, 1).name(i + ". distance").listen();
                 }
 
                 folderSun
-                    .add(this, 'reset').name('RESET SUN');
+                    .add(this, "reset").name("RESET SUN");
 
                 return folderSun;
             }
@@ -2886,22 +2886,22 @@ var Scene = (function () {
             },
 
             add: function (gui) {
-                var folderOrbitControls = gui.addFolder('ORBIT CONTROLS');
+                var folderOrbitControls = gui.addFolder("ORBIT CONTROLS");
 
                 folderOrbitControls
-                    .add(params.orbitControls, 'autoRotate').listen()
+                    .add(params.orbitControls, "autoRotate").listen()
                     .onChange(function (value) {
                         self.applyParamsOrbitControlsAutoRotate();
                     });
 
                 folderOrbitControls
-                    .add(params.orbitControls, 'autoRotateSpeed', -1, 1).listen()
+                    .add(params.orbitControls, "autoRotateSpeed", -1, 1).listen()
                     .onChange(function (value) {
                         self.applyParamsOrbitControlsAutoRotateSpeed();
                     });
 
                 folderOrbitControls
-                    .add(this, 'reset').name('RESET CONTR.');
+                    .add(this, "reset").name("RESET CONTR.");
 
                 return folderOrbitControls;
             }
@@ -3017,64 +3017,64 @@ var SceneShadow = (function (Scene) {
             },
 
             add: function (gui) {
-                var folderShadow = gui.addFolder('SHADOW');
+                var folderShadow = gui.addFolder("SHADOW");
 
                 folderShadow
-                    .add(self.cameraHelper, 'visible').name('cameraHelper').listen();
+                    .add(self.cameraHelper, "visible").name("cameraHelper").listen();
 
                 folderShadow
-                    .add(Sun.sunLight, 'castShadow').listen();
+                    .add(Sun.sunLight, "castShadow").listen();
 
                 folderShadow
-                    .add(Sun.sunLight.shadow.camera, 'near').step(10).listen()
+                    .add(Sun.sunLight.shadow.camera, "near").step(10).listen()
                     .onChange(function () {
                         self.updateShadow();
                     });
 
                 folderShadow
-                    .add(Sun.sunLight.shadow.camera, 'far').step(10).listen()
+                    .add(Sun.sunLight.shadow.camera, "far").step(10).listen()
                     .onChange(function () {
                         self.updateShadow();
                     });
 
                 folderShadow
-                    .add(Sun.sunLight.shadow.mapSize, 'width', 0, 2048).listen();
+                    .add(Sun.sunLight.shadow.mapSize, "width", 0, 2048).listen();
 
                 folderShadow
-                    .add(Sun.sunLight.shadow.mapSize, 'height', 0, 2048).listen();
+                    .add(Sun.sunLight.shadow.mapSize, "height", 0, 2048).listen();
 
                 folderShadow
-                    .add(Sun.sunLight.shadow, 'bias', 0, 0.4).step(0.001).listen()
+                    .add(Sun.sunLight.shadow, "bias", 0, 0.4).step(0.001).listen()
                     .onChange(function () {
                         self.updateShadow();
                     });
 
                 folderShadow
-                    .add(Sun.sunLight.shadow.camera, 'right').step(10).listen()
+                    .add(Sun.sunLight.shadow.camera, "right").step(10).listen()
                     .onChange(function () {
                         self.updateShadow();
                     });
 
                 folderShadow
-                    .add(Sun.sunLight.shadow.camera, 'left').step(10).listen()
+                    .add(Sun.sunLight.shadow.camera, "left").step(10).listen()
                     .onChange(function () {
                         self.updateShadow();
                     });
 
                 folderShadow
-                    .add(Sun.sunLight.shadow.camera, 'top').step(10).listen()
+                    .add(Sun.sunLight.shadow.camera, "top").step(10).listen()
                     .onChange(function () {
                         self.updateShadow();
                     });
 
                 folderShadow
-                    .add(Sun.sunLight.shadow.camera, 'bottom').step(10).listen()
+                    .add(Sun.sunLight.shadow.camera, "bottom").step(10).listen()
                     .onChange(function () {
                         self.updateShadow();
                     });
 
                 folderShadow
-                    .add(this, 'reset').name('RESET SHADOW');
+                    .add(this, "reset").name("RESET SHADOW");
 
                 return folderShadow;
             }
@@ -3095,7 +3095,7 @@ var View = (function () {
 
     var params = {
         imgDef: DEFAULT,
-        helpClassname: 'help'
+        helpClassname: "help"
     };
 
     var _View = function () {
@@ -3108,7 +3108,7 @@ var View = (function () {
 
             animate();
 
-            window.addEventListener('resize', this.updateAll, false);
+            window.addEventListener("resize", this.updateAll, false);
         };
 
         this.addGui = function () {
@@ -3124,7 +3124,7 @@ var View = (function () {
             SceneShadow.gui.add(gui);
             Renderer.gui.add(gui);
 
-            gui.add(params, 'imgDef', [DEFAULT, IMAGE_SD, IMAGE_HD]).name('IMG DEF ALL').listen()
+            gui.add(params, "imgDef", [DEFAULT, IMAGE_SD, IMAGE_HD]).name("IMG DEF ALL").listen()
                 .onChange(function (imgDef) {
                     imgDef = DEFAULT === imgDef ? undefined : imgDef;
 
@@ -3135,8 +3135,8 @@ var View = (function () {
                     Moon.setMaterialTextures(imgDef);
                 });
 
-            gui.add(this, 'resetAll').name('RESET ALL');
-            gui.add(this, 'help').name('(?) HELP');
+            gui.add(this, "resetAll").name("RESET ALL");
+            gui.add(this, "help").name("(?) HELP");
         };
 
         this.resetAll = function () {
@@ -3164,7 +3164,7 @@ var View = (function () {
         };
 
         this.helpHideToggle = function (value) {
-            return 'none' === value ? 'block' : 'none';
+            return "none" === value ? "block" : "none";
         };
 
         var animate = function () {
